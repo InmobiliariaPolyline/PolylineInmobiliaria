@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POLYLINE - Constructora</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/calendly.css">
+    <link rel="stylesheet" href="../css/nav.css">
+    <link rel="stylesheet" href="../css/idiomas.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script type="module" src="../js/Login_Perfil.js"></script>
+
+</head>
+<body>
+    <header>
+        <!-- Botón de menú móvil -->
+        <button class="mobile-menu-button" aria-label="Menú">
+            <div class="hamburger"></div>
+        </button>
+       
+        <div class="logo-container">
+            <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+            <h1 class="company-name">POLYLINE</h1>
+            <p class="slogan"> CONSTRUCTORA</p>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="language-selector">
+                    <button class="language-btn" onclick="toggleLanguageOptions()">
+                        <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
+                        <span id="currentLanguage">Español</span>
+                    </button>
+                    <div class="language-options" id="languageOptions">
+                        <div class="language-option" onclick="changeLanguage('es')">
+                            <img src="../Resource/flags/es.png" alt="Español">
+                            <span>Español</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('en')">
+                            <img src="../Resource/flags/en.png" alt="English">
+                            <span>English</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('pt')">
+                            <img src="../Resource/flags/pt.png" alt="Português">
+                            <span>Português</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('zh')">
+                            <img src="../Resource/flags/zh.png" alt="中文">
+                            <span>中文</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('ja')">
+                            <img src="../Resource/flags/ja.png" alt="日本語">
+                            <span>日本語</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('it')">
+                            <img src="../Resource/flags/it.png" alt="Italiano">
+                            <span>Italiano</span>
+                        </div>
+                    </div>
+                </li>
+                <li><a class='active' data-translate='Inicio' href='../index.html'>Inicio</a></li>
+                <li><a data-translate='Para Tí' href='../index.html'>Para Tí</a></li>
+                <li class="dropdown">
+                    <a data-translate='Proyectos' href='../proyectos/proyectos.html' id='proyectos-link'>Proyectos</a>
+                    <ul class="dropdown-menu">
+                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='../proyectos/proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
+                        <li><a data-translate='Proyecto Benavides 1' href='../proyectos/pben1.html'>Proyecto Benavides 1</a></li>
+                        <li><a data-translate='Proyecto Benavides 2' href='../proyectos/pben2.html'>Proyecto Benavides 2</a></li>
+                        <li><a data-translate='Proyecto Sienna' href='../proyectos/ppl1.html'>Proyecto Sienna</a></li>
+                        <li><a data-translate='Proyecto Varsovia' href='../proyectos/plin.html'>Proyecto Varsovia</a></li>
+                        <li><a data-translate='Mas Proyectos' href='../proyectos/mas-proyectos.html'>Mas Proyectos</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="informaci%c3%b3n.html" id="proyectos-link" data-translate="Contacto">Contacto</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="informaci%c3%b3n.html" data-translate="Información">Información</a></li>
+                        <li><a href="agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
+                    </ul>
+                </li>
+                <li><a data-translate='Cotizar Proyecto' href='../proyectos/cotizar.html'>Cotizar Proyecto</a></li>
+                <li><a data-translate='Anuncios' href='../proyectos/Anuncios.html'>Anuncios</a></li>
+                <li id="translateContainer" class="translate-container">
+                    <div id="google_translate_element" title="Seleccionar idioma"></div>
+                </li>
+                <li id="loginContainer" class="mobile-login">
+                    <a class='login-link' href='../pages/login.html' id='loginLink'>
+                        <i class="fas fa-sign-in-alt"></i> 
+                        <span data-translate="Login">Login</span>
+                    </a>
+                    <div id="userProfile" style="display: none;">
+                        <div class="profile-header">
+                            <a id="profileLink" href='../pages/perfil.html' style='text-decoration: none; color: inherit;'>
+                                <i class="fas fa-user"></i>
+                                <span id="profileText" data-translate="Perfil">Perfil</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div class="menu-overlay"></div>
+    <main>
+        <section class="hero-section" style="position: relative; height: 80vh; overflow: hidden;">
+            <!-- Added overlay div -->
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 0;"></div>
+            
+            <video autoplay muted loop playsinline id="background-video" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 1; transition: opacity 1s ease-in-out;">
+            <source src="../Resource/Equipo/background_Agendar.mp4" type="video/mp4">
+            Tu navegador no soporta videos HTML5.
+            </video>
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%; color: #fff; z-index: 1;">
+            <h2 class="hero-title">
+                <span class="letter-wrapper">
+                <span class="letters-main" data-translate="Agenda una Reunión con Nosotros" style="color: white;">Agenda una Reunión con Nosotros</span>
+                </span>
+            </h2>
+            <p class="hero-subtitle">
+                <span class="letter-wrapper">
+                <span class="letters-sub" data-translate="Estamos aquí para ayudarte a hacer realidad tus proyectos">Estamos aquí para ayudarte a hacer realidad tus proyectos</span>
+                </span>
+            </p>
+                <div class="botones-agenda">
+                    <a href="#" onclick="mostrarCalendlyYScroll('presencial')" class="boton-agenda">
+                        <i class="fas fa-handshake"></i>
+                        <span data-translate="Reunión Presencial">Reunión Presencial</span>
+                    </a>
+                    
+                    <a href="#" onclick="mostrarCalendlyYScroll('remoto')" class="boton-agenda">
+                        <i class="fas fa-video"></i>
+                        <span data-translate="Reunión Virtual">Reunión Virtual</span>
+                    </a>
+                </div>
+                <script>
+                function mostrarCalendlyYScroll(tipo) {
+                    // Primero mostrar el calendly 
+                    mostrarCalendly(tipo);
+                    
+                    // Esperar un momento para que se muestre el contenedor
+                    setTimeout(() => {
+                        // Obtener el elemento calendly
+                        const calendlyContainer = document.getElementById(`calendly-${tipo}`);
+                        
+                        // Hacer scroll suave hasta el elemento
+                        calendlyContainer.scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 100);
+                }
+                </script>
+            </div>
+        </section>
+
+       
+    <div class="separator"></div>
+
+        <section id="calendly-remoto" class="calendly-container">
+            <button class="close-button" onclick="cerrarCalendly('remoto')">×</button>
+            <div class="tipo-reunion">
+                <h3 data-translate="Reunión Virtual">Reunión Virtual</h3>
+                <p data-translate="Agenda una videollamada">Agenda una videollamada con nuestro equipo desde la comodidad de tu hogar u oficina.</p>
+            </div>
+            <div class="beneficios-reunion">
+                <div class="beneficio">
+                    <i class="fas fa-clock"></i>
+                    <h4 data-translate="Ahorra Tiempo">Ahorra Tiempo</h4>
+                    <p data-translate="Sin necesidad de desplazarte">Sin necesidad de desplazarte</p>
+                </div>
+                <div class="beneficio">
+                    <i class="fas fa-laptop"></i>
+                    <h4 data-translate="Presentación Digital">Presentación Digital</h4>
+                    <p data-translate="Compartiremos toda la información en tiempo real">Compartiremos toda la información en tiempo real</p>
+                </div>
+                <div class="beneficio">
+                    <i class="fas fa-comments"></i>
+                    <h4 data-translate="Comunicación Efectiva">Comunicación Efectiva</h4>
+                    <p data-translate="Resuelve todas tus dudas en directo">Resuelve todas tus dudas en directo</p>
+                </div>
+            </div>
+            <div class="calendly-iframe-container">
+                <iframe src="https://calendly.com/pollylinesacinmobiliaria/reuvirtual" frameborder="0"></iframe>
+                
+            </div>
+
+        </section>
+
+        <section id="calendly-presencial" class="calendly-container">
+            <button class="close-button" onclick="cerrarCalendly('presencial')">×</button>
+            <div class="tipo-reunion">
+                <h3 data-translate="Reunión Presencial">Reunión Presencial</h3>
+                <p data-translate="Visítanos en nuestras oficinas para conocer más sobre nuestros proyectos">Visítanos en nuestras oficinas para conocer más sobre nuestros proyectos.</p>
+            </div>
+            <div class="beneficios-reunion">
+                <div class="beneficio">
+                    <i class="fas fa-building"></i>
+                    <h4 data-translate="Conoce Nuestras Instalaciones">Conoce Nuestras Instalaciones</h4>
+                    <p data-translate="Visita nuestra oficina principal">Visita nuestra oficina principal</p>
+                </div>
+                <div class="beneficio">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h4 data-translate="Ubicación Céntrica">Ubicación Céntrica</h4>
+                    <p data-translate="Fácil acceso y estacionamiento disponible">Fácil acceso y estacionamiento disponible</p>
+                </div>
+                <div class="beneficio">
+                    <i class="fas fa-file-contract"></i>
+                    <h4 data-translate="Documentación Física">Documentación Física</h4>
+                    <p data-translate="Revisa todos los detalles en persona">Revisa todos los detalles en persona</p>
+                </div>
+            </div>
+            <div class="calendly-iframe-container" >
+                <iframe src="https://calendly.com/polylinesacinmobiliaria/reupresencial" frameborder="0"></iframe>
+            </div>
+        </section>
+        
+        <script>
+            // Animación inicial
+            window.addEventListener('load', () => {
+                anime({
+                    targets: '.contenido-agenda',
+                    opacity: [0, 1],
+                    translateY: [30, 0],
+                    duration: 1500,
+                    easing: 'easeOutExpo'
+                });
+            });
+
+            function mostrarCalendly(tipo) {
+                // Ocultar ambos calendarios
+                document.getElementById('calendly-remoto').style.display = 'none';
+                document.getElementById('calendly-presencial').style.display = 'none';
+                
+                // Mostrar el calendario seleccionado
+                const calendlyElement = document.getElementById(`calendly-${tipo}`);
+                calendlyElement.style.display = 'block';
+                
+                // Animar la aparición
+                anime({
+                    targets: calendlyElement,
+                    opacity: [0, 1],
+                    translateY: [30, 0],
+                    duration: 800,
+                    easing: 'easeOutQuad'
+                });
+
+                // Scroll suave hasta el calendario
+                calendlyElement.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            function cerrarCalendly(tipo) {
+                const calendlyElement = document.getElementById(`calendly-${tipo}`);
+                
+                anime({
+                    targets: calendlyElement,
+                    opacity: 0,
+                    translateY: 30,
+                    duration: 500,
+                    easing: 'easeOutQuad',
+                    complete: function() {
+                        calendlyElement.style.display = 'none';
+                    }
+                });
+            }
+        </script>
+        
+    </main>
+    <button id="dark-mode-toggle" class="dark-mode-button" style="position: fixed; right: 30px;"></button>
+    <script src="../scripts.js"></script>
+    <script src="../js/auth.js"></script>
+
+    <footer class="seccion-footer">
+        <div class="contenedor-footer">
+            <div class="bloque-logo">
+                <img src="../Resource/Logo/logo.png" alt="Polyline">
+                <div class="texto-copyright" style="color:black;">
+                    <p>&copy; 2025 POLYLINE. Todos los derechos reservados.</p>
+                </div>
+            </div>
+            <div class="bloque-contacto" style="color: black;">
+                <h3>CONTACTOS:</h3>
+                <p>WhatsApp: <a href="https://wa.link/lkvfnb">+51 943 812 536</a></p>
+                <p>Email: <a href="mailto:contacto@polyline.com">contacto@polyline.com</a></p>
+                <p>Dirección: Av. Óscar R. Benavides</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="social-buttons" style="position: fixed; bottom: 20px; right: 90px;">
+        <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
+            <i class="fab fa-facebook-f"></i>
+        </button>
+        <button class="social-btn whatsapp" onclick="window.open('https://wa.link/lkvfnb')">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+        <button class="social-btn instagram" onclick="window.open('https://www.instagram.com/arquitectosalasperu/')">
+            <i class="fab fa-instagram"></i>
+        </button>
+        <button class="social-btn linkedin" onclick="window.open('https://www.linkedin.com/in/arquitectosalas')">
+            <i class="fab fa-linkedin-in"></i>
+        </button>
+        <button class="social-btn youtube" onclick="window.open('https://www.youtube.com/channel/UC9wMT7_zsq7yE0MMCSxiVMw')">
+            <i class="fab fa-youtube"></i>
+        </button>
+    </div>
+    <script type="module" src="js/nav.html"></script>
+    <script type="module">
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    
+        // Función para manejar el cierre de sesión
+        document.getElementById('logoutButton').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const auth = getAuth();
+            try {
+                await signOut(auth);
+                console.log('Sesión cerrada exitosamente');
+                window.location.href = '../index.html'; // Redirige al inicio después de cerrar sesión
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
+    const navMenu = document.querySelector('.nav-menu');
+    const menuOverlay = document.querySelector('.menu-overlay');
+    const dropdowns = document.querySelectorAll('.dropdown');
+
+    // Toggle menú móvil
+    mobileMenuButton.addEventListener('click', function() {
+        this.classList.toggle('active');
+        navMenu.classList.toggle('active');
+        menuOverlay.classList.toggle('active');
+        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+    });
+
+    // Cerrar menú al hacer click en el overlay
+    menuOverlay.addEventListener('click', function() {
+        mobileMenuButton.classList.remove('active');
+        navMenu.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    // Manejar dropdowns en móvil
+    dropdowns.forEach(dropdown => {
+        const link = dropdown.querySelector('a');
+        link.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                dropdown.classList.toggle('active');
+            }
+        });
+    });
+
+    // Cerrar menú al cambiar el tamaño de la ventana
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            mobileMenuButton.classList.remove('active');
+            navMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+});
+    </script>
+
+    <script>
+        // Funciones para el selector de idiomas
+         function toggleLanguageOptions() {
+            const selector = document.querySelector('.language-selector');
+            const options = document.getElementById('languageOptions');
+            selector.classList.toggle('active');
+            options.classList.toggle('show');
+        }
+
+        function changeLanguage(lang) {
+            const currentFlag = document.getElementById('currentFlag');
+            const currentLanguage = document.getElementById('currentLanguage');
+            const options = document.getElementById('languageOptions');
+            
+            // Actualizar el botón con el idioma seleccionado
+            currentFlag.src = `../Resource/flags/${lang}.png`;
+            currentLanguage.textContent = {
+                'es': 'Español',
+                'en': 'English',
+                'pt': 'Português',
+                'zh': '中文',
+                'ja': '日本語',
+                'it': 'Italiano'
+            }[lang];
+            
+            // Ocultar las opciones
+            options.classList.remove('show');
+            
+            // Traducir el contenido
+            translatePage(lang);
+        }
+        // Objeto con las traducciones
+        const translations = {
+            'en': {
+                'Inicio': 'Home',
+                'Para Tí': 'For You', 
+                'Proyectos': 'Projects',
+                'Casas de Playa en Venta / Alquiler': 'Beach Houses for Sale / Rent',
+                'Proyecto Benavides 1': 'Benavides Project 1',
+                'Proyecto Benavides 2': 'Benavides Project 2',
+                'Proyecto Sienna': 'Sienna Project',
+                'Proyecto Varsovia': 'Varsovia Project',
+                'Mas Proyectos': 'More Projects',
+                'Contacto': 'Contact',
+                'Información': 'Information',
+                'Agenda una Reunión con Nosotros': 'Schedule a Meeting with Us',
+                'Cotizar Proyecto': 'Quote Project',
+                'Login': 'Login',
+                'Perfil': 'Profile',
+                'Estamos aquí para ayudarte a hacer realidad tus proyectos': 'We are here to help make your projects a reality',
+                'Reunión Virtual': 'Virtual Meeting',
+                'Reunión Presencial': 'In-Person Meeting',
+                'Agenda una videollamada': 'Schedule a video call',
+                'Ahorra Tiempo': 'Save Time',
+                'Sin necesidad de desplazarte': 'No need to travel',
+                'Presentación Digital': 'Digital Presentation',
+                'Compartiremos toda la información en tiempo real': 'We will share all information in real time',
+                'Comunicación Efectiva': 'Effective Communication',
+                'Resuelve todas tus dudas en directo': 'Resolve all your questions live',
+                'Visítanos en nuestras oficinas para conocer más sobre nuestros proyectos': 'Visit our offices to learn more about our projects',
+                'Conoce Nuestras Instalaciones': 'Know Our Facilities',
+                'Visita nuestra oficina principal': 'Visit our main office',
+                'Ubicación Céntrica': 'Central Location',
+                'Fácil acceso y estacionamiento disponible': 'Easy access and parking available',
+                'Documentación Física': 'Physical Documentation',
+                'Revisa todos los detalles en persona': 'Review all details in person'
+            
+            },
+            'pt': {
+                'Inicio': 'Início',
+                'Para Tí': 'Para Você',
+                'Proyectos': 'Projetos',
+                'Casas de Playa en Venta / Alquiler': 'Casas de Praia à Venda / Aluguel',
+                'Proyecto Benavides 1': 'Projeto Benavides 1',
+                'Proyecto Benavides 2': 'Projeto Benavides 2', 
+                'Proyecto Sienna': 'Sienna Projeto',
+                'Proyecto Varsovia': 'Varsovia Projeto',
+                'Mas Proyectos': 'Mais Projetos',
+                'Contacto': 'Contato',
+                'Información': 'Informação',
+                'Agenda una Reunión con Nosotros': 'Agende uma Reunião Conosco',
+                'Cotizar Proyecto': 'Cotar Projeto',
+                'Login': 'Entrar',
+                'Perfil': 'Perfil',
+                'Estamos aquí para ayudarte a hacer realidad tus proyectos': 'Estamos aqui para ajudar a tornar seus projetos realidade',
+                'Reunión Virtual': 'Reunião Virtual',
+                'Reunión Presencial': 'Reunião Presencial',
+                'Agenda una videollamada': 'Agende uma videochamada',
+                'Ahorra Tiempo': 'Economize Tempo',
+                'Sin necesidad de desplazarte': 'Sem necessidade de deslocamento',
+                'Presentación Digital': 'Apresentação Digital',
+                'Compartiremos toda la información en tiempo real': 'Compartilharemos todas as informações em tempo real',
+                'Comunicación Efectiva': 'Comunicação Efetiva',
+                'Resuelve todas tus dudas en directo': 'Tire todas as suas dúvidas ao vivo',
+                'Visítanos en nuestras oficinas para conocer más sobre nuestros proyectos': 'Visite nossos escritórios para saber mais sobre nossos projetos',
+                'Conoce Nuestras Instalaciones': 'Conheça Nossas Instalações',
+                'Visita nuestra oficina principal': 'Visite nosso escritório principal',
+                'Ubicación Céntrica': 'Localização Central',
+                'Fácil acceso y estacionamiento disponible': 'Fácil acesso e estacionamento disponível',
+                'Documentación Física': 'Documentação Física',
+                'Revisa todos los detalles en persona': 'Revise todos os detalhes pessoalmente'
+            },
+            'zh': {
+                'Inicio': '首页',
+                'Para Tí': '为您服务',
+                'Proyectos': '项目',
+                'Casas de Playa en Venta / Alquiler': '出售/出租房屋',
+                'Proyecto Benavides 1': '贝纳维德斯项目1',
+                'Proyecto Benavides 2': '贝纳维德斯项目2',
+                'Proyecto Sienna': '锡耶纳项目',
+                'Proyecto Varsovia': '华沙项目',
+                'Mas Proyectos': '更多项目',
+                'Contacto': '联系我们',
+                'Información': '信息',
+                'Agenda una Reunión con Nosotros': '预约会议',
+                'Cotizar Proyecto': '项目报价',
+                'Login': '登录',
+                'Perfil': '个人资料',
+                'Estamos aquí para ayudarte a hacer realidad tus proyectos': '我们在此帮助您实现项目',
+                'Reunión Virtual': '线上会议',
+                'Reunión Presencial': '线下会议',
+                'Agenda una videollamada': '预约视频通话',
+                'Ahorra Tiempo': '节省时间',
+                'Sin necesidad de desplazarte': '无需亲临现场',
+                'Presentación Digital': '数字演示',
+                'Compartiremos toda la información en tiempo real': '实时分享所有信息',
+                'Comunicación Efectiva': '有效沟通',
+                'Resuelve todas tus dudas en directo': '实时解答您的所有疑问',
+                'Visítanos en nuestras oficinas para conocer más sobre nuestros proyectos': '访问我们的办公室了解更多项目信息',
+                'Conoce Nuestras Instalaciones': '了解我们的设施',
+                'Visita nuestra oficina principal': '参观我们的总部',
+                'Ubicación Céntrica': '中心位置',
+                'Fácil acceso y estacionamiento disponible': '交通便利，提供停车位',
+                'Documentación Física': '实体文件',
+                'Revisa todos los detalles en persona': '亲自查看所有细节'
+            },
+            'ja': {
+                'Inicio': 'ホーム',
+                'Para Tí': 'あなたのために',
+                'Proyectos': 'プロジェクト',
+                'Casas de Playa en Venta / Alquiler': ' 販売/賃貸ビーチハウス',
+                'Proyecto Benavides 1': 'ベナビデスプロジェクト1',
+                'Proyecto Benavides 2': 'ベナビデスプロジェクト2',
+                'Proyecto Sienna': 'シエナ・プロジェクト',
+                'Proyecto Varsovia': 'ワルシャワ・プロジェクト',
+                'Mas Proyectos': 'もっとプロジェクト',
+                'Contacto': 'お問い合わせ',
+                'Información': '情報',
+                'Agenda una Reunión con Nosotros': 'ミーティングを予約する',
+                'Cotizar Proyecto': 'プロジェクト見積もり',
+                'Login': 'ログイン',
+                'Perfil': 'プロフィール',
+                'Estamos aquí para ayudarte a hacer realidad tus proyectos': 'あなたのプロジェクトを実現するためにここにいます',
+                'Reunión Virtual': 'オンラインミーティング',
+                'Reunión Presencial': '対面ミーティング',
+                'Agenda una videollamada': 'ビデオ通話を予約する',
+                'Ahorra Tiempo': '時間を節約',
+                'Sin necesidad de desplazarte': '移動の必要なし',
+                'Presentación Digital': 'デジタルプレゼンテーション',
+                'Compartiremos toda la información en tiempo real': 'リアルタイムで全ての情報を共有します',
+                'Comunicación Efectiva': '効果的なコミュニケーション',
+                'Resuelve todas tus dudas en directo': 'すべての疑問をライブで解決',
+                'Visítanos en nuestras oficinas para conocer más sobre nuestros proyectos': 'オフィスにお越しいただき、プロジェクトについて詳しく知る',
+                'Conoce Nuestras Instalaciones': '施設見学',
+                'Visita nuestra oficina principal': '本社オフィスへお越しください',
+                'Ubicación Céntrica': '中心部に位置',
+                'Fácil acceso y estacionamiento disponible': 'アクセス便利、駐車場完備',
+                'Documentación Física': '書類での対応',
+                'Revisa todos los detalles en persona': '詳細を直接確認'
+            },
+            'it': {
+                'Inicio': 'Home',
+                'Para Tí': 'Per Te',
+                'Proyectos': 'Progetti',
+                'Casas de Playa en Venta / Alquiler': 'Case in Spiaggia in Vendita / Affitto',
+                'Proyecto Benavides 1': 'Progetto Benavides 1',
+                'Proyecto Benavides 2': 'Progetto Benavides 2',
+                'Proyecto Sienna': 'Progetto Sienna',
+                'Proyecto Varsovia': 'Progetto Varsovia',
+                'Mas Proyectos': 'Altri Progetti',
+                'Contacto': 'Contatti',
+                'Información': 'Informazioni',
+                'Agenda una Reunión con Nosotros': 'Programma un Incontro con Noi',
+                'Cotizar Proyecto': 'Preventivo Progetto',
+                'Login': 'Accedi',
+                'Perfil': 'Profilo',
+                'Estamos aquí para ayudarte a hacer realidad tus proyectos': 'Siamo qui per aiutarti a realizzare i tuoi progetti',
+                'Reunión Virtual': 'Incontro Virtuale',
+                'Reunión Presencial': 'Incontro di Persona',
+                'Agenda una videollamada': 'Programma una videochiamata',
+                'Ahorra Tiempo': 'Risparmia Tempo',
+                'Sin necesidad de desplazarte': 'Senza necessità di spostarsi',
+                'Presentación Digital': 'Presentazione Digitale',
+                'Compartiremos toda la información en tiempo real': 'Condivideremo tutte le informazioni in tempo reale',
+                'Comunicación Efectiva': 'Comunicazione Efficace',
+                'Resuelve todas tus dudas en directo': 'Risolvi tutti i tuoi dubbi in diretta',
+                'Visítanos en nuestras oficinas para conocer más sobre nuestros proyectos': 'Visitaci nei nostri uffici per saperne di più sui nostri progetti',
+                'Conoce Nuestras Instalaciones': 'Scopri le Nostre Strutture',
+                'Visita nuestra oficina principal': 'Visita il nostro ufficio principale',
+                'Ubicación Céntrica': 'Posizione Centrale',
+                'Fácil acceso y estacionamiento disponible': 'Facile accesso e parcheggio disponibile',
+                'Documentación Física': 'Documentazione Fisica',
+                'Revisa todos los detalles en persona': 'Esamina tutti i dettagli di persona'
+            }
+        };
+
+       function translatePage(lang) {
+            if (lang === 'es') {
+                location.reload();
+                return;
+            }
+
+            // Usar un fragmento de documento para optimizar las manipulaciones del DOM
+            const fragment = document.createDocumentFragment();
+            const elements = document.querySelectorAll('[data-translate]');
+            
+            // Procesar elementos en lotes para evitar bloqueo del navegador
+            const batchSize = 10;
+            let currentBatch = 0;
+
+            function processBatch() {
+                const start = currentBatch * batchSize;
+                const end = Math.min(start + batchSize, elements.length);
+                
+                for (let i = start; i < end; i++) {
+                    const element = elements[i];
+                    const key = element.getAttribute('data-translate');
+                    
+                    if (translations[lang]?.[key]) {
+                        if (element.tagName.toLowerCase() === 'input' || 
+                            element.tagName.toLowerCase() === 'textarea') {
+                            element.placeholder = translations[lang][key];
+                        } else {
+                            const isTextOnly = element.innerHTML.trim() === element.textContent.trim();
+                            element[isTextOnly ? 'textContent' : 'innerHTML'] = translations[lang][key];
+                        }
+                    }
+                }
+
+                currentBatch++;
+                
+                if (currentBatch * batchSize < elements.length) {
+                    requestAnimationFrame(processBatch);
+                } else {
+                    // Actualizar título después de procesar todas las traducciones
+                    document.title = {
+                        'en': 'POLYLINE - Construction Company',
+                        'pt': 'POLYLINE - Construtora',
+                        'zh': 'POLYLINE - 建筑公司',
+                        'ja': 'POLYLINE - 建設会社',
+                        'it': 'POLYLINE - Società di costruzioni'
+                    }[lang] || 'POLYLINE - Constructora';
+
+                    // Reinicializar animaciones solo si es necesario
+                    if (typeof anime !== 'undefined' && typeof wrapLetters === 'function') {
+                        requestAnimationFrame(() => {
+                            const mainText = document.querySelector('.letters-main');
+                            const subText = document.querySelector('.letters-sub');
+                            
+                            if (mainText) mainText.style.opacity = '1';
+                            if (subText) subText.style.opacity = '1';
+                            
+                            wrapLetters('.letters-main');
+                            wrapLetters('.letters-sub');
+                            
+                            // Usar requestAnimationFrame para las animaciones
+                            requestAnimationFrame(() => {
+                                anime.timeline({
+                                    loop: false,
+                                    easing: 'easeOutExpo'
+                                })
+                                .add({
+                                    targets: '.hero-title .letter',
+                                    translateY: ["1.1em", 0],
+                                    translateX: ["0.55em", 0],
+                                    rotateZ: [180, 0],
+                                    duration: 600,
+                                    delay: anime.stagger(40)
+                                })
+                                .add({
+                                    targets: '.hero-subtitle .letter',
+                                    opacity: [0, 1],
+                                    duration: 800,
+                                    delay: anime.stagger(20),
+                                    offset: '-=400'
+                                });
+                            });
+                        });
+                    }
+                }
+            }
+
+            // Iniciar el procesamiento por lotes
+            requestAnimationFrame(processBatch);
+        }
+
+        // Cerrar el menú de idiomas cuando se hace clic fuera
+        document.addEventListener('click', function(event) {
+            const languageSelector = document.querySelector('.language-selector');
+            const languageOptions = document.getElementById('languageOptions');
+            
+            if (!languageSelector.contains(event.target)) {
+                languageOptions.classList.remove('show');
+            }
+        });
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const navMenu = document.querySelector('.nav-menu');
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const dropdowns = document.querySelectorAll('.dropdown');
+    
+        // Toggle menú móvil
+        mobileMenuButton.addEventListener('click', function() {
+            this.classList.toggle('active');
+            navMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+        });
+    
+        // Cerrar menú al hacer click en el overlay
+        menuOverlay.addEventListener('click', function() {
+            mobileMenuButton.classList.remove('active');
+            navMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    
+        // Manejar dropdowns en móvil
+        dropdowns.forEach(dropdown => {
+            const link = dropdown.querySelector('a');
+            link.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    dropdown.classList.toggle('active');
+                }
+            });
+        });
+    
+        // Cerrar menú al cambiar el tamaño de la ventana
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                mobileMenuButton.classList.remove('active');
+                navMenu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    
+        // Agregar después de la inicialización de Firebase
+        document.getElementById('logoutButton').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                await signOut(auth);
+                console.log('Usuario cerró sesión');
+                window.location.href = '../index.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+            }
+        });
+    
+        // Toggle del menú desplegable
+        document.getElementById('userProfile').addEventListener('click', function(e) {
+            const dropdown = this.querySelector('.user-dropdown');
+            dropdown.classList.toggle('show');
+            e.stopPropagation();
+        });
+    
+        // Cerrar el menú al hacer clic fuera
+        document.addEventListener('click', function() {
+            const dropdowns = document.getElementsByClassName('user-dropdown');
+            for (const dropdown of dropdowns) {
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+    });
+    </script>
+    <!-- Firebase SDK -->
+    <script type="module" src="../js/firebase-config.js"></script>
+    <script type="module" src="../js/auth-check.js"></script>
+</body>
+</html>

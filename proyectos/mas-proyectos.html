@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Más Proyectos - POLYLINE</title>
+    <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/grid.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../css/idiomas.css">
+</head>
+<body>
+    <header>
+        <!-- Botón de menú móvil -->
+        <button class="mobile-menu-button" aria-label="Menú">
+            <div class="hamburger"></div>
+        </button>
+        <div id="loading-screen" class="loading-screen">
+            <div class="logo-container">
+                <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+                <h1 class="company-name">POLYLINE</h1>
+                <p class="slogan">CONSTRUCTORA</p>
+            </div>
+        </div>
+        <div class="logo-container">
+            <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+            <h1 class="company-name">POLYLINE</h1>
+            <p class="slogan"> CONSTRUCTORA</p>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="language-selector">
+                    <button class="language-btn" onclick="toggleLanguageOptions()">
+                        <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
+                        <span id="currentLanguage">Español</span>
+                    </button>
+                    <div class="language-options" id="languageOptions">
+                        <div class="language-option" onclick="changeLanguage('es')">
+                            <img src="../Resource/flags/es.png" alt="Español">
+                            <span>Español</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('en')">
+                            <img src="../Resource/flags/en.png" alt="English">
+                            <span>English</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('pt')">
+                            <img src="../Resource/flags/pt.png" alt="Português">
+                            <span>Português</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('zh')">
+                            <img src="../Resource/flags/zh.png" alt="中文">
+                            <span>中文</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('ja')">
+                            <img src="../Resource/flags/ja.png" alt="日本語">
+                            <span>日本語</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('it')">
+                            <img src="../Resource/flags/it.png" alt="Italiano">
+                            <span>Italiano</span>
+                        </div>
+                    </div>
+                </li>
+                <li><a class='active' data-translate='Inicio' href='../index.html'>Inicio</a></li>
+                <li><a href="../index.html#para-ti" data-translate="Para Tí">Para Tí</a></li>
+                <li class="dropdown">
+                    <a data-translate='Proyectos' href='proyectos.html' id='proyectos-link'>Proyectos</a>
+                    <ul class="dropdown-menu">
+                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
+                        <li><a data-translate='Proyecto Benavides 1' href='pben1.html'>Proyecto Benavides 1</a></li>
+                        <li><a data-translate='Proyecto Benavides 2' href='pben2.html'>Proyecto Benavides 2</a></li>
+                        <li><a data-translate='Proyecto Sienna' href='ppl1.html'>Proyecto Sienna</a></li>
+                        <li><a data-translate='Proyecto Varsovia' href='plin.html'>Proyecto Varsovia </a></li>
+                        <li><a data-translate='Mas Proyectos' href='mas-proyectos.html'>Mas Proyectos</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="../contact/informaci%c3%b3n.html" id="proyectos-link" data-translate="Contacto">Contacto</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../contact/informaci%c3%b3n.html" data-translate="Información">Información</a></li>
+                        <li><a href="../contact/agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
+                    </ul>
+                </li>
+                <li><a data-translate='Cotizar Proyecto' href='cotizar.html'>Cotizar Proyecto</a></li>
+                <li><a data-translate='Anuncios' href='Anuncios.html'>Anuncios</a></li>
+                <li id="translateContainer" class="translate-container">
+                    <div id="google_translate_element" title="Seleccionar idioma"></div>
+                </li>
+                <li id="loginContainer" class="mobile-login">
+                    <a class='login-link' href='../pages/login.html' id='loginLink'>
+                        <i class="fas fa-sign-in-alt"></i> 
+                        <span data-translate="Login">Login</span>
+                    </a>
+                    <div id="userProfile" style="display: none;">
+                        <div class="profile-header">
+                            <a id="profileLink" href='../pages/perfil.html' style='text-decoration: none; color: inherit;'>
+                                <i class="fas fa-user"></i>
+                                <span id="profileText" data-translate="Perfil">Perfil</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div class="menu-overlay"></div>
+    <main class="container">
+        <div style="max-width: 1200px; margin: auto;">
+            <h2 class="section-title">Más Proyectos</h2>
+            <div class="mas-proyectos-lista" id="proyectosLista">
+                <!-- Los proyectos se cargarán dinámicamente aquí -->
+            </div>
+            <div style="display: flex; justify-content: center; margin-top: 30px;">
+                <i class="fas fa-chevron-down" style="font-size: 2em; color: #222;"></i>
+            </div>
+        </div>
+    </main>
+    <footer class="seccion-footer">
+        <div class="contenedor-footer">
+            <div class="bloque-logo">
+                <img src="../Resource/Logo/logo.png" alt="Polyline">
+                <div class="texto-copyright" style="color: black;">
+                    <p>&copy; 2025 POLYLINE. Todos los derechos reservados.</p>
+                </div>
+            </div>
+            <div class="bloque-contacto" style="color: black;">
+                <h3>CONTACTOS:</h3>
+                <p>WhatsApp: <a href="https://wa.link/lkvfnb">+51 943 812 536</a></p>
+                <p>Email: <a href="mailto:contacto@polyline.com">contacto@polyline.com</a></p>
+                <p>Dirección: Av. Óscar R. Benavides</p>
+            </div>
+        </div>
+    </footer>
+    <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px; z-index: 999;">
+        <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
+            <i class="fab fa-facebook-f"></i>
+        </button>
+        <button class="social-btn whatsapp" onclick="window.open('https://wa.link/lkvfnb')">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+        <button class="social-btn instagram" onclick="window.open('https://www.instagram.com/arquitectosalasperu/')">
+            <i class="fab fa-instagram"></i>
+        </button>
+        <button class="social-btn linkedin" onclick="window.open('https://www.linkedin.com/in/arquitectosalas')">
+            <i class="fab fa-linkedin-in"></i>
+        </button>
+        <button class="social-btn youtube" onclick="window.open('https://www.youtube.com/channel/UC9wMT7_zsq7yE0MMCSxiVMw')">
+            <i class="fab fa-youtube"></i>
+        </button>
+    </div>
+    <style>
+        .container {
+            background: #f5f5f5;
+            border-radius: 18px;
+            margin-top: 40px;
+            padding: 40px 0;
+        }
+        .section-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        .section-description {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: #444;
+        }
+        .mas-proyectos-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .mas-proyecto-bloque {
+            display: flex;
+            border: 2px solid #d1d1d1;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: white;
+            cursor: pointer;
+        }
+        .mas-proyecto-bloque:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .mas-proyecto-info {
+            flex: 1;
+            padding: 30px;
+        }
+        .mas-proyecto-info h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: #222;
+        }
+        .mas-proyecto-info p {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .mas-proyecto-img {
+            width: 300px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .mas-proyecto-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .mas-proyecto-bloque:hover .mas-proyecto-img img {
+            transform: scale(1.05);
+        }
+        .proyecto-meta {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .categoria {
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            color: #495057;
+        }
+        .estado {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+        .estado.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        .estado.draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .loading, .error, .no-projects {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #666;
+        }
+        .error {
+            color: #dc3545;
+        }
+
+        /* Estilos para el modal */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .proyecto-modal {
+            word-break: break-word;
+            overflow-wrap: break-word;
+            padding: 40px 30px;
+            font-size: 1.15em;
+            line-height: 1.7;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            border: 1.5px solid #e0e0e0;
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            max-width: 1000px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 1001;
+            font-family: 'Roboto', 'Open Sans', Arial, sans-serif;
+            color: #111;
+            text-align: center;
+        }
+        .proyecto-modal-header h2 {
+            font-size: 2em;
+            margin-bottom: 18px;
+            word-break: break-word;
+            text-align: center;
+        }
+        .proyecto-modal-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .proyecto-modal-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
+        .proyecto-modal-section {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        .proyecto-modal-section p,
+        .proyecto-modal-section h3,
+        .proyecto-meta span {
+            color: #111 !important;
+            font-family: 'Roboto', 'Open Sans', Arial, sans-serif !important;
+            text-align: center;
+        }
+        .proyecto-meta {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .categoria, .estado {
+            font-family: 'Roboto', 'Open Sans', Arial, sans-serif !important;
+            color: #111 !important;
+            font-size: 1em;
+            border-radius: 12px;
+            padding: 4px 12px;
+            background: #f0f0f0;
+        }
+        .proyecto-modal-section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 18px 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+            position: absolute;
+            top: 20px;
+            right: 30px;
+        }
+        @media (max-width: 600px) {
+            .proyecto-modal {
+                padding: 12px 4vw;
+                font-size: 1em;
+            }
+            .proyecto-modal-header h2 {
+                font-size: 1.2em;
+            }
+        }
+
+        /* Estilos para modo oscuro */
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        body.dark-mode .section-title {
+            color: #fff;
+        }
+
+        body.dark-mode .section-description {
+            color: #ccc;
+        }
+
+        body.dark-mode .mas-proyecto-bloque {
+            background: #2a2a2a;
+            border-color: #444;
+        }
+
+        body.dark-mode .mas-proyecto-info h3 {
+            color: #fff;
+        }
+
+        body.dark-mode .mas-proyecto-info p {
+            color: #ccc;
+        }
+
+        body.dark-mode .categoria {
+            background: #333;
+            color: #fff;
+        }
+
+        body.dark-mode .estado.published {
+            background: #1a472a;
+            color: #4CAF50;
+        }
+
+        body.dark-mode .estado.draft {
+            background: #4a3c00;
+            color: #ffd700;
+        }
+
+        body.dark-mode .loading,
+        body.dark-mode .error,
+        body.dark-mode .no-projects {
+            color: #ccc;
+        }
+
+        body.dark-mode .proyecto-modal {
+            background: #2a2a2a;
+            border-color: #444;
+        }
+
+        body.dark-mode .proyecto-modal-header h2 {
+            color: #fff;
+        }
+
+        body.dark-mode .proyecto-modal-section h3 {
+            color: #fff;
+        }
+
+        body.dark-mode .proyecto-modal-section p {
+            color: #ccc;
+        }
+
+        body.dark-mode .close-modal {
+            color: #fff;
+        }
+
+        body.dark-mode .modal-backdrop {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Asegurar que todos los textos en modo oscuro sean visibles */
+        body.dark-mode * {
+            color: #fff;
+        }
+
+        body.dark-mode p,
+        body.dark-mode span,
+        body.dark-mode div,
+        body.dark-mode h1,
+        body.dark-mode h2,
+        body.dark-mode h3,
+        body.dark-mode h4,
+        body.dark-mode h5,
+        body.dark-mode h6 {
+            color: #fff !important;
+        }
+
+        body.dark-mode .mas-proyecto-info p {
+            color: #ccc !important;
+        }
+
+        body.dark-mode .proyecto-modal-section p {
+            color: #ccc !important;
+        }
+
+        body.dark-mode .section-description {
+            color: #ccc !important;
+        }
+
+        /* Ajustar colores específicos para elementos que necesitan contraste */
+        body.dark-mode .estado.published {
+            color: #4CAF50 !important;
+        }
+
+        body.dark-mode .estado.draft {
+            color: #ffd700 !important;
+        }
+
+        body.dark-mode .categoria {
+            color: #fff !important;
+        }
+
+        /* Ajustar el color del ícono de flecha */
+        body.dark-mode .fa-chevron-down {
+            color: #fff !important;
+        }
+
+        /* Ajustar el color del texto en el footer */
+        body.dark-mode .texto-copyright,
+        body.dark-mode .bloque-contacto {
+            color: #fff !important;
+        }
+
+        body.dark-mode .bloque-contacto a {
+            color: #4CAF50 !important;
+        }
+
+        /* --- GALERÍA DE IMÁGENES EN EL MODAL (AJUSTE DINÁMICO DE COLUMNAS, SIN :has()) --- */
+        .proyecto-modal-gallery.cols-1 { grid-template-columns: 1fr; }
+        .proyecto-modal-gallery.cols-2 { grid-template-columns: 1fr 1fr; }
+        .proyecto-modal-gallery.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .proyecto-modal-gallery {
+            display: grid;
+            gap: 8px;
+            margin: 10px 0;
+            justify-items: center;
+            align-items: center;
+            max-width: 100%;
+        }
+        .proyecto-modal-gallery img {
+            width: 100%;
+            
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            object-fit: cover;
+        }
+        @media (max-width: 600px) {
+            .proyecto-modal-gallery.cols-1 { grid-template-columns: 1fr; }
+            .proyecto-modal-gallery.cols-2,
+            .proyecto-modal-gallery.cols-3 {
+                grid-template-columns: 1fr 1fr;
+            }
+            .proyecto-modal-gallery img {
+                max-width: 100px;
+            }
+        }
+        /* --- FIN GALERÍA DE IMÁGENES EN EL MODAL --- */
+    </style>
+
+    <!-- Modal para mostrar detalles del proyecto -->
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="proyecto-modal" id="proyectoModal">
+        <div class="proyecto-modal-header">
+            <h2 id="modalTitle"></h2>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="proyecto-modal-content">
+            <div class="proyecto-modal-info">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="../js/Login_Perfil.js" type="module"></script>
+    <script src="../js/firebase-config.js" type="module"></script>
+    <script>
+        // Oculta la pantalla de carga cuando la página termina de cargar
+        window.addEventListener('load', function() {
+            document.body.classList.add('loaded');
+            var loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) loadingScreen.style.display = 'none';
+        });
+
+        
+    </script>
+    <!-- Scripts y recursos adicionales como en index.html -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script type="module" src="../js/property-viewer.js"></script>
+    <script type="module" src="../js/auth-check.js"></script>
+    <script>
+        // Función para cambiar de idioma
+        function changeLanguage(lang) {
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+        }
+
+        // Objeto con las traducciones
+        const translations = {
+            'es': {
+                'Inicio': 'Inicio',
+                'Para Tí': 'Para Tí',
+                'Proyectos': 'Proyectos',
+                'Casas de Playa en Venta / Alquiler': 'Casas de Playa en Venta / Alquiler',
+                'Proyecto Benavides 1': 'Proyecto Benavides 1',
+                'Proyecto Benavides 2': 'Proyecto Benavides 2',
+                'Proyecto Sienna': 'Proyecto Sienna',
+                'Proyecto Varsovia ': 'Proyecto Varsovia',
+                'Mas Proyectos': 'Más Proyectos',
+                'Contacto': 'Contacto',
+                'Información': 'Información',
+                'Agenda Una Reunión': 'Agenda Una Reunión',
+                'Cotizar Proyecto': 'Cotizar Proyecto',
+                'Login': 'Login',
+                'Perfil': 'Perfil',
+                'Casas': 'Casas',
+                'Edificios': 'Edificios',
+                'Comercial': 'Comercial',
+                'Industrial': 'Industrial',
+                'Publicado': 'Publicado',
+                'Borrador': 'Borrador',
+                'Anuncios': 'Anuncios'
+            },
+            'en': {
+                'Inicio': 'Home',
+                'Para Tí': 'For You',
+                'Proyectos': 'Projects',
+                'Casas de Playa en Venta / Alquiler': 'Beach Houses for Sale / Rent',
+                'Proyecto Benavides 1': 'Benavides Project 1',
+                'Proyecto Benavides 2': 'Benavides Project 2',
+                'Proyecto Sienna': 'Sienna Project',
+                'Proyecto Varsovia ': 'Varsovia Project',
+                'Mas Proyectos': 'More Projects',
+                'Contacto': 'Contact',
+                'Información': 'Information',
+                'Agenda Una Reunión': 'Schedule a Meeting',
+                'Cotizar Proyecto': 'Quote Project',
+                'Login': 'Login',
+                'Perfil': 'Profile',
+                'Casas': 'Houses',
+                'Edificios': 'Buildings',
+                'Comercial': 'Commercial',
+                'Industrial': 'Industrial',
+                'Publicado': 'Published',
+                'Borrador': 'Draft',
+                'Anuncios': 'Ads'
+            },
+            'pt': {
+                'Inicio': 'Início',
+                'Para Tí': 'Para Você',
+                'Proyectos': 'Projetos',
+                'Casas de Playa en Venta / Alquiler': 'Casas de Praia à Venda / Aluguel',
+                'Proyecto Benavides 1': 'Benavides Projeto 1',
+                'Proyecto Benavides 2': 'Benavides Projeto 2',
+                'Proyecto Sienna': 'Sienna Projeto',
+                'Proyecto Varsovia ': 'Varsovia Projeto',
+                'Mas Proyectos': 'Mais Projetos',
+                'Contacto': 'Contato',
+                'Información': 'Informações',
+                'Agenda Una Reunión': 'Agendar uma Reunião',
+                'Cotizar Proyecto': 'Orçar Projeto',
+                'Login': 'Entrar',
+                'Perfil': 'Perfil',
+                'Casas': 'Casas',
+                'Edificios': 'Edifícios',
+                'Comercial': 'Comercial',
+                'Industrial': 'Industrial',
+                'Publicado': 'Publicado',
+                'Borrador': 'Rascunho',
+                'Anuncios': 'Anúncios'
+            },
+            'zh': {
+                'Inicio': '首页',
+                'Para Tí': '为您',
+                'Proyectos': '项目',
+                'Casas de Playa en Venta / Alquiler': '海滨别墅出售/出租',
+                'Proyecto Benavides 1': '贝纳维德斯项目 1',
+                'Proyecto Benavides 2': '贝纳维德斯项目 2',
+                'Proyecto Sienna': '锡耶纳项目',
+                'Proyecto Varsovia ': '华沙项目',
+                'Mas Proyectos': '更多项目',
+                'Contacto': '联系方式',
+                'Información': '信息',
+                'Agenda Una Reunión': '安排会议',
+                'Cotizar Proyecto': '项目报价',
+                'Login': '登录',
+                'Perfil': '个人资料',
+                'Casas': '房屋',
+                'Edificios': '楼宇',
+                'Comercial': '商业',
+                'Industrial': '工业',
+                'Publicado': '已发布',
+                'Borrador': '草稿',
+                'Anuncios': '公告'
+            },
+            'ja': {
+                'Inicio': 'ホーム',
+                'Para Tí': 'あなたへ',
+                'Proyectos': 'プロジェクト',
+                'Casas de Playa en Venta / Alquiler': 'ビーチハウス売買／賃貸',
+                'Proyecto Benavides 1': 'ベナビデスプロジェクト 1',
+                'Proyecto Benavides 2': 'ベナビデスプロジェクト 2',
+                'Proyecto Sienna': 'シエナプロジェクト',
+                'Proyecto Varsovia ': 'ワルシャワプロジェクト',
+                'Mas Proyectos': 'その他のプロジェクト',
+                'Contacto': 'お問い合わせ',
+                'Información': '情報',
+                'Agenda Una Reunión': '会議を予約',
+                'Cotizar Proyecto': 'プロジェクト見積もり',
+                'Login': 'ログイン',
+                'Perfil': 'プロフィール',
+                'Casas': '家',
+                'Edificios': '建物',
+                'Comercial': '商業',
+                'Industrial': '工業',
+                'Publicado': '公開済み',
+                'Borrador': 'ドラフト',
+                'Anuncios': 'お知らせ'
+            },
+            'it': {
+                'Inicio': 'Inizio',
+                'Para Tí': 'Per Te',
+                'Proyectos': 'Progetti',
+                'Casas de Playa en Venta / Alquiler': 'Case al mare in vendita/affitto',
+                'Proyecto Benavides 1': 'Progetto Benavides 1',
+                'Proyecto Benavides 2': 'Progetto Benavides 2',
+                'Proyecto Sienna': 'Progetto Sienna',
+                'Proyecto Varsovia ': 'Progetto Varsovia',
+                'Mas Proyectos': 'Altri Progetti',
+                'Contacto': 'Contatti',
+                'Información': 'Informazioni',
+                'Agenda Una Reunión': 'Prenota una riunione',
+                'Cotizar Proyecto': 'Preventivo Progetto',
+                'Login': 'Accedi',
+                'Perfil': 'Profilo',
+                'Casas': 'Case',
+                'Edificios': 'Edifici',
+                'Comercial': 'Commerciale',
+                'Industrial': 'Industriale',
+                'Publicado': 'Pubblicato',
+                'Borrador': 'Bozza',
+                'Anuncios': 'Annunci'
+            }
+        };
+
+        // Traducción y animaciones (adaptado de index.html)
+        function translatePage(lang) {
+            if (lang === 'es') {
+                location.reload();
+                return;
+            }
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang]?.[key]) {
+                    if (element.tagName.toLowerCase() === 'input' || element.tagName.toLowerCase() === 'textarea') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        const isTextOnly = element.innerHTML.trim() === element.textContent.trim();
+                        element[isTextOnly ? 'textContent' : 'innerHTML'] = translations[lang][key];
+                    }
+                }
+            });
+            document.title = translations[lang]?.['Más Proyectos'] || 'POLYLINE - Constructora';
+        }
+        document.addEventListener('click', function(event) {
+            const languageSelector = document.querySelector('.language-selector');
+            const languageOptions = document.getElementById('languageOptions');
+            if (languageSelector && languageOptions && !languageSelector.contains(event.target)) {
+                languageOptions.classList.remove('show');
+            }
+        });
+        // VanillaTilt para tarjetas (si las hay)
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.VanillaTilt) {
+                VanillaTilt.init(document.querySelectorAll(".service-card"), {
+                    max: 8,
+                    speed: 400,
+                    glare: true,
+                    "max-glare": 0.1,
+                    scale: 1.03,
+                    perspective: 1000,
+                    transition: true,
+                    gyroscope: true,
+                    easing: "cubic-bezier(.03,.98,.52,.99)"
+                });
+            }
+        });
+        // Login/Perfil dinámico
+        document.addEventListener('DOMContentLoaded', () => {
+            const userSession = JSON.parse(localStorage.getItem('userSession'));
+            const loginLink = document.getElementById('loginLink');
+            const userProfile = document.getElementById('userProfile');
+            const profileLink = document.getElementById('profileLink');
+            const profileText = document.getElementById('profileText');
+            if (userSession && userSession.emailVerified) {
+                if (loginLink) loginLink.style.display = 'none';
+                if (userProfile) userProfile.style.display = 'flex';
+                if (profileLink && profileText) {
+                    if (userSession.isAdmin) {
+                        profileLink.href = '../pages/perfilAdmin.html';
+                        profileText.textContent = 'Administrador';
+                        profileText.setAttribute('data-translate', 'Administrador');
+                    } else {
+                        profileLink.href = '../pages/perfil.html';
+                        profileText.textContent = 'Perfil';
+                        profileText.setAttribute('data-translate', 'Perfil');
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+    // Script para mostrar/ocultar el menú de idiomas
+    function toggleLanguageOptions() {
+        var options = document.getElementById('languageOptions');
+        if (options) {
+            options.classList.toggle('show');
+        }
+    }
+    </script>
+    <!-- Botón de modo oscuro -->
+    <button id="dark-mode-toggle" class="dark-mode-button" style="position: fixed; bottom: 20px; right: 30px; z-index: 1000;">🌙</button>
+    <script>
+    // Script de modo oscuro
+    document.addEventListener('DOMContentLoaded', function() {
+        const darkModeBtn = document.getElementById('dark-mode-toggle');
+        if (darkModeBtn) {
+            darkModeBtn.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                // Guardar preferencia en localStorage
+                if(document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('dark-mode', 'true');
+                } else {
+                    localStorage.setItem('dark-mode', 'false');
+                }
+            });
+            // Cargar preferencia al iniciar
+            if(localStorage.getItem('dark-mode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+        }
+    });
+    </script>
+    <!-- Firebase -->
+    <script type="module">
+        import { db } from '../js/firebase-config.js';
+        import { 
+            collection, 
+            query, 
+            getDocs, 
+            orderBy,
+            doc,
+            getDoc
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Función para cargar los proyectos
+        async function cargarProyectos() {
+            try {
+                const proyectosLista = document.getElementById('proyectosLista');
+                proyectosLista.innerHTML = '<div class="loading">Cargando proyectos...</div>';
+
+                const pagesQuery = query(collection(db, 'paginas'), orderBy('createdAt', 'desc'));
+                const pagesSnapshot = await getDocs(pagesQuery);
+
+                if (pagesSnapshot.empty) {
+                    proyectosLista.innerHTML = '<div class="no-projects">No hay proyectos disponibles</div>';
+                    return;
+                }
+
+                proyectosLista.innerHTML = '';
+                pagesSnapshot.forEach(doc => {
+                    const page = doc.data();
+                    if (page.status !== 'published') return; // Solo mostrar publicados
+                    const proyectoHTML = `
+                        <div class="mas-proyecto-bloque" onclick="mostrarDetallesProyecto('${doc.id}')">
+                            <div class="mas-proyecto-info">
+                                <h3>${page.title}</h3>
+                                <p>${page.description || 'Sin descripción disponible'}</p>
+                                <div class="proyecto-meta">
+                                    <span class="categoria">${page.category || 'Sin categoría'}</span>
+                                    <span class="estado ${page.status}">${page.status === 'published' ? 'Publicado' : 'Borrador'}</span>
+                                </div>
+                            </div>
+                            <div class="mas-proyecto-img">
+                                <img src="${page.contentBlocks && page.contentBlocks.find(block => block.type === 'image')?.value || '../Resource/Logo/logo.png'}" 
+                                    alt="${page.title}"
+                                    onerror="this.src='../Resource/Logo/logo.png'">
+                            </div>
+                        </div>
+                    `;
+                    proyectosLista.innerHTML += proyectoHTML;
+                });
+            } catch (error) {
+                console.error('Error al cargar proyectos:', error);
+                document.getElementById('proyectosLista').innerHTML = '<div class="error">Error al cargar los proyectos</div>';
+            }
+        }
+
+        // Función para mostrar detalles del proyecto
+        window.mostrarDetallesProyecto = async function(proyectoId) {
+            try {
+                const docRef = doc(db, 'paginas', proyectoId);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const proyecto = docSnap.data();
+                    
+                    // Actualizar contenido del modal
+                    document.getElementById('modalTitle').textContent = proyecto.title;
+                    // --- NUEVO: Renderizar bloques dinámicos si existen ---
+                    const modalInfo = document.querySelector('.proyecto-modal-info');
+                    // Elimina bloques previos si los hay
+                    const oldBlocks = modalInfo.querySelectorAll('.content-block-dynamic');
+                    oldBlocks.forEach(el => el.remove());
+                    if (Array.isArray(proyecto.contentBlocks) && proyecto.contentBlocks.length > 0) {
+                        // --- GALERÍA DE IMÁGENES CONSECUTIVAS EN EL MODAL ---
+                        let gallery = null;
+                        let galleryCount = 0;
+                        proyecto.contentBlocks.forEach((block, idx) => {
+                            if (block.type === 'image') {
+                                if (!gallery) {
+                                    gallery = document.createElement('div');
+                                    gallery.className = 'proyecto-modal-section content-block-dynamic proyecto-modal-gallery';
+                                    galleryCount = 0;
+                                }
+                                let img = document.createElement('img');
+                                img.src = block.value;
+                                img.alt = 'Imagen bloque';
+                                gallery.appendChild(img);
+                                galleryCount++;
+                                // Si la siguiente no es imagen o es la última, cerrar galería
+                                const nextBlock = proyecto.contentBlocks[idx + 1];
+                                if (!nextBlock || nextBlock.type !== 'image') {
+                                    // Asignar clase de columnas según cantidad
+                                    if (galleryCount === 1) gallery.classList.add('cols-1');
+                                    else if (galleryCount === 2) gallery.classList.add('cols-2');
+                                    else gallery.classList.add('cols-3');
+                                    // Si solo hay una imagen, no usar galería grid
+                                    if (galleryCount === 1) {
+                                        let single = document.createElement('div');
+                                        single.className = 'proyecto-modal-section content-block-dynamic';
+                                        single.appendChild(gallery.firstChild);
+                                        modalInfo.appendChild(single);
+                                    } else {
+                                        modalInfo.appendChild(gallery);
+                                    }
+                                    gallery = null;
+                                    galleryCount = 0;
+                                }
+                            } else {
+                                // Si hay una galería abierta, ciérrala antes de agregar otro bloque
+                                if (gallery) {
+                                    if (galleryCount === 1) gallery.classList.add('cols-1');
+                                    else if (galleryCount === 2) gallery.classList.add('cols-2');
+                                    else gallery.classList.add('cols-3');
+                                    if (galleryCount === 1) {
+                                        let single = document.createElement('div');
+                                        single.className = 'proyecto-modal-section content-block-dynamic';
+                                        single.appendChild(gallery.firstChild);
+                                        modalInfo.appendChild(single);
+                                    } else {
+                                        modalInfo.appendChild(gallery);
+                                    }
+                                    gallery = null;
+                                    galleryCount = 0;
+                                }
+                                // Renderizar otros bloques normalmente
+                                let blockEl = document.createElement('div');
+                                blockEl.className = 'proyecto-modal-section content-block-dynamic';
+                                if (block.type === 'title') {
+                                    blockEl.innerHTML = `<h3 style='color:#1976d2; font-size:1.2em; margin-bottom:0.3em;'>${block.value}</h3>`;
+                                } else if (block.type === 'description') {
+                                    blockEl.innerHTML = `<p style='color:#444; margin-bottom:0.7em;'>${block.value}</p>`;
+                                }
+                                modalInfo.appendChild(blockEl);
+                            }
+                        });
+                        // --- FIN GALERÍA DE IMÁGENES CONSECUTIVAS ---
+                    }
+
+                    // Mostrar modal
+                    document.getElementById('modalBackdrop').style.display = 'block';
+                    document.getElementById('proyectoModal').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error al cargar detalles del proyecto:', error);
+                alert('Error al cargar los detalles del proyecto');
+            }
+        };
+
+        // Función para cerrar el modal
+        window.closeModal = function() {
+            document.getElementById('modalBackdrop').style.display = 'none';
+            document.getElementById('proyectoModal').style.display = 'none';
+        };
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+
+        // Cargar proyectos cuando se carga la página
+        window.addEventListener('DOMContentLoaded', cargarProyectos);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>POLYLINE - Constructora</title>
+    <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="preload" as="video" href="../Resource/background1.mp4">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/assistant.css">
+    <link rel="stylesheet" href="../css/gallery.html">
+    <link rel="stylesheet" href="../css/cotizar.css">
+    <link rel="stylesheet" href="../css/idiomas.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <!-- Firebase SDK -->
+    <script type="module" src="../js/firebase-config.js"></script>
+    <script type="module" src="../js/auth-check.js"></script>
+    <script type="module" src="../js/Login_Perfil.js"></script>
+
+</head>
+
+<body>
+    <header>
+        <!-- Botón de menú móvil -->
+        <button class="mobile-menu-button" aria-label="Menú">
+            <div class="hamburger"></div>
+        </button>
+        <div id="loading-screen" class="loading-screen">
+            <div class="logo-container">
+                <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+                <h1 class="company-name">POLYLINE</h1>
+                <p class="slogan">CONSTRUCTORA</p>
+            </div>
+        </div>
+        <div class="logo-container">
+            <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+            <h1 class="company-name">POLYLINE</h1>
+            <p class="slogan"> CONSTRUCTORA</p>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="language-selector">
+                    <button class="language-btn" onclick="toggleLanguageOptions()">
+                        <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
+                        <span id="currentLanguage">Español</span>
+                    </button>
+                    <div class="language-options" id="languageOptions">
+                        <div class="language-option" onclick="changeLanguage('es')">
+                            <img src="../Resource/flags/es.png" alt="Español">
+                            <span>Español</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('en')">
+                            <img src="../Resource/flags/en.png" alt="English">
+                            <span>English</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('pt')">
+                            <img src="../Resource/flags/pt.png" alt="Português">
+                            <span>Português</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('zh')">
+                            <img src="../Resource/flags/zh.png" alt="中文">
+                            <span>中文</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('ja')">
+                            <img src="../Resource/flags/ja.png" alt="日本語">
+                            <span>日本語</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('it')">
+                            <img src="../Resource/flags/it.png" alt="Italiano">
+                            <span>Italiano</span>
+                        </div>
+                    </div>
+                </li>
+                <li><a class='active' data-translate='Inicio' href='../index.html'>Inicio</a></li>
+                <li><a href="../index.html#para-ti" data-translate="Para Tí">Para Tí</a></li>
+                <li class="dropdown">
+                    <a data-translate='Proyectos' href='proyectos.html' id='proyectos-link'>Proyectos</a>
+                    <ul class="dropdown-menu">
+                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
+                        <li><a data-translate='Proyecto Benavides 1' href='pben1.html'>Proyecto Benavides 1</a></li>
+                        <li><a data-translate='Proyecto Benavides 2' href='pben2.html'>Proyecto Benavides 2</a></li>
+                        <li><a data-translate='Proyecto Sienna' href='ppl1.html'>Proyecto Sienna</a></li>
+                        <li><a data-translate='Proyecto Varsovia' href='plin.html'>Proyecto Varsovia</a></li>
+                        <li><a data-translate='Mas Proyectos' href='mas-proyectos.html'>Mas Proyectos</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="../contact/informaci%c3%b3n.html" id="proyectos-link" data-translate="Contacto">Contacto</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../contact/informaci%c3%b3n.html" data-translate="Información">Información</a></li>
+                        <li><a href="../contact/agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
+                    </ul>
+                </li>
+                <li><a data-translate='Cotizar Proyecto' href='cotizar.html'>Cotizar Proyecto</a></li>
+                <li><a data-translate='Anuncios' href='Anuncios.html'>Anuncios</a></li>
+                <li id="translateContainer" class="translate-container">
+                    <div id="google_translate_element" title="Seleccionar idioma"></div>
+                </li>
+                <li id="loginContainer" class="mobile-login">
+                    <a class='login-link' href='../pages/login.html' id='loginLink'>
+                        <i class="fas fa-sign-in-alt"></i> 
+                        <span data-translate="Login">Login</span>
+                    </a>
+                    <div id="userProfile" style="display: none;">
+                        <div class="profile-header">
+                            <a id="profileLink" href='../pages/perfil.html' style='text-decoration: none; color: inherit;'>
+                                <i class="fas fa-user"></i>
+                                <span id="profileText" data-translate="Perfil">Perfil</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <!-- Overlay para el menú móvil -->
+    <div class="menu-overlay"></div>
+
+    <!--audio de ambiente-->
+    <audio id="ambient-sound" autoplay loop volume="0.0">
+        <!--<source src="/Resource/sounds/ambiente-sound.mp3" type="audio/mp3"> -->
+    </audio>
+
+    <section id="inicio" style="position: relative; height: 60vh; overflow: hidden;">
+        <!-- Reemplazar video por imagen de fondo -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;">
+            <img src="../RESOURCE/background-cot.jpg" alt="Background" 
+                 style="width: 100%; height: 100%; object-fit: cover; opacity: 0; 
+                        transition: opacity 1s ease-in-out;" 
+                 id="background-image">
+        </div>
+        <!-- Contenido de la sección -->
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%; color: #fff; z-index: 1;">
+            <h2 class="hero-title">
+                <span class="letter-wrapper">
+                    <span data-translate="COTIZA TU FUTURO INMUEBLE"; class="letters-main">COTIZA TU FUTURO INMUEBLE</span>
+                </span>
+            </h2>
+            <p class="hero-subtitle">
+                <span class="letter-wrapper">
+                    <span data-translate="Crea tus sueños con Polyline"; class="letters-sub">Crea tus sueños con Polyline</span>
+                </span>
+            </p>
+        </div>
+
+        <script>
+            // Optimización de la animación de letras
+            function wrapLetters(selector) {
+                const textWrapper = document.querySelector(selector);
+                if (!textWrapper) return;
+                textWrapper.innerHTML = textWrapper.textContent.replace(/\S/g, "<span class='letter' style='will-change: transform'>$&</span>");
+            }
+
+            // Animaciones optimizadas
+            document.addEventListener('DOMContentLoaded', () => {
+                wrapLetters('.letters-main');
+                wrapLetters('.letters-sub');
+
+                anime.timeline({
+                    loop: false,
+                    easing: 'easeOutExpo'
+                })
+                .add({
+                    targets: '.hero-title .letter',
+                    translateY: ["1.1em", 0],
+                    translateX: ["0.55em", 0],
+                    rotateZ: [180, 0],
+                    duration: 600,
+                    delay: anime.stagger(40),
+                    changeBegin: function() {
+                        document.querySelectorAll('.hero-title .letter').forEach(el => {
+                            el.style.opacity = '1';
+                        });
+                    }
+                })
+                .add({
+                    targets: '.hero-subtitle .letter',
+                    opacity: [0, 1],
+                    duration: 800,
+                    delay: anime.stagger(20),
+                    offset: '-=400'
+                });
+            });
+        </script>
+    </section>
+
+    <script>
+        // Reemplazar la lógica del video por la de la imagen
+        window.addEventListener('load', function() {
+            const bgImage = document.getElementById('background-image');
+            if (bgImage) {
+                bgImage.style.opacity = '1';
+            }
+        });
+    </script>
+
+
+    <div class="excavator-container">
+        <div class="ground"></div> <!-- El suelo debe ir primero -->
+        <div class="crack-network"></div> <!-- Contenedor de grietas -->
+        <div class="excavator">
+            <div class="body">
+                <div class="exhaust"></div>
+                <div class="cabin">
+                    <div class="window"></div>
+                    <div class="metal-shine"></div>
+                    <div class="metal-shine"></div>
+                </div>
+                <div class="arm">
+                    <div class="joint arm-joint"></div>
+                    <div class="hydraulic-system hydraulic-1"></div>
+                    <div class="metal-shine"></div>
+                    <div class="boom">
+                        <div class="joint boom-joint"></div>
+                        <div class="hydraulic-system hydraulic-2"></div>
+                        <div class="metal-shine"></div>
+                        <div class="bucket">
+                            <div class="joint bucket-joint"></div>
+                            <div class="metal-shine"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tracks">
+                <div class="track"></div>
+            </div>
+        </div>
+        <div class="dirt-particles"></div>
+    </div>
+
+    
+
+
+        <div class="separator"></div>
+
+    <section class="cotizacion-section"; style="color: var(--text-color, #000);">
+        <h2 data-translate="Cotización de Inmueble">Cotización de Inmueble</h2>
+        <div  class="tipo-inmueble-options" style="display: flexbox; justify-content: center; margin-top: 20px;">
+            <div class="tipo-card" data-tipo="casa" style="color: var(--text-color, #000);">
+                <i class="fas fa-home tipo-icon"></i>
+                <h3 data-translate="Casa">Casa</h3>
+                <p data-translate="Vivienda unifamiliar">Vivienda unifamiliar</p>
+            </div>
+            <div class="tipo-card" data-tipo="edificio" style="color: var(--text-color, #000);">
+                <i class="fas fa-building tipo-icon"></i>
+                <h3 data-translate="Edificio">Edificio</h3>
+                <p data-translate="Construcción vertical">Construcción vertical</p>
+            </div>
+            <div class="tipo-card" data-tipo="comercial" style="color: var(--text-color, #000);">
+                <i class="fas fa-store tipo-icon"></i>
+                <h3 data-translate="Local Comercial">Local Comercial</h3>
+                <p data-translate="Espacios de negocio">Espacios de negocio</p>
+            </div>
+            <div class="tipo-card" data-tipo="industrial" style="color: var(--text-color, #000);">
+                <i class="fas fa-industry tipo-icon"></i>
+                <h3 data-translate="Industrial">Industrial</h3>
+                <p data-translate="Naves y fábricas">Naves y fábricas</p>
+            </div>
+        </div>
+
+        <div class="parametros-form">
+            <!-- Añadir selector de moneda antes de los inputs -->
+            <div class="input-group currency-selector">
+                <label data-translate="Moneda">Moneda</label>
+                <select id="tipo-moneda">
+                    <option value="PEN">Soles (S/)</option>
+                    <option value="USD">Dólares ($)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label data-translate="M² de Terreno">M² de Terreno</label>
+                <input type="number" id="metros-terreno" min="0">
+            </div>
+            <div class="input-group">
+                <label data-translate="M² de Construcción">M² de Construcción</label>
+                <input type="number" id="metros-construccion" min="0">
+            </div>
+            <div class="input-group">
+                <label data-translate="M² de Excavación">M² de Excavación</label>
+                <input type="number" id="metros-excavacion" min="0">
+            </div>
+            <div class="input-group">
+                <label data-translate="Niveles">Niveles</label>
+                <input type="number" id="niveles" min="1" value="1">
+            </div>
+        </div>
+
+        <button class="cotizar-btn"; data-translate="Calcular Cotización">Calcular Cotización</button>
+
+        <div class="resultado-cotizacion">
+            <h3 data-translate="Presupuesto Estimado">Presupuesto Estimado</h3>
+            <div class="precio-total">$0.00 <span style="font-size: 0.5em; color: #aaa;">aproximados</span></div>
+            <div class="desglose-precios">
+                <p><span data-translate="Excavación">Excavación</span>: <span id="precio-excavacion">$0.00</span></p>
+                <p><span data-translate="Construcción">Construcción</span>: <span id="precio-construccion">$0.00</span></p>
+                <p><span data-translate="Acabados">Acabados</span>: <span id="precio-acabados">$0.00</span></p>
+            </div>
+        </div>
+    </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Animación inicial de la sección
+    anime({
+        targets: '.cotizacion-section',
+        opacity: [0, 1],
+        translateY: [30, 0],
+        duration: 1000,
+        easing: 'easeOutExpo'
+    });
+
+    // Animación de las tarjetas de tipo
+    anime({
+        targets: '.tipo-card',
+        opacity: [0, 1],
+        translateY: [20, 0],
+        duration: 800,
+        delay: anime.stagger(100),
+        easing: 'easeOutQuad'
+    });
+
+    // Animación del formulario
+    anime({
+        targets: '.parametros-form',
+        opacity: [0, 1],
+        duration: 800,
+        delay: 500,
+        easing: 'easeOutQuad'
+    });
+
+    
+
+    // Manejador del botón de cotización
+    document.querySelector('.cotizar-btn').addEventListener('click', () => {
+        const resultado = document.querySelector('.resultado-cotizacion');
+        
+        // Cálculo del presupuesto (ejemplo)
+        const metrosTerreno = parseFloat(document.getElementById('metros-terreno').value) || 0;
+        const metrosConstruccion = parseFloat(document.getElementById('metros-construccion').value) || 0;
+        const metrosExcavacion = parseFloat(document.getElementById('metros-excavacion').value) || 0;
+        const niveles = parseFloat(document.getElementById('niveles').value) || 1;
+
+        const precioExcavacion = metrosExcavacion * 100;
+        const precioConstruccion = metrosConstruccion * 500 * niveles;
+        const precioAcabados = metrosConstruccion * 200 * niveles;
+        const total = precioExcavacion + precioConstruccion + precioAcabados;
+
+        // Animación del resultado
+        anime({
+            targets: '.resultado-cotizacion',
+            opacity: [0, 1],
+            scale: [0.95, 1],
+            duration: 800,
+            easing: 'easeOutElastic(1, .8)'
+        });
+
+        // Animación de los precios
+        anime({
+            targets: '.precio-total',
+            innerHTML: [0, total],
+            round: 1,
+            duration: 2000,
+            easing: 'easeOutExpo',
+            update: function(anim) {
+                document.querySelector('.precio-total').innerHTML = 
+                    '$' + anim.progress.toFixed(2);
+            }
+        });
+
+        // Actualizar desglose
+        document.getElementById('precio-excavacion').textContent = `$${precioExcavacion.toFixed(2)}`;
+        document.getElementById('precio-construccion').textContent = `$${precioConstruccion.toFixed(2)}`;
+        document.getElementById('precio-acabados').textContent = `$${precioAcabados.toFixed(2)}`;
+    });
+
+    // Add touch events for mobile
+    const tipoCards = document.querySelectorAll('.tipo-card');
+    tipoCards.forEach(card => {
+        card.addEventListener('touchstart', function() {
+            this.style.transform = 'scale(0.95)';
+        });
+        
+        card.addEventListener('touchend', function() {
+            this.style.transform = 'scale(1)';
+            // Trigger click event
+            this.click();
+        });
+    });
+
+    // Optimize animations for mobile
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+        // Reduce animation durations for better performance
+        anime.speed = 1.5;
+    }
+});
+</script>
+
+    <div class="separator"></div>
+        
+   
+
+    <!-- Botón de modo oscuro -->
+    <button id="dark-mode-toggle" class="dark-mode-button" style="position: fixed; bottom: 20px; right: 30px;"></button>
+
+    </button>
+
+    
+
+    <script src="../scripts.js"></script>
+    <script src="../js/excavator.js"></script>
+    <script src="../js/cotizacion.js"></script>
+    <script src="../js/assistant.js"></script>
+
+
+    <script>
+        window.addEventListener('load', function () {
+            document.body.classList.add('loaded');
+        });
+    </script>
+
+    
+
+    <footer class="seccion-footer">
+        <div class="contenedor-footer">
+            <div class="bloque-logo">
+                <img src="../Resource/Logo/logo.png" alt="Polyline">
+                <div class="texto-copyright" style="color: black;">
+                    <p>&copy; 2025 POLYLINE. Todos los derechos reservados.</p>
+                </div>
+            </div>
+            <div class="bloque-contacto" style="color: black;">
+                <h3>CONTACTOS:</h3>
+                <p>WhatsApp: <a href="https://wa.link/lkvfnb">+51 943 812 536</a></p>
+                <p>Email: <a href="mailto:contacto@polyline.com">contacto@polyline.com</a></p>
+                <p>Dirección: Av. Óscar R. Benavides</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px;">
+        <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
+            <i class="fab fa-facebook-f"></i>
+        </button>
+        <button class="social-btn whatsapp" onclick="window.open('https://wa.link/lkvfnb')">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+        <button class="social-btn instagram" onclick="window.open('https://www.instagram.com/arquitectosalasperu/')">
+            <i class="fab fa-instagram"></i>
+        </button>
+        <button class="social-btn linkedin" onclick="window.open('https://www.linkedin.com/in/arquitectosalas')">
+            <i class="fab fa-linkedin-in"></i>
+        </button>
+        <button class="social-btn youtube" onclick="window.open('https://www.youtube.com/channel/UC9wMT7_zsq7yE0MMCSxiVMw')">
+            <i class="fab fa-youtube"></i>
+        </button>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
+    const navMenu = document.querySelector('.nav-menu');
+    const menuOverlay = document.querySelector('.menu-overlay');
+    const dropdowns = document.querySelectorAll('.dropdown');
+
+    // Toggle menú móvil
+    mobileMenuButton.addEventListener('click', function() {
+        this.classList.toggle('active');
+        navMenu.classList.toggle('active');
+        menuOverlay.classList.toggle('active');
+        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+    });
+
+    // Cerrar menú al hacer click en el overlay
+    menuOverlay.addEventListener('click', function() {
+        mobileMenuButton.classList.remove('active');
+        navMenu.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    // Manejar dropdowns en móvil
+    dropdowns.forEach(dropdown => {
+        const link = dropdown.querySelector('a');
+        link.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                dropdown.classList.toggle('active');
+            }
+        });
+    });
+
+    // Cerrar menú al cambiar el tamaño de la ventana
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            mobileMenuButton.classList.remove('active');
+            navMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Agregar después de la inicialización de Firebase
+    document.getElementById('logoutButton').addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+            await signOut(auth);
+            console.log('Usuario cerró sesión');
+            window.location.href = '../index.html';
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+        }
+    });
+
+    // Toggle del menú desplegable
+    document.getElementById('userProfile').addEventListener('click', function(e) {
+        const dropdown = this.querySelector('.user-dropdown');
+        dropdown.classList.toggle('show');
+        e.stopPropagation();
+    });
+
+    // Cerrar el menú al hacer clic fuera
+    document.addEventListener('click', function() {
+        const dropdowns = document.getElementsByClassName('user-dropdown');
+        for (const dropdown of dropdowns) {
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        }
+    });
+});
+</script>
+
+<script>
+    // Funciones para el selector de idiomas
+    function toggleLanguageOptions() {
+        const selector = document.querySelector('.language-selector');
+        const options = document.getElementById('languageOptions');
+        selector.classList.toggle('active');
+        options.classList.toggle('show');
+    }
+
+    function changeLanguage(lang) {
+        const currentFlag = document.getElementById('currentFlag');
+        const currentLanguage = document.getElementById('currentLanguage');
+        const options = document.getElementById('languageOptions');
+        
+        // Actualizar el botón con el idioma seleccionado
+        currentFlag.src = `../Resource/flags/${lang}.png`;
+        currentLanguage.textContent = {
+            'es': 'Español',
+            'en': 'English',
+            'pt': 'Português',
+            'zh': '中文',
+            'ja': '日本語',
+            'it': 'Italiano'
+        }[lang];
+        
+        // Ocultar las opciones
+        options.classList.remove('show');
+        
+        // Traducir el contenido
+        translatePage(lang);
+    }
+
+    // Objeto con las traducciones
+    const translations = {
+        'en': {
+            'Inicio': 'Home',
+            'Para Tí': 'For You',
+            'Proyectos': 'Projects',
+            'Casas de Playa en Venta / Alquiler': 'Beach Houses for Sale / Rent',
+            'Proyecto Benavides 1': 'Benavides Project 1',
+            'Proyecto Benavides 2': 'Benavides Project 2',
+            'Proyecto Sienna': 'Sienna Project',
+            'Proyecto Varsovia': 'Varsovia Project',
+            'Mas Proyectos': 'More Projects',
+            'Contacto': 'Contact',
+            'Información': 'Information',
+            'Agenda Una Reunión': 'Schedule a Meeting',
+            'Cotizar Proyecto': 'Quote Project',
+            'BIENVENIDO A POLYLINE': 'WELCOME TO POLYLINE',
+            'Proyectos inmobiliarios creados para ti.': 'Real estate projects created for you.',
+            'Login': 'Login',
+            'Perfil': 'Profile',
+            'Cerrar Sesión': 'Logout',
+            'Casa': 'House',
+            'Edificio': 'Building',
+            'Local Comercial': 'Commercial Space',
+            'Industrial': 'Industrial',
+            'Vivienda unifamiliar': 'Single-family home',
+            'Construcción vertical': 'Vertical construction',
+            'Espacios de negocio': 'Business spaces',
+            'Naves y fábricas': 'Warehouses and factories',
+            'Cotización de Inmueble': 'Property Quote',
+            'Moneda': 'Currency',
+            'M² de Terreno': 'Land M²',
+            'M² de Construcción': 'Construction M²',
+            'M² de Excavación': 'Excavation M²',
+            'Niveles': 'Levels',
+            'Calcular Cotización': 'Calculate Quote',
+            'Presupuesto Estimado': 'Estimated Budget',
+            'aproximados': 'approximate',
+            'Excavación': 'Excavation',
+            'Construcción': 'Construction', 
+            'Acabados': 'Finishes',
+            'COTIZA TU FUTURO INMUEBLE': 'QUOTE YOUR FUTURE PROPERTY',
+            'Crea tus sueños con Polyline': 'Create your dream with Polyline'
+        },
+        'pt': {
+            'Inicio': 'Início',
+            'Para Tí': 'Para Você', 
+            'Proyectos': 'Projetos',
+            'Casas de Playa en Venta / Alquiler': 'Casas de Praia à Venda / Aluguel',
+            'Proyecto Benavides 1': 'Benavides Projeto 1',
+            'Proyecto Benavides 2': 'Benavides Projeto 2',
+            'Proyecto Sienna': 'Sienna Projeto',
+            'Proyecto Varsovia': 'Varsovia Projeto',
+            'Mas Proyectos': 'Mais Projetos',
+            'Contacto': 'Contato',
+            'Información': 'Informações',
+            'Agenda Una Reunión': 'Agendar uma Reunião',
+            'Cotizar Proyecto': 'Orçar Projeto',
+            'BIENVENIDO A POLYLINE': 'BEM-VINDO À POLYLINE',
+            'Proyectos inmobiliarios creados para ti.': 'Projetos imobiliários criados para você.',
+            'Login': 'Entrar',
+            'Perfil': 'Perfil',
+            'Cerrar Sesión': 'Sair',
+            'Casa': 'Casa',
+            'Edificio': 'Edifício',
+            'Local Comercial': 'Instalações comerciais',
+            'Industrial': 'Industrial',
+            'Vivienda unifamiliar': 'Habitação unifamiliar',
+            'Construcción vertical': 'Construção vertical',
+            'Espacios de negocio': 'Espaços comerciais',
+            'Naves y fábricas': 'Armazéns e fábricas',
+            'Cotización de Inmueble': 'Cotação de imóveis',
+            'Moneda': 'Divisas',
+            'M² de Terreno': 'M² de Terra',
+            'M² de Construcción': ' M² de Construção',
+            'M² de Excavación': ' M² de Escavação',
+            'Niveles': 'Níveis',
+            'Calcular Cotización': 'Calcular orçamento',
+            'Presupuesto Estimado': 'Orçamento estimado',
+            'aproximados': 'aproximado',
+            'Excavación': 'Escavação',
+            'Construcción': 'Construção', 
+            'Acabados': 'Acabamentos',
+            'COTIZA TU FUTURO INMUEBLE': 'ORÇAMENTAR O SEU FUTURO IMÓVEL',
+            'Crea tus sueños con Polyline': 'Crie os seus sonhos com o Polyline'
+        },
+        'zh': {
+            'Inicio': '首页',
+            'Para Tí': '为您服务',
+            'Proyectos': '项目',
+            'Casas de Playa en Venta / Alquiler': '出售/出租房屋',
+            'Proyecto Benavides 1': '贝纳维德斯项目 1',
+            'Proyecto Benavides 2': '贝纳维德斯项目 2',
+            'Proyecto Sienna': '锡耶纳项目',
+            'Proyecto Varsovia': '华沙项目',
+            'Mas Proyectos': '更多项目',
+            'Contacto': '联系我们',
+            'Información': '信息',
+            'Agenda Una Reunión': '预约会议',
+            'Cotizar Proyecto': '项目报价',
+            'BIENVENIDO A POLYLINE': '欢迎来到POLYLINE',
+            'Proyectos inmobiliarios creados para ti.': '为您定制的房地产项目',
+            'Login': '登录',
+            'Perfil': '个人中心', 
+            'Cerrar Sesión': '退出登录',
+            'Casa': '房子',
+            'Edificio': '建筑',
+            'Local Comercial': '商业场所',
+            'Industrial': '工业',
+            'Vivienda unifamiliar': '独户住宅',
+            'Construcción vertical': '垂直建筑',
+            'Espacios de negocio': '商业空间',
+            'Naves y fábricas': '厂房和工厂',
+            'Cotización de Inmueble': '房产报价',
+            'Moneda': '货币',
+            'M² de Terreno': '土地面积 M²',
+            'M² de Construcción': '建筑面积 M²',
+            'M² de Excavación': '挖掘面积 M²',
+            'Niveles': '层数',
+            'Calcular Cotización': '计算报价',
+            'Presupuesto Estimado': '预估预算',
+            'aproximados': '大约',
+            'Excavación': '挖掘',
+            'Construcción': '建造', 
+            'Acabados': '装修',
+            'COTIZA TU FUTURO INMUEBLE': '为您的未来房产报价',
+            'Crea tus sueños con Polyline': '用Polyline创造你的梦想'
+            
+        },
+        'ja': {
+            'Inicio': 'ホーム',
+            'Para Tí': 'あなたのために',
+            'Proyectos': 'プロジェクト', 
+            'Casas de Playa en Venta / Alquiler': ' 販売/賃貸ビーチハウス',
+            'Proyecto Benavides 1': 'ベナビデス・プロジェクト1',
+            'Proyecto Benavides 2': 'ベナビデス・プロジェクト2',
+            'Proyecto Sienna': 'シエナ・プロジェクト',
+            'Proyecto Varsovia': 'ワルシャワ・プロジェクト',
+            'Mas Proyectos': 'もっとプロジェクト',
+            'Contacto': 'お問い合わせ',
+            'Información': '情報',
+            'Agenda Una Reunión': '面談予約',
+            'Cotizar Proyecto': '見積もり依頼',
+            'BIENVENIDO A POLYLINE': 'POLYLINEへようこそ',
+            'Proyectos inmobiliarios creados para ti.': 'あなたのための不動産プロジェクト',
+            'Login': 'ログイン',
+            'Perfil': 'プロフィール',
+            'Cerrar Sesión': 'ログアウト',
+            'Casa': '家',
+            'Edificio': '建物',
+            'Local Comercial': '商業施設',
+            'Industrial': '工業',
+            'Vivienda unifamiliar': '一戸建て住宅',
+            'Construcción vertical': '垂直建設',
+            'Espacios de negocio': 'ビジネススペース',
+            'Naves y fábricas': '工場と倉庫',
+            'Cotización de Inmueble': '不動産の見積もり',
+            'Moneda': '通貨',
+            'M² de Terreno': '土地面積 M²',
+            'M² de Construcción': '建築面積 M²',
+            'M² de Excavación': '掘削面積 M²',
+            'Niveles': '階数',
+            'Calcular Cotización': '見積もりを計算',
+            'Presupuesto Estimado': '推定予算',
+            'aproximados': 'およそ',
+            'Excavación': '掘削',
+            'Construcción': '建設', 
+            'Acabados': '仕上げ',
+            'COTIZA TU FUTURO INMUEBLE': 'あなたの未来の不動産を査定',
+            'Crea tus sueños con Polyline': 'Polylineで夢を創造'
+            
+        },
+        'it': {
+            'Inicio': 'Inizio',
+            'Para Tí': 'Per Te',
+            'Proyectos': 'Progetti',
+            'Casas de Playa en Venta / Alquiler': 'Case in Spiaggia in Vendita / Affitto',
+            'Proyecto Benavides 1': 'Progetto Benavides 1',
+            'Proyecto Benavides 2': 'Progetto Benavides 2',
+            'Proyecto Sienna': 'Progetto Sienna',
+            'Proyecto Varsovia': 'Progetto Varsovia',
+            'Mas Proyectos': 'Altri Progetti',
+            'Contacto': 'Contatti',
+            'Información': 'Informazioni',
+            'Agenda Una Reunión': 'Prenota un Appuntamento',
+            'Cotizar Proyecto': 'Preventivo Progetto',
+            'BIENVENIDO A POLYLINE': 'BENVENUTO A POLYLINE',
+            'Proyectos inmobiliarios creados para ti.': 'Progetti immobiliari creati per te.',
+            'Login': 'Accedi',
+            'Perfil': 'Profilo',
+            'Cerrar Sesión': 'Disconnetti',
+            'Casa': 'Casa',
+            'Edificio': 'Edificio',
+            'Local Comercial': 'Locale Commerciale',
+            'Industrial': 'Industriale',
+            'Vivienda unifamiliar': 'Abitazione unifamiliare',
+            'Construcción vertical': 'Costruzione verticale',
+            'Espacios de negocio': 'Spazi commerciali',
+            'Naves y fábricas': 'Capannoni e fabbriche',
+            'Cotización de Inmueble': 'Preventivo immobiliare',
+            'Moneda': 'Valuta',
+            'M² de Terreno': 'M² di Terreno',
+            'M² de Construcción': 'M² di Costruzione',
+            'M² de Excavación': 'M² di Scavo',
+            'Niveles': 'Piani',
+            'Calcular Cotización': 'Calcola Preventivo',
+            'Presupuesto Estimado': 'Budget Stimato',
+            'aproximados': 'circa',
+            'Excavación': 'Scavo',
+            'Construcción': 'Costruzione', 
+            'Acabados': 'Rifiniture',
+            'COTIZA TU FUTURO INMUEBLE': 'PREVENTIVO PER IL TUO FUTURO IMMOBILE',
+            'Crea tus sueños con Polyline': 'Crea i tuoi sogni con Polyline'
+        }
+    };
+
+    function translatePage(lang) {
+        if (lang === 'es') {
+            location.reload();
+            return;
+        }
+
+        // Usar un fragmento de documento para optimizar las manipulaciones del DOM
+        const fragment = document.createDocumentFragment();
+        const elements = document.querySelectorAll('[data-translate]');
+        
+        // Procesar elementos en lotes para evitar bloqueo del navegador
+        const batchSize = 10;
+        let currentBatch = 0;
+
+        function processBatch() {
+            const start = currentBatch * batchSize;
+            const end = Math.min(start + batchSize, elements.length);
+            
+            for (let i = start; i < end; i++) {
+                const element = elements[i];
+                const key = element.getAttribute('data-translate');
+                
+                if (translations[lang]?.[key]) {
+                    if (element.tagName.toLowerCase() === 'input' || 
+                        element.tagName.toLowerCase() === 'textarea') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        const isTextOnly = element.innerHTML.trim() === element.textContent.trim();
+                        element[isTextOnly ? 'textContent' : 'innerHTML'] = translations[lang][key];
+                    }
+                }
+            }
+
+            currentBatch++;
+            
+            if (currentBatch * batchSize < elements.length) {
+                requestAnimationFrame(processBatch);
+            } else {
+                // Actualizar título después de procesar todas las traducciones
+                document.title = {
+                    'en': 'POLYLINE - Construction Company',
+                    'pt': 'POLYLINE - Construtora',
+                    'zh': 'POLYLINE - 建筑公司',
+                    'ja': 'POLYLINE - 建設会社',
+                    'it': 'POLYLINE - Società di costruzioni'
+                }[lang] || 'POLYLINE - Constructora';
+
+                // Reinicializar animaciones solo si es necesario
+                if (typeof anime !== 'undefined' && typeof wrapLetters === 'function') {
+                    requestAnimationFrame(() => {
+                        const mainText = document.querySelector('.letters-main');
+                        const subText = document.querySelector('.letters-sub');
+                        
+                        if (mainText) mainText.style.opacity = '1';
+                        if (subText) subText.style.opacity = '1';
+                        
+                        wrapLetters('.letters-main');
+                        wrapLetters('.letters-sub');
+                        
+                        // Usar requestAnimationFrame para las animaciones
+                        requestAnimationFrame(() => {
+                            anime.timeline({
+                                loop: false,
+                                easing: 'easeOutExpo'
+                            })
+                            .add({
+                                targets: '.hero-title .letter',
+                                translateY: ["1.1em", 0],
+                                translateX: ["0.55em", 0],
+                                rotateZ: [180, 0],
+                                duration: 600,
+                                delay: anime.stagger(40)
+                            })
+                            .add({
+                                targets: '.hero-subtitle .letter',
+                                opacity: [0, 1],
+                                duration: 800,
+                                delay: anime.stagger(20),
+                                offset: '-=400'
+                            });
+                        });
+                    });
+                }
+            }
+        }
+
+        // Iniciar el procesamiento por lotes
+        requestAnimationFrame(processBatch);
+    }
+
+    // Cerrar el menú de idiomas cuando se hace clic fuera
+    document.addEventListener('click', function(event) {
+        const languageSelector = document.querySelector('.language-selector');
+        const languageOptions = document.getElementById('languageOptions');
+        
+        if (!languageSelector.contains(event.target)) {
+            languageOptions.classList.remove('show');
+        }
+    });
+</script>
+
+
+
+
+
+
+<script type="module">
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    // Función para manejar el cierre de sesión
+    document.getElementById('logoutButton').addEventListener('click', async (e) => {
+        e.preventDefault();
+        const auth = getAuth();
+        try {
+            await signOut(auth);
+            console.log('Sesión cerrada exitosamente');
+            window.location.href = '../index.html'; // Redirige al inicio después de cerrar sesión
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+        }
+    });
+</script>
+<script type="module" src="js/nav.html"></script>
+
+
+</body>
+</html>

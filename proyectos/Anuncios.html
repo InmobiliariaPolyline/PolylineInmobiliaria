@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Anuncios - POLYLINE</title>
+    <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/idiomas.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+    <header>
+        <!-- Botón de menú móvil -->
+        <button class="mobile-menu-button" aria-label="Menú">
+            <div class="hamburger"></div>
+        </button>
+        <div id="loading-screen" class="loading-screen">
+            <div class="logo-container">
+                <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+                <h1 class="company-name">POLYLINE</h1>
+                <p class="slogan">CONSTRUCTORA</p>
+            </div>
+        </div>
+        <div class="logo-container">
+            <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+            <h1 class="company-name">POLYLINE</h1>
+            <p class="slogan">CONSTRUCTORA</p>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li><a class='active' data-translate='Inicio' href='../index.html'>Inicio</a></li>
+                <li><a href="../index.html#para-ti" data-translate="Para Tí">Para Tí</a></li>
+                <li class="dropdown">
+                    <a data-translate='Proyectos' href='../proyectos/proyectos.html' id='proyectos-link'>Proyectos</a>
+                    <ul class="dropdown-menu">
+                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='proyectos/proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
+                        <li><a data-translate='Proyecto Benavides 1' href='../proyectos/pben1.html'>Proyecto Benavides 1</a></li>
+                        <li><a data-translate='Proyecto Benavides 2' href='../proyectos/pben2.html'>Proyecto Benavides 2</a></li>
+                        <li><a data-translate='Proyecto Sienna' href='../proyectos/ppl1.html'>Proyecto Sienna</a></li>
+                        <li><a data-translate='Proyecto Varsovia' href='../proyectos/plin.html'>Proyecto Varsovia </a></li>
+                        <li><a data-translate='Mas Proyectos' href='../proyectos/mas-proyectos.html'>Mas Proyectos</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="../contact/informaci%c3%b3n.html" id="proyectos-link" data-translate="Contacto">Contacto</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../contact/informaci%c3%b3n.html" data-translate="Información">Información</a></li>
+                        <li><a href="../contact/agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
+                    </ul>
+                </li>
+                <li><a data-translate='Cotizar Proyecto' href='../proyectos/cotizar.html'>Cotizar Proyecto</a></li>
+                <li><a data-translate='Anuncios' href='Anuncios.html'>Anuncios</a></li>
+                <li id="translateContainer" class="translate-container">
+                    <div id="google_translate_element" title="Seleccionar idioma"></div>
+                </li>
+                <li id="loginContainer" class="mobile-login">
+                    <a class='login-link' href='../pages/login.html' id='loginLink'>
+                        <i class="fas fa-sign-in-alt"></i> 
+                        <span data-translate="Login">Login</span>
+                    </a>
+                    <div id="userProfile" style="display: none;">
+                        <div class="profile-header">
+                            <a id="profileLink" href='../pages/perfil.html' style='text-decoration: none; color: inherit;'>
+                                <i class="fas fa-user"></i>
+                                <span id="profileText" data-translate="Perfil">Perfil</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="anuncios-section">
+            <div class="container">
+                <h2 class="section-title">Anuncios</h2>
+                <div class="banner-container">
+                    <div class="banner-wrapper">
+                        <div class="banner-slider">
+                            <!-- Los anuncios se cargarán dinámicamente aquí -->
+                        </div>
+                    </div>
+                    <button class="banner-nav prev" aria-label="Anuncio anterior">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="banner-nav next" aria-label="Siguiente anuncio">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <!-- Contenedor para la información del anuncio -->
+                <div class="anuncio-info-container" id="anuncioInfoContainer">
+                    <h3 id="anuncioTitulo"></h3>
+                    <p id="anuncioDescripcion"></p>
+                    <span id="anuncioTipo" class="anuncio-tipo"></span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Botón de modo oscuro -->
+    <button id="dark-mode-toggle" class="dark-mode-button" style="position: fixed; bottom: 20px; right: 30px;"></button>
+
+    <footer class="seccion-footer">
+        <div class="contenedor-footer">
+            <div class="bloque-logo">
+                <img src="../Resource/Logo/logo.png" alt="Polyline">
+                <div class="texto-copyright" style="color: black;">
+                    <p>&copy; 2025 POLYLINE. Todos los derechos reservados.</p>
+                </div>
+            </div>
+            <div class="bloque-contacto" style="color: black;">
+                <h3>CONTACTOS:</h3>
+                <p>WhatsApp: <a href="https://wa.link/lkvfnb">+51 943 812 536</a></p>
+                <p>Email: <a href="mailto:contacto@polyline.com">contacto@polyline.com</a></p>
+                <p>Dirección: Av. Óscar R. Benavides</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../scripts.js"></script>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { db } from '../js/firebase-config.js';
+        import {
+            collection,
+            query,
+            getDocs,
+            orderBy,
+            where
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        let currentSlide = 0;
+        let slideInterval;
+        let totalSlides = 0;
+        let anunciosData = [];
+
+        // Función para cargar los anuncios publicados
+        async function cargarAnuncios() {
+            try {
+                const bannerSlider = document.querySelector('.banner-slider');
+                bannerSlider.innerHTML = '<div class="loading">Cargando anuncios...</div>';
+
+                const anunciosQuery = query(
+                    collection(db, 'anuncios'),
+                    where('status', '==', 'published'),
+                    orderBy('createdAt', 'desc')
+                );
+                const anunciosSnapshot = await getDocs(anunciosQuery);
+
+                if (anunciosSnapshot.empty) {
+                    bannerSlider.innerHTML = '<div class="no-anuncios">No hay anuncios disponibles en este momento.</div>';
+                    return;
+                }
+
+                bannerSlider.innerHTML = '';
+                anunciosData = [];
+                anunciosSnapshot.forEach(doc => {
+                    anunciosData.push(doc.data());
+                });
+
+                totalSlides = anunciosData.length;
+
+                anunciosData.forEach((anuncio, index) => {
+                    const slideHTML = `
+                        <div class="banner-slide">
+                            <img src="${anuncio.imageUrl || '../Resource/Logo/logo.png'}" 
+                                 alt="${anuncio.title}" 
+                                 onclick="mostrarInfoAnuncio(${index})"
+                                 onerror="this.src='../Resource/Logo/logo.png'">
+                        </div>
+                    `;
+                    bannerSlider.innerHTML += slideHTML;
+                });
+
+                if (totalSlides > 1) {
+                    iniciarDesplazamientoAutomatico();
+                }
+
+                configurarNavegacion();
+
+            } catch (error) {
+                console.error('Error al cargar anuncios:', error);
+                document.querySelector('.banner-slider').innerHTML = '<div class="error">Error al cargar los anuncios</div>';
+            }
+        }
+
+        function iniciarDesplazamientoAutomatico() {
+            if (slideInterval) {
+                clearInterval(slideInterval);
+            }
+            slideInterval = setInterval(() => {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                actualizarSlider();
+            }, 7000);
+        }
+
+        function actualizarSlider() {
+            const slider = document.querySelector('.banner-slider');
+            slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+
+        function configurarNavegacion() {
+            const prevBtn = document.querySelector('.banner-nav.prev');
+            const nextBtn = document.querySelector('.banner-nav.next');
+
+            prevBtn.addEventListener('click', () => {
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                actualizarSlider();
+                reiniciarDesplazamientoAutomatico();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                actualizarSlider();
+                reiniciarDesplazamientoAutomatico();
+            });
+        }
+
+        function reiniciarDesplazamientoAutomatico() {
+            if (totalSlides > 1) {
+                iniciarDesplazamientoAutomatico();
+            }
+        }
+
+        // Función para mostrar la información del anuncio
+        window.mostrarInfoAnuncio = function(index) {
+            const anuncio = anunciosData[index];
+            const infoContainer = document.getElementById('anuncioInfoContainer');
+            
+            document.getElementById('anuncioTitulo').textContent = anuncio.title;
+            document.getElementById('anuncioDescripcion').textContent = anuncio.description || '';
+            document.getElementById('anuncioTipo').textContent = getAnnouncementTypeLabel(anuncio.type);
+            document.getElementById('anuncioTipo').className = `anuncio-tipo ${anuncio.type}`;
+            
+            infoContainer.classList.add('visible');
+            
+            // Scroll suave hasta la información
+            infoContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+
+        // Función auxiliar para obtener la etiqueta del tipo de anuncio
+        function getAnnouncementTypeLabel(type) {
+            const types = {
+                'general': 'General',
+                'promocion': 'Promoción',
+                'evento': 'Evento',
+                'noticia': 'Noticia'
+            };
+            return types[type] || type;
+        }
+
+        // Cargar anuncios cuando se carga la página
+        window.addEventListener('DOMContentLoaded', cargarAnuncios);
+    </script>
+
+    <script>
+        // Login/Perfil dinámico
+        document.addEventListener('DOMContentLoaded', () => {
+            const userSession = JSON.parse(localStorage.getItem('userSession'));
+            const loginLink = document.getElementById('loginLink');
+            const userProfile = document.getElementById('userProfile');
+            const profileLink = document.getElementById('profileLink');
+            const profileText = document.getElementById('profileText');
+
+            if (userSession && userSession.emailVerified) {
+                if (loginLink) loginLink.style.display = 'none';
+                if (userProfile) userProfile.style.display = 'flex';
+                if (profileLink && profileText) {
+                    if (userSession.isAdmin) {
+                        profileLink.href = '../pages/perfilAdmin.html';
+                        profileText.textContent = 'Administrador';
+                        profileText.setAttribute('data-translate', 'Administrador');
+                    } else {
+                        profileLink.href = '../pages/perfil.html';
+                        profileText.textContent = 'Perfil';
+                        profileText.setAttribute('data-translate', 'Perfil');
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- Modal para mostrar imagen en tamaño completo -->
+    <div class="modal-backdrop hidden" id="imageModalBackdrop"></div>
+    <div class="modal hidden" id="imageModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeImageModal">&times;</span>
+            <img src="" alt="Imagen en tamaño completo" id="fullImage" style="max-width: 100%; max-height: 80vh; display: block; margin: auto;">
+        </div>
+    </div>
+    
+    <style>
+        .hidden {
+            display: none;
+        }
+        
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+        
+        .modal {
+            position: fixed;
+            inset: 0; /* top: 0; right: 0; bottom: 0; left: 0; */
+            z-index: 1001;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none; /* El fondo oscuro ya lo pone .modal-backdrop */
+            overflow: auto;
+        }
+        
+        .modal-content {
+            position: relative;
+            padding: 10px;
+            background-color: #5d595496;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 50%;
+            max-height: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        body.dark-mode .modal-content {
+            background-color: #333;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #888;
+        }
+        
+        body.dark-mode .close-modal {
+            color: #aaa;
+        }
+
+        #fullImage {
+            max-width: 90vw;
+            max-height: 80vh;
+            width: auto;
+            height: auto;
+            display: block;
+            margin: auto;
+        }
+
+        .banner-container {
+            position: relative;
+            width: 90%;
+            max-width: 1000px;
+            height: 40vh;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .banner-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .banner-slider {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+            height: 100%;
+        }
+
+        .banner-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .banner-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        body.dark-mode .banner-slide img {
+            background-color: #2a2a2a;
+        }
+
+        .banner-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: background-color 0.3s ease;
+        }
+
+        .banner-nav:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .banner-nav.prev {
+            left: 20px;
+        }
+
+        .banner-nav.next {
+            right: 20px;
+        }
+
+        body.dark-mode .banner-nav {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.dark-mode .banner-nav:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Estilos para la información del anuncio */
+        .anuncio-info-container {
+            display: none;
+            padding: 30px;
+            background: white;
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .anuncio-info-container {
+            background: #2a2a2a;
+            color: white;
+        }
+
+        .anuncio-info-container h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.8em;
+            color: #333;
+        }
+
+        body.dark-mode .anuncio-info-container h3 {
+            color: white;
+        }
+
+        .anuncio-info-container p {
+            margin: 0 0 20px 0;
+            line-height: 1.6;
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        body.dark-mode .anuncio-info-container p {
+            color: #ccc;
+        }
+
+        .anuncio-info-container .anuncio-tipo {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+        }
+
+        .anuncio-info-container.visible {
+            display: block;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .banner-container {
+                width: 95%;
+                height: 35vh;
+            }
+            .anuncio-info-container {
+                margin: 15px;
+                padding: 20px;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const imageModalBackdrop = document.getElementById('imageModalBackdrop');
+            const imageModal = document.getElementById('imageModal');
+            const fullImage = document.getElementById('fullImage');
+            const closeImageModal = document.getElementById('closeImageModal');
+            const anunciosGrid = document.querySelector('.anuncios-grid');
+
+            // Delegación de eventos para clics en imágenes dentro del grid
+            anunciosGrid.addEventListener('click', (e) => {
+                const clickedElement = e.target;
+                // Verificar si el clic fue en una imagen dentro de un contenedor de imagen de anuncio
+                if (clickedElement.tagName === 'IMG' && clickedElement.closest('.anuncio-imagen-container')) {
+                    const imageUrl = clickedElement.src;
+                    fullImage.src = imageUrl;
+                    imageModalBackdrop.classList.remove('hidden');
+                    imageModal.classList.remove('hidden');
+                }
+            });
+
+            // Cerrar modal al hacer clic en el botón de cerrar
+            closeImageModal.addEventListener('click', () => {
+                imageModalBackdrop.classList.add('hidden');
+                imageModal.classList.add('hidden');
+                fullImage.src = ''; // Limpiar la imagen al cerrar
+            });
+
+            // Cerrar modal al hacer clic en el fondo oscuro
+            imageModalBackdrop.addEventListener('click', () => {
+                imageModalBackdrop.classList.add('hidden');
+                imageModal.classList.add('hidden');
+                fullImage.src = ''; // Limpiar la imagen al cerrar
+            });
+        });
+    </script>
+</body>
+</html>

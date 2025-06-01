@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Página de Pago - POLYLINE</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/departamentos.css">
+    <link rel="stylesheet" href="../css/idiomas.css">
+    <link rel="stylesheet" href="../css/assistant.css">
+    <link rel="stylesheet" href="../css/pago.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="preload" as="video" href="../Resource/background1.mp4">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../css/assistant.css">
+    <link rel="stylesheet" href="../css/idiomas.css">
+    <link rel="stylesheet" href="../css/gallery.html">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="../css/property-viewer.html">
+    <script type="module" src="../js/Login_Perfil.js"></script> 
+</head>
+<body>
+    <header>
+        <!-- Botón de menú móvil -->
+        <button class="mobile-menu-button" aria-label="Menú">
+            <div class="hamburger"></div>
+        </button>
+        
+        <div class="logo-container">
+            <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+            <h1 class="company-name">POLYLINE</h1>
+            <p class="slogan"> CONSTRUCTORA</p>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="language-selector">
+                    <button class="language-btn" onclick="toggleLanguageOptions()">
+                        <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
+                        <span id="currentLanguage">Español</span>
+                    </button>
+                    <div class="language-options" id="languageOptions">
+                        <div class="language-option" onclick="changeLanguage('es')">
+                            <img src="../Resource/flags/es.png" alt="Español">
+                            <span>Español</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('en')">
+                            <img src="../Resource/flags/en.png" alt="English">
+                            <span>English</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('pt')">
+                            <img src="../Resource/flags/pt.png" alt="Português">
+                            <span>Português</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('zh')">
+                            <img src="../Resource/flags/zh.png" alt="中文">
+                            <span>中文</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('ja')">
+                            <img src="../Resource/flags/ja.png" alt="日本語">
+                            <span>日本語</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('it')">
+                            <img src="../Resource/flags/it.png" alt="Italiano">
+                            <span>Italiano</span>
+                        </div>
+                    </div>
+                </li>
+                <li><a class='active' data-translate='Inicio' href='../index.html'>Inicio</a></li>
+                <li><a href="../index.html#para-ti" data-translate="Para Tí">Para Tí</a></li>
+                <li class="dropdown">
+                    <a data-translate='Proyectos' href='../proyectos/proyectos.html' id='proyectos-link'>Proyectos</a>
+                    <ul class="dropdown-menu">
+                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='../proyectos/proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
+                        <li><a data-translate='Proyecto Benavides 1' href='../proyectos/pben1.html'>Proyecto Benavides 1</a></li>
+                        <li><a data-translate='Proyecto Benavides 2' href='../proyectos/pben2.html'>Proyecto Benavides 2</a></li>
+                        <li><a data-translate='Proyecto Sienna' href='../proyectos/ppl1.html'>Proyecto Sienna</a></li>
+                        <li><a data-translate='Proyecto Varsovia' href='../proyectos/plin.html'>Proyecto Varsovia </a></li>
+                        <li><a data-translate='Mas Proyectos' href='../proyectos/mas-proyectos.html'>Mas Proyectos</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="../contact/informaci%c3%b3n.html" id="proyectos-link" data-translate="Contacto">Contacto</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../contact/informaci%c3%b3n.html" data-translate="Información">Información</a></li>
+                        <li><a href="../contact/agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
+                    </ul>
+                </li>
+                <li><a data-translate='Cotizar Proyecto' href='../proyectos/cotizar.html'>Cotizar Proyecto</a></li>
+                <li><a data-translate='Anuncios' href='../proyectos/Anuncios.html'>Anuncios</a></li>
+                <li id="translateContainer" class="translate-container">
+                    <div id="google_translate_element" title="Seleccionar idioma"></div>
+                </li>
+                <li id="loginContainer" class="mobile-login">
+                    <a class='login-link' href='../pages/login.html' id='loginLink'>
+                        <i class="fas fa-sign-in-alt"></i> 
+                        <span data-translate="Login">Login</span>
+                    </a>
+                    <div id="userProfile" style="display: none;">
+                        <div class="profile-header">
+                            <a href='../pages/perfil.html' style='text-decoration: none; color: inherit; '>
+                                <span data-translate="Perfil">Perfil</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+        
+    <!-- Overlay para el menú móvil -->
+    <div class="menu-overlay"></div>
+
+    <main>
+        <section class="payment-form" style="color: black;">
+            <h2 data-translate="Seleccione su método de pago">Seleccione su método de pago</h2>
+            <div class="payment-methods">
+                <div class="payment-method" data-method="transfer">
+                    <div class="payment-method-header">
+                        <img src="../Resource/bcp.png" alt="Transferencia" class="payment-method-icon">
+                        <h3 data-translate="Transferencia Bancaria">Transferencia Bancaria</h3>
+                    </div>
+                    <p data-translate="Realice una transferencia directa a nuestra cuenta bancaria">Realice una transferencia directa a nuestra cuenta bancaria</p>
+                </div>
+                <div class="payment-method" data-method="yape">
+                    <div class="payment-method-header">
+                        <img src="../Resource/yape.png" alt="Yape" class="payment-method-icon">
+                        <h3 data-translate="Pago con Yape">Pago con Yape</h3>
+                    </div>
+                    <p data-translate="Pague fácilmente usando Yape">Pague fácilmente usando Yape</p>
+                </div>
+            </div>
+
+            <div class="payment-details" id="transfer-details">
+                <h3 data-translate="Detalles de Transferencia">Detalles de Transferencia</h3>
+                <div class="bank-info">
+                    <p data-translate="Banco:"><strong>Banco:</strong> BCP</p>
+                    <p data-translate="Cuenta:"><strong>Cuenta:</strong> 193-2548545-0-24</p>
+                    <p data-translate="Titular:"><strong>Titular:</strong> POLYLINE S.A.C</p>
+                    <button class="copy-button" data-copy="193-2548545-0-24" data-translate="Copiar número de cuenta">Copiar número de cuenta</button>
+                </div>
+                <form id="transfer-form" class="form-group">
+                    <div class="form-group">
+                        <label data-translate="Número de operación">Número de operación</label>
+                        <input type="text" class="operation-input" readonly required>
+                    </div>
+                    <div class="form-group">
+                        <label data-translate="Monto transferido">Monto transferido</label>
+                        <input type="number" step="0.01" required>
+                    </div>
+                    <button type="submit" class="submit-button" data-translate="Confirmar pago">Confirmar pago</button>
+                </form>
+            </div>
+
+            <div class="payment-details" id="yape-details">
+                <h3 data-translate="Pago con Yape">Pago con Yape</h3>
+                <div class="bank-info">
+                    <p><strong><span data-translate="Propietario:">Propietario:</span></strong> Arq. Luis Salas - Polyline SAC</p>
+                    <img src="../Resource/yape-qr.png" alt="QR Yape" class="yape-qr">
+                    <p><strong><span data-translate="Número:">Número:</span></strong> +51 943 812 536</p>
+                    <button class="copy-button" data-copy="+51943812536" data-translate="Copiar número">Copiar número</button>
+                </div>
+                <form id="yape-form">
+                    <div class="form-group">
+                        <label data-translate="Número de operación Yape">Número de operación Yape</label>
+                        <input type="text" class="operation-input" readonly required>
+                    </div>
+                    <button type="submit" class="submit-button" data-translate="Confirmar pago">Confirmar pago</button>
+                </form>
+            </div>
+        </section>
+        
+        <!-- Modal de confirmación -->
+        <div class="payment-modal" id="paymentModal">
+            <div class="modal-content">
+                <button class="modal-close" aria-label="Cerrar">&times;</button>
+                <div class="loader"></div>
+                <p class="modal-text" data-translate="Procesando pago...">Procesando pago...</p>
+                <div class="receipt-details" style="display: none;">
+                    <div class="company-header">
+                        <img src="../Resource/Logo/logo.png" alt="Logo POLYLINE" class="modal-logo">
+                        <div class="company-info">
+                            <h3 data-translate="POLYLINE S.A.C">POLYLINE S.A.C</h3>
+                            <p>RUC: 20603042521</p>
+                        </div>
+                    </div>
+                    <div class="payment-summary" style="color: black;">
+                        <h4 data-translate="Detalles del Pago">Detalles del Pago</h4>
+                        <p><span data-translate="Fecha:"><strong>Fecha</strong></span>:<span id="paymentDate"></span></p>
+                        <p><span data-translate="Hora:"><strong>Hora</strong></span>:<span id="paymentTime"></span></p>
+                        <p><span data-translate="Método:"><strong>Método</strong></span>:<span id="paymentMethod"></span></p>
+                        <p><span data-translate="N° Operación:"><strong>N° Operación</strong></span>:<span id="operationNumber"></span></p>
+                        <p><span data-translate="Monto:"><strong>Monto</strong></span>:<span id="paymentAmount"></span></p>
+                    </div>
+                    <button id="downloadPdf" class="download-button">
+                        <i  data-translate="Descargar Boleta"><strong>Descargar Boleta </strong></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Add jsPDF library -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    </main>
+
+      <!-- Botón de modo oscuro -->
+     <button id="dark-mode-toggle" class="dark-mode-button" style="position: fixed; bottom: 20px; right: 30px;"></button>
+    <script src="../scripts.js"></script>
+    
+    <footer class="seccion-footer">
+        <div class="contenedor-footer">
+            <div class="bloque-logo">
+                <img src="../Resource/Logo/logo.png" alt="Polyline">
+                <div class="texto-copyright" style="color: black;">
+                    <p>&copy; 2025 POLYLINE. Todos los derechos reservados.</p>
+                </div>
+            </div>
+            <div class="bloque-contacto" style="color: black;">
+                <h3>CONTACTOS:</h3>
+                <p>WhatsApp: <a href="https://wa.link/lkvfnb">+51 943 812 536</a></p>
+                <p>Email: <a href="mailto:contacto@polyline.com">contacto@polyline.com</a></p>
+                <p>Dirección: Av. Óscar R. Benavides</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/assistant.js"></script>
+    
+    <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px;">
+        <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
+            <i class="fab fa-facebook-f"></i>
+        </button>
+        <button class="social-btn whatsapp" onclick="window.open('https://wa.link/lkvfnb')">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+        <button class="social-btn instagram" onclick="window.open('https://www.instagram.com/arquitectosalasperu/')">
+            <i class="fab fa-instagram"></i>
+        </button>
+        <button class="social-btn linkedin" onclick="window.open('https://www.linkedin.com/in/arquitectosalas')">
+            <i class="fab fa-linkedin-in"></i>
+        </button>
+        <button class="social-btn youtube" onclick="window.open('https://www.youtube.com/channel/UC9wMT7_zsq7yE0MMCSxiVMw')">
+            <i class="fab fa-youtube"></i>
+        </button>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const navMenu = document.querySelector('.nav-menu');
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const dropdowns = document.querySelectorAll('.dropdown');
+    
+        // Toggle menú móvil
+        mobileMenuButton.addEventListener('click', function() {
+            this.classList.toggle('active');
+            navMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+        });
+    
+        // Cerrar menú al hacer click en el overlay
+        menuOverlay.addEventListener('click', function() {
+            mobileMenuButton.classList.remove('active');
+            navMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    
+        // Manejar dropdowns en móvil
+        dropdowns.forEach(dropdown => {
+            const link = dropdown.querySelector('a');
+            link.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    dropdown.classList.toggle('active');
+                }
+            });
+        });
+    
+        // Cerrar menú al cambiar el tamaño de la ventana
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                mobileMenuButton.classList.remove('active');
+                navMenu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    
+        // Agregar después de la inicialización de Firebase
+        document.getElementById('logoutButton').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                await signOut(auth);
+                console.log('Usuario cerró sesión');
+                window.location.href = '../index.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+            }
+        });
+    
+        // Toggle del menú desplegable
+        document.getElementById('userProfile').addEventListener('click', function(e) {
+            const dropdown = this.querySelector('.user-dropdown');
+            dropdown.classList.toggle('show');
+            e.stopPropagation();
+        });
+    
+        // Cerrar el menú al hacer clic fuera
+        document.addEventListener('click', function() {
+            const dropdowns = document.getElementsByClassName('user-dropdown');
+            for (const dropdown of dropdowns) {
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+    });
+    </script>
+
+<script>
+    // Funciones para el selector de idiomas
+    function toggleLanguageOptions() {
+        const selector = document.querySelector('.language-selector');
+        const options = document.getElementById('languageOptions');
+        selector.classList.toggle('active');
+        options.classList.toggle('show');
+    }
+
+    function changeLanguage(lang) {
+        const currentFlag = document.getElementById('currentFlag');
+        const currentLanguage = document.getElementById('currentLanguage');
+        const options = document.getElementById('languageOptions');
+        
+        // Actualizar el botón con el idioma seleccionado
+        currentFlag.src = `../Resource/flags/${lang}.png`;
+        currentLanguage.textContent = {
+            'es': 'Español',
+            'en': 'English',
+            'pt': 'Português',
+            'zh': '中文',
+            'ja': '日本語',
+            'it': 'Italiano'
+        }[lang];
+        
+        // Ocultar las opciones
+        options.classList.remove('show');
+        
+        // Traducir el contenido
+        translatePage(lang);
+    }
+
+    // Objeto con las traducciones
+    const translations = {
+        'en': {
+            'Inicio': 'Home',
+            'Para Tí': 'For You',
+            'Proyectos': 'Projects',
+            'Casas de Playa en Venta / Alquiler': 'Beach Houses for Sale / Rent',
+            'Proyecto Benavides 1': 'Benavides Project 1',
+            'Proyecto Benavides 2': 'Benavides Project 2',
+            'Proyecto Sienna': 'Sienna Project',
+            'Proyecto Varsovia': 'Varsovia Project',
+            'Mas Proyectos': 'More Projects',
+            'Contacto': 'Contact',
+            'Información': 'Information',
+            'Agenda Una Reunión': 'Schedule a Meeting',
+            'Cotizar Proyecto': 'Quote Project',
+            'BIENVENIDO A POLYLINE': 'WELCOME TO POLYLINE',
+            'Proyectos inmobiliarios creados para ti.': 'Real estate projects created for you.',
+            'Login': 'Login',
+            'Perfil': 'Profile',
+            'Cerrar Sesión': 'Logout',
+            'Seleccione su método de pago': 'Select your payment method',
+            'Transferencia Bancaria': 'Bank Transfer',
+            'Realice una transferencia directa a nuestra cuenta bancaria': 'Make a direct transfer to our bank account',
+            'Copiar número de cuenta': 'Copy account number',
+            'Pago con Yape': 'Pay with Yape',
+            'Pague fácilmente usando Yape': 'Pay easily using Yape',
+            'Detalles de Transferencia': 'Transfer Details',
+            'Banco': 'Bank',
+            'Cuenta': 'Account',
+            'Titular': 'Account Holder',
+            'Número de operación': 'Operation number',
+            'Monto transferido': 'Amount transferred',
+            'Confirmar pago': 'Confirm payment',
+            'Propietario:': 'Owner:',
+            'Número:': 'Number:',
+            'Número de operación Yape': 'Yape operation number',
+            'Procesando pago...': 'Processing payment...',
+            'Fecha:': 'Date',
+            'Hora:': 'Time',
+            'Método:': 'Method',
+            'N° Operación:': 'Operation #',
+            'Monto:': 'Amount',
+            'Copiar número': 'Copy number',
+            'Descargar Boleta': 'Download Receipt',
+            'Detalles del Pago': 'Payment Details'
+        },
+        'pt': {
+            'Inicio': 'Início',
+            'Para Tí': 'Para Você',
+            'Proyectos': 'Projetos',
+            'Casas de Playa en Venta / Alquiler': 'Casas de Praia à Venda / Aluguel',
+            'Proyecto Benavides 1': 'Benavides Projeto 1',
+            'Proyecto Benavides 2': 'Benavides Projeto 2',
+            'Proyecto Sienna': 'Sienna Projeto',
+            'Proyecto Varsovia': 'Varsovia Projeto',
+            'Mas Proyectos': 'Mais Projetos',
+            'Contacto': 'Contato',
+            'Información': 'Informações',
+            'Agenda Una Reunión': 'Agendar uma Reunião',
+            'Cotizar Proyecto': 'Orçar Projeto',
+            'BIENVENIDO A POLYLINE': 'BEM-VINDO À POLYLINE',
+            'Proyectos inmobiliarios creados para ti.': 'Projetos imobiliários criados para você.',
+            'Login': 'Entrar',
+            'Perfil': 'Perfil',
+            'Cerrar Sesión': 'Sair',
+            'Seleccione su método de pago': 'Selecione seu método de pagamento',
+            'Transferencia Bancaria': 'Transferência Bancária',
+            'Realice una transferencia directa a nuestra cuenta bancaria': 'Faça uma transferência direta para nossa conta bancária',
+            'Copiar número de cuenta': 'Copiar número da conta',
+            'Pago con Yape': 'Pagamento com Yape',
+            'Pague fácilmente usando Yape': 'Pague facilmente usando Yape',
+            'Detalles de Transferencia': 'Detalhes da Transferência',
+            'Banco': 'Banco',
+            'Cuenta': 'Conta',
+            'Titular': 'Titular',
+            'Número de operación': 'Número da operação',
+            'Monto transferido': 'Valor transferido',
+            'Confirmar pago': 'Confirmar pagamento',
+            'Propietario:': 'Proprietário:',
+            'Número:': 'Número:',
+            'Número de operación Yape': 'Número da operação Yape',
+            'Procesando pago...': 'Processando pagamento...',
+            'Fecha:': 'Data',
+            'Hora:': 'Hora',
+            'Método:': 'Método',
+            'N° Operación:': 'Nº Operação',
+            'Monto': 'Valor',
+            'Copiar número': 'Copiar número',
+            'Descargar Boleta': 'Baixar Recibo',
+            'Detalles del Pago': 'Detalhes do Pagamento'
+        },
+        'zh': {
+            'Inicio': '首页',
+            'Para Tí': '为您服务',
+            'Proyectos': '项目',
+            'Casas de Playa en Venta / Alquiler': '出售/出租房屋',
+            'Proyecto Benavides 1': '贝纳维德斯项目 1',
+            'Proyecto Benavides 2': '贝纳维德斯项目 2',
+            'Proyecto Sienna': '锡耶纳项目',
+            'Proyecto Varsovia': '华沙项目',
+            'Mas Proyectos': '更多项目',
+            'Contacto': '联系我们',
+            'Información': '信息',
+            'Agenda Una Reunión': '预约会议',
+            'Cotizar Proyecto': '项目报价',
+            'BIENVENIDO A POLYLINE': '欢迎来到POLYLINE',
+            'Proyectos inmobiliarios creados para ti.': '为您定制的房地产项目',
+            'Login': '登录',
+            'Perfil': '个人中心',
+            'Cerrar Sesión': '退出登录',
+            'Seleccione su método de pago': '请选择您的付款方式',
+            'Transferencia Bancaria': '银行转账',
+            'Realice una transferencia directa a nuestra cuenta bancaria': '直接转账到我们的银行账户',
+            'Copiar número de cuenta': '复制账户号码',
+            'Pago con Yape': '使用Yape付款',
+            'Pague fácilmente usando Yape': '使用Yape轻松付款',
+            'Detalles de Transferencia': '转账详情',
+            'Banco': '银行',
+            'Cuenta': '账户',
+            'Titular': '持有人',
+            'Número de operación': '交易编号',
+            'Monto transferido': '转账金额',
+            'Confirmar pago': '确认付款',
+            'Propietario:': '所有者：',
+            'Número:': '号码：',
+            'Número de operación Yape': 'Yape交易编号',
+            'Procesando pago...': '正在处理付款...',
+            'Fecha:': '日期',
+            'Hora:': '时间',
+            'Método:': '方式',
+            'N° Operación:': '交易编号',
+            'Monto:': '金额',
+            'Copiar número': '复制号码',
+            'Descargar Boleta': '下载收据',
+            'Detalles del Pago': '付款详情'
+        },
+        'ja': {
+            'Inicio': 'ホーム',
+            'Para Tí': 'あなたのために', 
+            'Proyectos': 'プロジェクト',
+            'Casas de Playa en Venta / Alquiler': ' 販売/賃貸ビーチハウス',
+            'Proyecto Benavides 1': 'ベナビデス・プロジェクト1',
+            'Proyecto Benavides 2': 'ベナビデス・プロジェクト2',
+            'Proyecto Sienna': 'シエナ・プロジェクト',
+            'Proyecto Varsovia': 'ワルシャワ・プロジェクト',
+            'Mas Proyectos': 'もっとプロジェクト',
+            'Contacto': 'お問い合わせ',
+            'Información': '情報',
+            'Agenda Una Reunión': '面談予約',
+            'Cotizar Proyecto': '見積もり依頼',
+            'BIENVENIDO A POLYLINE': 'POLYLINEへようこそ',
+            'Proyectos inmobiliarios creados para ti.': 'お客様のための不動産プロジェクト',
+            'Login': 'ログイン',
+            'Perfil': 'プロフィール',
+            'Cerrar Sesión': 'ログアウト',
+            'Seleccione su método de pago': 'お支払い方法を選択してください',
+            'Transferencia Bancaria': '銀行振込',
+            'Realice una transferencia directa a nuestra cuenta bancaria': '当社の銀行口座に直接振り込みを行ってください',
+            'Copiar número de cuenta': '口座番号をコピー',
+            'Pago con Yape': 'Yapeで支払う',
+            'Pague fácilmente usando Yape': 'Yapeで簡単に支払い',
+            'Detalles de Transferencia': '振込詳細',
+            'Banco': '銀行',
+            'Cuenta': '口座',
+            'Titular': '名義人',
+            'Número de operación': '取引番号',
+            'Monto transferido': '振込金額',
+            'Confirmar pago': '支払いを確認',
+            'Propietario:': '所有者：',
+            'Número:': '番号：',
+            'Número de operación Yape': 'Yape取引番号',
+            'Procesando pago...': '支払い処理中...',
+            'Fecha:': '日付',
+            'Hora:': '時間',
+            'Método:': '方法',
+            'N° Operación:': '取引番号',
+            'Monto:': '金額',
+            'Copiar número': '番号をコピー',
+            'Descargar Boleta': '領収書をダウンロード',
+            'Detalles del Pago': '支払い詳細'
+        },
+        'it': {
+            'Inicio': 'Home',
+            'Para Tí': 'Per Te', 
+            'Proyectos': 'Progetti',
+            'Casas de Playa en Venta / Alquiler': 'Case in Spiaggia in Vendita / Affitto',
+            'Proyecto Benavides 1': 'Progetto Benavides 1',
+            'Proyecto Benavides 2': 'Progetto Benavides 2',
+            'Proyecto Sienna': 'Progetto Sienna',
+            'Proyecto Varsovia': 'Progetto Varsovia',
+            'Mas Proyectos': 'Altri Progetti',
+            'Contacto': 'Contatti',
+            'Información': 'Informazioni', 
+            'Agenda Una Reunión': 'Prenota un Appuntamento',
+            'Cotizar Proyecto': 'Richiedi un Preventivo',
+            'BIENVENIDO A POLYLINE': 'BENVENUTO A POLYLINE',
+            'Proyectos inmobiliarios creados para ti.': 'Progetti immobiliari creati per te.',
+            'Login': 'Accedi',
+            'Perfil': 'Profilo',
+            'Cerrar Sesión': 'Disconnetti',
+            'Seleccione su método de pago': 'Seleziona il metodo di pagamento',
+            'Transferencia Bancaria': 'Bonifico Bancario',
+            'Realice una transferencia directa a nuestra cuenta bancaria': 'Effettua un bonifico diretto sul nostro conto bancario',
+            'Copiar número de cuenta': 'Copia numero di conto',
+            'Pago con Yape': 'Paga con Yape',
+            'Pague fácilmente usando Yape': 'Paga facilmente con Yape',
+            'Detalles de Transferencia': 'Dettagli del Bonifico',
+            'Banco': 'Banca',
+            'Cuenta': 'Conto',
+            'Titular': 'Intestatario',
+            'Número de operación': 'Numero di operazione',
+            'Monto transferido': 'Importo trasferito',
+            'Confirmar pago': 'Conferma pagamento',
+            'Propietario:': 'Proprietario:',
+            'Número:': 'Numero:',
+            'Número de operación Yape': 'Numero di operazione Yape',
+            'Procesando pago...': 'Elaborazione del pagamento...',
+            'Fecha:': 'Data',
+            'Hora:': 'Ora',
+            'Método:': 'Metodo',
+            'N° Operación:': 'N° Operazione',
+            'Monto:': 'Importo',
+            'Copiar número': 'Copia numero',
+            'Descargar Boleta': 'Scarica ricevuta',
+            'Detalles del Pago': 'Dettagli del pagamento'
+        }
+    };
+
+    function translatePage(lang) {
+        if (lang === 'es') {
+            location.reload();
+            return;
+        }
+
+        // Usar un fragmento de documento para optimizar las manipulaciones del DOM
+        const fragment = document.createDocumentFragment();
+        const elements = document.querySelectorAll('[data-translate]');
+        
+        // Procesar elementos en lotes para evitar bloqueo del navegador
+        const batchSize = 10;
+        let currentBatch = 0;
+
+        function processBatch() {
+            const start = currentBatch * batchSize;
+            const end = Math.min(start + batchSize, elements.length);
+            
+            for (let i = start; i < end; i++) {
+                const element = elements[i];
+                const key = element.getAttribute('data-translate');
+                
+                if (translations[lang]?.[key]) {
+                    if (element.tagName.toLowerCase() === 'input' || 
+                        element.tagName.toLowerCase() === 'textarea') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        const isTextOnly = element.innerHTML.trim() === element.textContent.trim();
+                        element[isTextOnly ? 'textContent' : 'innerHTML'] = translations[lang][key];
+                    }
+                }
+            }
+
+            currentBatch++;
+            
+            if (currentBatch * batchSize < elements.length) {
+                requestAnimationFrame(processBatch);
+            } else {
+                // Actualizar título después de procesar todas las traducciones
+                document.title = {
+                    'en': 'POLYLINE - Construction Company',
+                    'pt': 'POLYLINE - Construtora',
+                    'zh': 'POLYLINE - 建筑公司',
+                    'ja': 'POLYLINE - 建設会社',
+                    'it': 'POLYLINE - Società di costruzioni'
+                }[lang] || 'POLYLINE - Constructora';
+
+                // Reinicializar animaciones solo si es necesario
+                if (typeof anime !== 'undefined' && typeof wrapLetters === 'function') {
+                    requestAnimationFrame(() => {
+                        const mainText = document.querySelector('.letters-main');
+                        const subText = document.querySelector('.letters-sub');
+                        
+                        if (mainText) mainText.style.opacity = '1';
+                        if (subText) subText.style.opacity = '1';
+                        
+                        wrapLetters('.letters-main');
+                        wrapLetters('.letters-sub');
+                        
+                        // Usar requestAnimationFrame para las animaciones
+                        requestAnimationFrame(() => {
+                            anime.timeline({
+                                loop: false,
+                                easing: 'easeOutExpo'
+                            })
+                            .add({
+                                targets: '.hero-title .letter',
+                                translateY: ["1.1em", 0],
+                                translateX: ["0.55em", 0],
+                                rotateZ: [180, 0],
+                                duration: 600,
+                                delay: anime.stagger(40)
+                            })
+                            .add({
+                                targets: '.hero-subtitle .letter',
+                                opacity: [0, 1],
+                                duration: 800,
+                                delay: anime.stagger(20),
+                                offset: '-=400'
+                            });
+                        });
+                    });
+                }
+            }
+        }
+
+        // Iniciar el procesamiento por lotes
+        requestAnimationFrame(processBatch);
+    }
+
+    // Cerrar el menú de idiomas cuando se hace clic fuera
+    document.addEventListener('click', function(event) {
+        const languageSelector = document.querySelector('.language-selector');
+        const languageOptions = document.getElementById('languageOptions');
+        
+        if (!languageSelector.contains(event.target)) {
+            languageOptions.classList.remove('show');
+        }
+    });
+</script>
+    <script src="../js/pago.js"></script>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { auth, db } from '../js/firebase-config.js';
+        import { 
+            collection, 
+            addDoc, 
+            serverTimestamp,
+            query,
+            where,
+            getDocs
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Generar número de operación único
+        function generateOperationNumber() {
+            const timestamp = Date.now().toString();
+            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `OP-${timestamp}-${random}`;
+        }
+
+        // Manejar el formulario de transferencia
+        const transferForm = document.getElementById('transfer-form');
+        if (transferForm) {
+            const operationInput = transferForm.querySelector('.operation-input');
+            operationInput.value = generateOperationNumber();
+
+            transferForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const modal = document.getElementById('paymentModal');
+                const loader = modal.querySelector('.loader');
+                const receiptDetails = modal.querySelector('.receipt-details');
+                const modalText = modal.querySelector('.modal-text');
+
+                try {
+                    // Mostrar modal de carga
+                    modal.style.display = 'flex';
+                    loader.style.display = 'block';
+                    receiptDetails.style.display = 'none';
+                    modalText.textContent = 'Procesando pago...';
+
+                    // Obtener datos del formulario
+                    const operationNumber = operationInput.value;
+                    const amount = transferForm.querySelector('input[type="number"]').value;
+
+                    // Guardar transacción en Firebase
+                    const transactionData = {
+                        id: operationNumber,
+                        usuario: auth.currentUser ? auth.currentUser.email : 'Anónimo',
+                        monto: parseFloat(amount),
+                        metodoPago: 'Transferencia Bancaria',
+                        estado: 'Pendiente',
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    };
+
+                    await addDoc(collection(db, 'transacciones'), transactionData);
+
+                    // Mostrar detalles del recibo
+                    loader.style.display = 'none';
+                    receiptDetails.style.display = 'block';
+                    modalText.textContent = '¡Pago registrado exitosamente!';
+
+                    // Llenar detalles del recibo
+                    document.getElementById('paymentDate').textContent = new Date().toLocaleDateString();
+                    document.getElementById('paymentTime').textContent = new Date().toLocaleTimeString();
+                    document.getElementById('paymentMethod').textContent = 'Transferencia Bancaria';
+                    document.getElementById('operationNumber').textContent = operationNumber;
+                    document.getElementById('paymentAmount').textContent = `S/ ${amount}`;
+
+                } catch (error) {
+                    console.error('Error al procesar el pago:', error);
+                    modalText.textContent = 'Error al procesar el pago. Por favor, intente nuevamente.';
+                    loader.style.display = 'none';
+                }
+            });
+        }
+
+        // Manejar el formulario de Yape
+        const yapeForm = document.getElementById('yape-form');
+        if (yapeForm) {
+            const operationInput = yapeForm.querySelector('.operation-input');
+            operationInput.value = generateOperationNumber();
+
+            yapeForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const modal = document.getElementById('paymentModal');
+                const loader = modal.querySelector('.loader');
+                const receiptDetails = modal.querySelector('.receipt-details');
+                const modalText = modal.querySelector('.modal-text');
+
+                try {
+                    // Mostrar modal de carga
+                    modal.style.display = 'flex';
+                    loader.style.display = 'block';
+                    receiptDetails.style.display = 'none';
+                    modalText.textContent = 'Procesando pago...';
+
+                    // Obtener datos del formulario
+                    const operationNumber = operationInput.value;
+
+                    // Guardar transacción en Firebase
+                    const transactionData = {
+                        id: operationNumber,
+                        usuario: auth.currentUser ? auth.currentUser.email : 'Anónimo',
+                        monto: 0, // El monto se actualizará cuando se confirme el pago
+                        metodoPago: 'Yape',
+                        estado: 'Pendiente',
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    };
+
+                    await addDoc(collection(db, 'transacciones'), transactionData);
+
+                    // Mostrar detalles del recibo
+                    loader.style.display = 'none';
+                    receiptDetails.style.display = 'block';
+                    modalText.textContent = '¡Pago registrado exitosamente!';
+
+                    // Llenar detalles del recibo
+                    document.getElementById('paymentDate').textContent = new Date().toLocaleDateString();
+                    document.getElementById('paymentTime').textContent = new Date().toLocaleTimeString();
+                    document.getElementById('paymentMethod').textContent = 'Yape';
+                    document.getElementById('operationNumber').textContent = operationNumber;
+                    document.getElementById('paymentAmount').textContent = 'Pendiente de confirmación';
+
+                } catch (error) {
+                    console.error('Error al procesar el pago:', error);
+                    modalText.textContent = 'Error al procesar el pago. Por favor, intente nuevamente.';
+                    loader.style.display = 'none';
+                }
+            });
+        }
+
+        // Manejar botones de copiar
+        document.querySelectorAll('.copy-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const textToCopy = button.getAttribute('data-copy');
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = button.textContent;
+                    button.textContent = '¡Copiado!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 2000);
+                });
+            });
+        });
+
+        // Manejar cierre del modal
+        const modalClose = document.querySelector('.modal-close');
+        if (modalClose) {
+            modalClose.addEventListener('click', () => {
+                document.getElementById('paymentModal').style.display = 'none';
+            });
+        }
+
+        // Manejar descarga de PDF
+        const downloadButton = document.getElementById('downloadPdf');
+        if (downloadButton) {
+            downloadButton.addEventListener('click', () => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Agregar logo
+                const logo = new Image();
+                logo.src = '../Resource/Logo/logo.png';
+                doc.addImage(logo, 'PNG', 10, 10, 30, 30);
+
+                // Agregar información de la empresa
+                doc.setFontSize(16);
+                doc.text('POLYLINE S.A.C', 50, 20);
+                doc.setFontSize(10);
+                doc.text('RUC: 20603042521', 50, 30);
+
+                // Agregar detalles del pago
+                doc.setFontSize(14);
+                doc.text('Comprobante de Pago', 105, 50, { align: 'center' });
+
+                doc.setFontSize(12);
+                doc.text(`Fecha: ${document.getElementById('paymentDate').textContent}`, 20, 70);
+                doc.text(`Hora: ${document.getElementById('paymentTime').textContent}`, 20, 80);
+                doc.text(`Método: ${document.getElementById('paymentMethod').textContent}`, 20, 90);
+                doc.text(`N° Operación: ${document.getElementById('operationNumber').textContent}`, 20, 100);
+                doc.text(`Monto: ${document.getElementById('paymentAmount').textContent}`, 20, 110);
+
+                // Guardar PDF
+                doc.save('comprobante-pago.pdf');
+            });
+        }
+    </script>
+</body>
+</html>

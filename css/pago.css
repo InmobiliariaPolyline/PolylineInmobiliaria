@@ -1,0 +1,307 @@
+.payment-form {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.475);
+}
+
+@media (max-width: 768px) {
+    .payment-form {
+        max-width: 100%;
+        margin: 0.5rem;
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .payment-methods {
+        flex-direction: column;
+    }
+
+    .payment-method {
+        padding: 1rem;
+    }
+
+    .payment-method-header {
+        gap: 0.5rem;
+    }
+
+    .payment-method-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    .payment-info {
+        padding: 1rem;
+    }
+}
+
+.payment-methods {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.payment-method {
+    flex: 1;
+    padding: 1.5rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.payment-method.active {
+    border-color: #FF6B00;
+    background: #f8fff8;
+}
+
+.payment-method-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.payment-method-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.payment-details {
+    margin-top: 2rem;
+    opacity: 0;
+}
+
+.payment-info {
+    background: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.submit-button {
+    background: #FF6B00;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    width: 100%;
+    transition: background 0.3s ease;
+}
+
+.submit-button:hover {
+    background: #fa9d5a;
+}
+
+.bank-info {
+    background: #f5f5f5;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.bank-info p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+.copy-button {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.payment-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    /* background: white; */
+    /* color: #333; */
+    /* Elimina fondo y color para heredar del global */
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    transform: scale(0.8);
+    opacity: 0;
+    min-width: 400px;
+    position: relative;
+}
+
+.loader {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #4CAF50;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+}
+
+.modal-text {
+    font-size: 1.2rem;
+    color: #333;
+    margin: 0;
+}
+
+.operation-number {
+    font-family: monospace;
+    font-size: 1.2rem;
+    color: #2196F3;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.operation-input {
+    background-color: #f8f9fa;
+    font-family: monospace;
+    font-size: 1.1rem;
+    color: #2196F3;
+    cursor: default;
+    user-select: all;
+}
+
+.operation-input:focus {
+    outline: 2px solid #2196F3;
+    background-color: #f8f9fa;
+}
+
+.yape-qr {
+    width: 200px; 
+    margin: 1rem auto; 
+    display: block;
+    box-shadow: 2px 4px 8px #333;
+}
+
+.receipt-details {
+    margin-top: 1.5rem;
+    text-align: left;
+    border-top: 1px solid #eee;
+    padding-top: 1.5rem;
+}
+
+.company-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.modal-logo {
+    width: 60px;
+    height: auto;
+}
+
+.company-info h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.company-info p {
+    margin: 0.2rem 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.payment-summary {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.payment-summary h4 {
+    margin: 0 0 1rem 0;
+    color: #2196F3;
+}
+
+.payment-summary p {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.download-button {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    transition: background 0.3s ease;
+}
+
+.download-button:hover {
+    background: #1976D2;
+}
+
+.modal-close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: #f5f5f5;
+    color: #333;
+}

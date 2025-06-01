@@ -1,0 +1,313 @@
+/*seccion de Proyecto Benavides 1*/
+
+
+.departamentos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    margin-top: -150%;
+}
+
+.departamento-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.656);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+body.dark-mode .departamento-card {
+    background: #1e1e1e;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.departamento-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.departamento-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: filter 0.3s;
+}
+
+
+.card-details {
+    padding: 20px;
+}
+
+.card-details h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    position: relative; /* Agregado para el hover */
+}
+
+.card-details h3::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background-color: #FF6B00;
+    transition: width 0.3s ease;
+}
+
+.departamento-card:hover .card-details h3::after {
+    width: 70%;
+}
+
+body.dark-mode .card-details h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+.card-details p {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #515050;
+}
+
+body.dark-mode .card-details p {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #d0d0d0;
+}
+
+
+.btn-details {
+    display: inline-block;
+    text-decoration: none;
+    padding: 10px 20px;
+    color: white;
+    background: #e67e22;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.btn-details:hover {
+    background: #9d5a0e;
+    transform: scale(1.1);
+}
+
+.btn-details, .btn-separate {
+    display: inline-block;
+    padding: 8px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn-details {
+    background: #e67e22;
+    color: white;
+}
+
+.btn-separate {
+    background: #28a745;
+    color: white;
+}
+
+.btn-details:hover, .btn-separate:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* Estilos para el contador */
+.launch-countdown {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 50px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin: 0 auto 150%; /* Aumentado de 150px a 200px para mayor separación */
+    max-width: 800px;
+    text-align: center;
+}
+
+.countdown-title {
+    margin-bottom: 20px;
+}
+
+.shine-text {
+    font-size: 1.8em;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+}
+
+.countdown {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.time-block {
+    background: linear-gradient(145deg, #e67d22a7, #9a54173f);
+    padding: 15px;
+    border-radius: 15px;
+    min-width: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.time-block span {
+    display: block;
+    color: white;
+}
+
+.time-block .days,
+.time-block .hours,
+.time-block .minutes,
+.time-block .seconds {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.time-block .label {
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+.countdown-description {
+    margin-top: 20px;
+    padding: 15px;
+    color: #666;
+    font-size: 1.1em;
+    line-height: 1.6;
+    text-align: center;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.countdown-highlight {
+    color: #007bff;
+    font-weight: 600;
+}
+
+@media screen and (max-width: 768px)    {
+
+    .departamentos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        margin-top: -150%;
+    }
+    
+    .departamento-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.656);
+        transition: transform 0.3s, box-shadow 0.3s;
+       
+    }
+
+    body.dark-mode .departamento-card {
+        background: #1e1e1e;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .departamento-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .departamento-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        transition: filter 0.3s;
+    }
+
+
+    .card-details {
+        padding: 20px;
+    }
+
+    .card-details h3 {
+        margin: 0 0 10px 0;
+        color: #333;
+        position: relative; /* Agregado para el hover */
+    }
+    .main-title {
+        word-break: break-word;
+        width: 85%;
+        margin: 0 auto;
+        
+    }
+
+    .download-btn{
+        background: #d37a2d;
+        color: white;
+        width: 200%;
+        border-radius: 15px;
+        text-decoration: none;
+        padding: 10px 20px;
+        transition: background 0.3s, transform 0.3s;
+    }
+    .tipologia-imagen{
+        display: block;
+        width: 70%;
+        margin-bottom: 20px;
+        border-radius: 15px;        
+        transition: filter 0.3s;
+        box-shadow: #666;
+    }
+    
+    
+    
+}
+
+/* MODO OSCURO PARA MAS PROYECTOS */
+body.modo-oscuro {
+    background: #101026 !important;
+    color: #f5f5f5 !important;
+}
+body.modo-oscuro .container {
+    background: #18182a !important;
+    color: #f5f5f5 !important;
+}
+body.modo-oscuro .section-title,
+body.modo-oscuro .section-description {
+    color: #f5f5f5 !important;
+}
+body.modo-oscuro .mas-proyecto-bloque {
+    background: #23233a !important;
+    border-color: #33334d !important;
+    color: #f5f5f5 !important;
+}
+body.modo-oscuro .mas-proyecto-info h3 {
+    color: #fff !important;
+}
+body.modo-oscuro .mas-proyecto-info p {
+    color: #e0e0e0 !important;
+}
+body.modo-oscuro .seccion-footer,
+body.modo-oscuro .bloque-contacto,
+body.modo-oscuro .bloque-logo .texto-copyright {
+    background: #18182a !important;
+    color: #f5f5f5 !important;
+}
+body.modo-oscuro .social-btn {
+    filter: brightness(0.85);
+}
+body.modo-oscuro .fa-chevron-down {
+    color: #f5f5f5 !important;
+}

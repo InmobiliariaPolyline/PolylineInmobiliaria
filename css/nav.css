@@ -1,0 +1,77 @@
+/* Ajustes base para la navegación móvil */
+@media screen and (max-width: 768px) {
+    .nav-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        height: 100vh;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        transition: 0.3s ease-in-out;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    .nav-menu.active {
+        right: 0;
+    }
+
+    .mobile-menu-button {
+        display: block;
+    }
+}
+
+/* iPhone SE, 5, 5S */
+@media screen and (max-width: 320px) {
+    .nav-menu {
+        width: 90%;
+    }
+    
+    .company-name {
+        font-size: 1.2em;
+    }
+    
+    .slogan {
+        font-size: 0.8em;
+    }
+}
+
+/* iPhone 6, 7, 8 */
+@media screen and (min-width: 321px) and (max-width: 375px) {
+    .logo-container {
+        padding: 0.5rem;
+    }
+    
+    .logo {
+        width: 40px;
+    }
+}
+
+/* iPhone X+ */
+@media screen and (min-width: 375px) and (max-width: 428px) {
+    .nav-menu {
+        padding-top: env(safe-area-inset-top);
+    }
+}
+
+/* Ajustes generales de navegación móvil */
+@media screen and (max-width: 768px) {
+    .dropdown-menu {
+        position: static;
+        width: 100%;
+        background: transparent;
+        box-shadow: none;
+    }
+    
+    .language-selector {
+        position: static;
+        width: 100%;
+    }
+    
+    .language-options {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+    }
+}

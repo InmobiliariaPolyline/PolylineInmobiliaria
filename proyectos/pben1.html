@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>POLYLINE - Constructora</title>
+    <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/departamentos.css">
+    <link rel="stylesheet" href="../css/idiomas.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="module" src="../js/Login_Perfil.js"></script>
+
+    <!-- Add Anime.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        .animated-title {
+            position: relative;
+            padding: 40px 0;
+            text-align: center;
+            perspective: 1000px;
+            margin-bottom: 50px;
+        }
+        
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            transform-origin: center;
+            font-size: 3.5em; /* Increased size */
+            font-weight: bold;
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: text-shadow 0.3s;
+        }
+
+        .letter:hover {
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            opacity: 0;
+            font-size: 2em; /* Increased size */
+            color: #505050;
+            margin-top: 20px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* New styles for cards enhancement */
+        .departamento-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .departamento-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-details, .btn-separate {
+            transition: all 0.3s;
+        }
+
+        .btn-details:hover, .btn-separate:hover {
+            transform: scale(1.05);
+        }
+    </style>
+
+<style>
+
+    /* Animación para el menú desplegable en móvil */
+    @media screen and (max-width: 768px) {
+        .user-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .user-dropdown.show {
+            max-height: 300px;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        #loginContainer {
+            width: 100%;
+            padding: 10px 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #loginLink {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        #userProfile {
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .user-dropdown {
+            position: static;
+            width: 100%;
+            background: transparent;
+            box-shadow: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .user-dropdown a {
+            padding: 10px 15px;
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #userName {
+            margin: 10px 0;
+            font-size: 1em;
+            color: white;
+        }
+    }
+</style>
+
+
+</head>
+<body>
+    <header>
+        <!-- Botón de menú móvil -->
+        <button class="mobile-menu-button" aria-label="Menú">
+            <div class="hamburger"></div>
+        </button>
+        <div id="loading-screen" class="loading-screen">
+            <div class="logo-container">
+                <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+                <h1 class="company-name">POLYLINE</h1>
+                <p class="slogan">CONSTRUCTORA</p>
+            </div>
+        </div>
+        <div class="logo-container">
+            <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+            <h1 class="company-name">POLYLINE</h1>
+            <p class="slogan"> CONSTRUCTORA</p>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="language-selector">
+                    <button class="language-btn" onclick="toggleLanguageOptions()">
+                        <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
+                        <span id="currentLanguage">Español</span>
+                    </button>
+                    <div class="language-options" id="languageOptions">
+                        <div class="language-option" onclick="changeLanguage('es')">
+                            <img src="../Resource/flags/es.png" alt="Español">
+                            <span>Español</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('en')">
+                            <img src="../Resource/flags/en.png" alt="English">
+                            <span>English</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('pt')">
+                            <img src="../Resource/flags/pt.png" alt="Português">
+                            <span>Português</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('zh')">
+                            <img src="../Resource/flags/zh.png" alt="中文">
+                            <span>中文</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('ja')">
+                            <img src="../Resource/flags/ja.png" alt="日本語">
+                            <span>日本語</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('it')">
+                            <img src="../Resource/flags/it.png" alt="Italiano">
+                            <span>Italiano</span>
+                        </div>
+                    </div>
+                </li>
+                <li><a class='active' data-translate='Inicio' href='../index.html'>Inicio</a></li>
+                <li><a href="../index.html#para-ti" data-translate="Para Tí">Para Tí</a></li>
+                <li class="dropdown">
+                    <a data-translate='Proyectos' href='proyectos.html' id='proyectos-link'>Proyectos</a>
+                    <ul class="dropdown-menu">
+                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
+                        <li><a data-translate='Proyecto Benavides 1' href='pben1.html'>Proyecto Benavides 1</a></li>
+                        <li><a data-translate='Proyecto Benavides 2' href='pben2.html'>Proyecto Benavides 2</a></li>
+                        <li><a data-translate='Proyecto Sienna' href='ppl1.html'>Proyecto Sienna</a></li>
+                        <li><a data-translate='Proyecto Varsovia' href='plin.html'>Proyecto Varsovia</a></li>
+                        <li><a data-translate='Mas Proyectos' href='mas-proyectos.html'>Mas Proyectos</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="../contact/informaci%c3%b3n.html" id="proyectos-link" data-translate="Contacto">Contacto</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../contact/informaci%c3%b3n.html" data-translate="Información">Información</a></li>
+                        <li><a href="../contact/agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
+                    </ul>
+                </li>
+                <li><a data-translate='Cotizar Proyecto' href='cotizar.html'>Cotizar Proyecto</a></li>
+                <li><a data-translate='Anuncios' href='Anuncios.html'>Anuncios</a></li>
+                <li id="translateContainer" class="translate-container">
+                    <div id="google_translate_element" title="Seleccionar idioma"></div>
+                </li>
+                <li id="loginContainer" class="mobile-login">
+                    <a class='login-link' href='../pages/login.html' id='loginLink'>
+                        <i class="fas fa-sign-in-alt"></i> 
+                        <span data-translate="Login">Login</span>
+                    </a>
+                    <div id="userProfile" style="display: none;">
+                        <div class="profile-header">
+                            <a id="profileLink" href='../pages/perfil.html' style='text-decoration: none; color: inherit;'>
+                                <i class="fas fa-user"></i>
+                                <span id="profileText" data-translate="Perfil">Perfil</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+        
+    <!-- Overlay para el menú móvil -->
+    <div class="menu-overlay"></div>
+        <!-- Sección de Proyectos -->
+        <section id="departamentos" class="departamentos-section">
+            <div class="animated-title">
+                <div class="main-title" data-translate="PROYECTO BENAVIDES 1">
+                    <span class="letter">P</span>
+                    <span class="letter">R</span>
+                    <span class="letter">O</span>
+                    <span class="letter">Y</span>
+                    <span class="letter">E</span>
+                    <span class="letter">C</span>
+                    <span class="letter">T</span>
+                    <span class="letter">O</span>
+                    <span class="letter">&nbsp;</span>
+                    <span class="letter">B</span>
+                    <span class="letter">E</span>
+                    <span class="letter">N</span>
+                    <span class="letter">A</span>
+                    <span class="letter">V</span>
+                    <span class="letter">I</span>
+                    <span class="letter">D</span>
+                    <span class="letter">E</span>
+                    <span class="letter">S</span>
+                    <span class="letter">&nbsp;</span>
+                    <span class="letter">1</span>
+                </div>
+                <div class="subtitle">EXCLUSIVOS DEPARTAMENTOS</div>
+            </div>
+            
+            <div class="launch-countdown">
+                <div class="countdown-title">
+                    <span class="shine-text" data-translate="ENTREGA INMEDIATA">ENTREGA INMEDIATA</span>
+                </div>
+            </div>
+
+            <div class="departamentos-grid">
+                <!-- Departamento 1 -->
+                <div class="departamento-card">
+                    <img src="../Resource/PBEN1/DEPA101/101.jpg" alt="Departamento 101" class="departamento-img">
+                    <div class="card-details">
+                        <h3 data-translate="Departamento 101 - DUPLEX">Departamento 101 - DUPLEX</h3>
+                        <p data-translate="3 Dormitorios, 2 Baños, 113.32 m²">3 Dormitorios, 2 Baños, 113.32 m²</p>
+                        <a href="#" class="btn-details" data-department="101" data-translate="Ver detalles">Ver detalles</a>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                </div>
+                
+                <!-- Layout emergente para detalles -->
+                <div id="detail-modal-101" class="modal hidden dark-mode">
+                    <div class="modal-content dark-mode">
+                        
+                        <!-- Botón para cerrar el modal -->
+                        <span class="close-btn" onclick="closeModal(101)">&times;</span>
+                        
+                        <!-- Contenedor principal del contenido (video o imagen) -->
+                        <div id="main-content-container" class="video-container dark-mode">
+                            <video id="main-content" controls autoplay muted>
+                                <source src="../Resource/PBEN1/DEPA101/101.mp4" type="video/mp4">
+                            </video>
+                            
+                        </div>
+
+                        <!-- Carrusel de imágenes -->
+                        <div class="image-carousel">
+                        
+                            
+                        <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+
+
+                            <div class="carousel-track">
+                                <!-- Ítem Principal -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA101/101.mp4', true, 101)">
+                                    <img src="../Resource/PBEN1/DEPA101/101.jpg" alt="Vista 0">
+                                </div>
+                                <!-- Ítem 1 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA101/1.jpg', false, 101)">
+                                    <img src="../Resource/PBEN1/DEPA101/1.jpg" alt="Vista 1">
+                                </div>
+                                <!-- Ítem 2 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA101/2.jpg', false, 101)">
+                                    <img src="../Resource/PBEN1/DEPA101/2.jpg" alt="Vista 2">
+                                </div>
+                                <!-- Ítem 3 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA101/3.jpg', false, 101)">
+                                    <img src="../Resource/PBEN1/DEPA101/3.jpg" alt="Vista 3">
+                                </div>
+                                <!-- Ítem 4 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA101/4.jpg', false, 101)">
+                                    <img src="../Resource/PBEN1/DEPA101/4.jpg" alt="Vista 4">
+                                </div>
+                                <!-- Ítem 5 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA101/5.jpg', false, 101)">
+                                    <img src="../Resource/PBEN1/DEPA101/5.jpg" alt="Vista 5">
+                                </div>
+                                <!-- Ítem 6 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA101/6.jpg', false, 101)">
+                                    <img src="../Resource/PBEN1/DEPA101/6.jpg" alt="Vista 6">
+                                </div>
+                                <!-- Ítem 7 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA101/7.jpg', false, 101)">
+                                    <img src="../Resource/PBEN1/DEPA101/7.jpg" alt="Vista 7">
+                                </div>
+                                <!-- Ítem 8 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA101/8.jpg', false, 101)">
+                                    <img src="../Resource/PBEN1/DEPA101/8.jpg" alt="Vista 8">
+                                </div>
+                            </div>
+
+                            <!-- Botón flecha derecha -->
+                            <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                            
+                                    
+                        </div>
+                        <!-- Segundo Modal para información -->
+                        <div id="info-modal-101" class="modal hidden">
+                            <div class="modal-content">
+                                <!-- Botón para cerrar el modal -->
+                                <span class="close-btn" onclick="closeInfoModal()">&times;</span>
+
+                                <!-- Contenido de información -->
+                                <div class="info-container">
+                                    <h2>Información del Departamento</h2>
+                                    <p>
+                                        Aquí puedes incluir la información detallada del departamento, como características, dimensiones,
+                                        precio, ubicación, y cualquier otro dato relevante.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                
+                <!-- Departamento 2 -->
+                <div class="departamento-card">
+                    <img src="../Resource/PBEN1/DEPA201/201.jpg" alt="Departamento 201" class="departamento-img">
+                    <div class="card-details">
+                        <h3 data-translate="Departamento 201">Departamento 201</h3>
+                        <p data-translate="3 Dormitorios, 2 Baños, 103.81 m²">3 Dormitorios, 2 Baños, 103.81 m²</p>
+                        <a href="#" class="btn-details" data-department="201" data-translate="Ver detalles">Ver detalles</a>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                </div>
+                <!-- Layout emergente para detalles -->
+                <div id="detail-modal-201" class="modal hidden dark-mode">
+                    <div class="modal-content dark-mode">
+                        
+                        <!-- Botón para cerrar el modal -->
+                        <span class="close-btn" onclick="closeModal(201)">&times;</span>
+                        
+                        <!-- Contenedor principal del contenido (video o imagen) -->
+                        <div id="main-content-container" class="video-container dark-mode">
+                            <video id="main-content" controls autoplay muted>
+                                <source src="../Resource/PBEN1/DEPA201/201.mp4" type="video/mp4">
+                            </video>
+                            
+                        </div>
+
+                        <!-- Carrusel de imágenes -->
+                        <div class="image-carousel">
+                            
+                            <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <div class="carousel-track">
+                                <!-- Ítem Principal -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA201/201.mp4', true, 201)">
+                                    <img src="../Resource/PBEN1/DEPA201/201.jpg" alt="Vista 0">
+                                </div>
+                                <!-- Ítem 1 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA201/1.jpg', false, 201)">
+                                    <img src="../Resource/PBEN1/DEPA201/1.jpg" alt="Vista 1">
+                                </div>
+                                <!-- Ítem 2 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA201/2.jpg', false, 201)">
+                                    <img src="../Resource/PBEN1/DEPA201/2.jpg" alt="Vista 2">
+                                </div>
+                                <!-- Ítem 3 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA201/3.jpg', false, 201)">
+                                    <img src="../Resource/PBEN1/DEPA201/3.jpg" alt="Vista 3">
+                                </div>
+                                <!-- Ítem 4 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA201/4.jpg', false, 201)">
+                                    <img src="../Resource/PBEN1/DEPA201/4.jpg" alt="Vista 4">
+                                </div>
+                               <!-- Ítem 5 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA201/5.jpg', false, 201)">
+                                    <img src="../Resource/PBEN1/DEPA201/5.jpg" alt="Vista 5">
+                                </div>
+                                <!-- Ítem 6 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA201/7.jpg', false, 201)">
+                                    <img src="../Resource/PBEN1/DEPA201/7.jpg" alt="Vista 7">
+                                </div>
+                               
+                                
+                           
+                            </div>
+
+                            <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                            
+                        </div>
+                        <!-- Segundo Modal para información -->
+                        <div id="info-modal-201" class="modal hidden">
+                            <div class="modal-content">
+                                <!-- Botón para cerrar el modal -->
+                                <span class="close-btn" onclick="closeInfoModal()">&times;</span>
+
+                                <!-- Contenido de información -->
+                                <div class="info-container">
+                                    <h2>Información del Departamento</h2>
+                                    <p>
+                                        Aquí puedes incluir la información detallada del departamento, como características, dimensiones,
+                                        precio, ubicación, y cualquier otro dato relevante.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+
+                <!-- Departamento 3 -->
+                <div class="departamento-card">
+                    <img src="../Resource/PBEN1/DEPA202/202.jpg" alt="Departamento 202" class="departamento-img">
+                    <div class="card-details">
+                        <h3 data-translate="Departamento 202">Departamento 202</h3>
+                        <p data-translate="2 Dormitorios, 2 Baños, 75.40 m²">2 Dormitorios, 2 Baños, 75.40 m²</p>
+                        <a href="#" class="btn-details" data-department="202" data-translate="Ver detalles">Ver detalles</a>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                </div>
+                <!-- Layout emergente para detalles -->
+                <div id="detail-modal-202" class="modal hidden dark-mode">
+                    <div class="modal-content dark-mode">
+                        
+                        <!-- Botón para cerrar el modal -->
+                        <span class="close-btn" onclick="closeModal(202)">&times;</span>
+                        
+                        <!-- Contenedor principal del contenido (video o imagen) -->
+                        <div id="main-content-container" class="video-container dark-mode">
+                            <video id="main-content" controls autoplay muted>
+                                <source src="../Resource/PBEN1/DEPA202/202.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="image-carousel">
+                            <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <div class="carousel-track">
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA202/202.mp4', true, 202)">
+                                    <img src="../Resource/PBEN1/DEPA202/202.jpg" alt="Vista 0">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA202/1.jpg', false, 202)">
+                                    <img src="../Resource/PBEN1/DEPA202/1.jpg" alt="Vista 1">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA202/2.jpg', false, 202)">
+                                    <img src="../Resource/PBEN1/DEPA202/2.jpg" alt="Vista 2">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA202/3.jpg', false, 202)">
+                                    <img src="../Resource/PBEN1/DEPA202/3.jpg" alt="Vista 3">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA202/4.jpg', false, 202)">
+                                    <img src="../Resource/PBEN1/DEPA202/4.jpg" alt="Vista 4">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA202/5.jpg', false, 202)">
+                                    <img src="../Resource/PBEN1/DEPA202/5.jpg" alt="Vista 5">
+                                </div>
+                            </div>
+                            <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>
+                                
+                    </div>
+                     <!-- Segundo Modal para información -->
+                     <div id="info-modal-201" class="modal hidden">
+                        <div class="modal-content">
+                            <!-- Botón para cerrar el modal -->
+                            <span class="close-btn" onclick="closeInfoModal()">&times;</span>
+
+                            <!-- Contenido de información -->
+                            <div class="info-container">
+                                <h2>Información del Departamento</h2>
+                                <p>
+                                    Aquí puedes incluir la información detallada del departamento, como características, dimensiones,
+                                    precio, ubicación, y cualquier otro dato relevante.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <!-- Departamento 4 -->
+                <div class="departamento-card">
+                    <img src="../Resource/PBEN1/DEPA301/301.jpg" alt="Departamento 301" class="departamento-img">
+                    <div class="card-details">
+                        <h3 data-translate="Departamento 301 - DUPLEX">Departamento 301 - DUPLEX</h3>
+                        <p data-translate="3 Dormitorios, 2 Baños, 113.32 m²">3 Dormitorios, 2 Baños, 113.32 m²</p>
+                        <a href="#" class="btn-details" data-department="301" data-translate="Ver detalles">Ver detalles</a>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                </div>
+                <!-- Layout emergente para detalles -->
+                <div id="detail-modal-301" class="modal hidden dark-mode">
+                    <div class="modal-content dark-mode">
+                        
+                        <!-- Botón para cerrar el modal -->
+                        <span class="close-btn" onclick="closeModal(301)">&times;</span>
+                        
+                        <!-- Contenedor principal del contenido (video o imagen) -->
+                        <div id="main-content-container" class="video-container dark-mode">
+                            <video id="main-content" controls autoplay muted>
+                                <source src="../Resource/PBEN1/DEPA301/301.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="image-carousel">
+                          
+                            <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+
+                            <div class="carousel-track">
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA301/301.mp4', true, 301)">
+                                    <img src="../Resource/PBEN1/DEPA301/301.jpg" alt="Vista 0">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA301/1.jpg', false, 301)">
+                                    <img src="../Resource/PBEN1/DEPA301/1.jpg" alt="Vista 1">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA301/2.jpg', false, 301)">
+                                    <img src="../Resource/PBEN1/DEPA301/2.jpg" alt="Vista 2">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA301/3.jpg', false, 301)">
+                                    <img src="../Resource/PBEN1/DEPA301/3.jpg" alt="Vista 3">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA301/4.jpg', false, 301)">
+                                    <img src="../Resource/PBEN1/DEPA301/4.jpg" alt="Vista 4">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA301/5.jpg', false, 301)">
+                                    <img src="../Resource/PBEN1/DEPA301/5.jpg" alt="Vista 5">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA301/6.jpg', false, 301)">
+                                    <img src="../Resource/PBEN1/DEPA301/6.jpg" alt="Vista 6">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA301/7.jpg', false, 301)">
+                                    <img src="../Resource/PBEN1/DEPA301/7.jpg" alt="Vista 7">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA301/8.jpg', false, 301)">
+                                    <img src="../Resource/PBEN1/DEPA301/8.jpg" alt="Vista 8">
+                                </div>
+                            </div>
+                            <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>                        
+                    </div>
+                     <!-- Segundo Modal para información -->
+                     <div id="info-modal-301" class="modal hidden">
+                        <div class="modal-content">
+                            <!-- Botón para cerrar el modal -->
+                            <span class="close-btn" onclick="closeInfoModal()">&times;</span>
+
+                            <!-- Contenido de información -->
+                            <div class="info-container">
+                                <h2>Información del Departamento</h2>
+                                <p>
+                                    Aquí puedes incluir la información detallada del departamento, como características, dimensiones,
+                                    precio, ubicación, y cualquier otro dato relevante.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+
+                <!-- Departamento 5 -->
+                <div class="departamento-card">
+                    <img src="../Resource/PBEN1/DEPA303/303.png" alt="Departamento 303" class="departamento-img">
+                    <div class="card-details">
+                        <h3 data-translate="Departamento 303">Departamento 303</h3>
+                        <p data-translate="2 Dormitorios, (Estudio) 75.40 m²">2 Dormitorios, (Estudio) 75.40 m²</p>
+                        <a href="#" class="btn-details" data-department="303" data-translate="Ver detalles">Ver detalles</a>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                </div>
+                <!-- Layout emergente para detalles -->
+                <div id="detail-modal-303" class="modal hidden dark-mode">
+                    <div class="modal-content dark-mode">
+                        
+                        <!-- Botón para cerrar el modal -->
+                        <span class="close-btn" onclick="closeModal(303)">&times;</span>
+                        
+                        <!-- Contenedor principal del contenido (video o imagen) -->
+                        <div id="main-content-container" class="video-container dark-mode">
+                            <video id="main-content" controls autoplay muted>
+                                <source src="../Resource/PBEN1/DEPA303/303-1.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="image-carousel">
+                            
+                            <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <div class="carousel-track">
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA303/303-1.mp4', true, 303)">
+                                    <img src="../Resource/PBEN1/DEPA303/303.png" alt="Vista 0">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA303/1.jpg', false, 303)">
+                                    <img src="../Resource/PBEN1/DEPA303/1.jpg" alt="Vista 1">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA303/2.jpg', false, 303)">
+                                    <img src="../Resource/PBEN1/DEPA303/2.jpg" alt="Vista 2">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA303/3.jpg', false, 303)">
+                                    <img src="../Resource/PBEN1/DEPA303/3.jpg" alt="Vista 3">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA303/4.jpg', false, 303)">
+                                    <img src="../Resource/PBEN1/DEPA303/4.jpg" alt="Vista 4">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA303/5.jpg', false, 303)">
+                                    <img src="../Resource/PBEN1/DEPA303/5.jpg" alt="Vista 5">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA303/6.jpg', false, 303)">
+                                    <img src="../Resource/PBEN1/DEPA303/6.jpg" alt="Vista 6">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA303/7.jpg', false, 303)">
+                                    <img src="../Resource/PBEN1/DEPA303/7.jpg" alt="Vista 7">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA303/8.jpg', false, 303)">
+                                    <img src="../Resource/PBEN1/DEPA303/8.jpg" alt="Vista 8">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA303/9.jpg', false, 303)">
+                                    <img src="../Resource/PBEN1/DEPA303/9.jpg" alt="Vista 9">
+                                </div>
+                            </div>
+                            <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>                        
+                    </div>
+                     <!-- Segundo Modal para información -->
+                     <div id="info-modal-303" class="modal hidden">
+                        <div class="modal-content">
+                            <!-- Botón para cerrar el modal -->
+                            <span class="close-btn" onclick="closeInfoModal()">&times;</span>
+
+                            <!-- Contenido de información -->
+                            <div class="info-container">
+                                <h2>Información del Departamento</h2>
+                                <p>
+                                    Aquí puedes incluir la información detallada del departamento, como características, dimensiones,
+                                    precio, ubicación, y cualquier otro dato relevante.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <!-- Departamento 6 -->
+                <div class="departamento-card">
+                    <img src="../Resource/PBEN1/DEPA601/601.png" alt="Departamento 601" class="departamento-img">
+                    <div class="card-details">
+                        <h3 data-translate="Departamento 601">Departamento 601</h3>
+                        <p data-translate="3 Dormitorios, 2 Baños, 100 m²">3 Dormitorios, 2 Baños, 100 m²</p>
+                        <a href="#" class="btn-details" data-department="601" data-translate="Ver detalles">Ver detalles</a>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                </div>
+                <!-- Layout emergente para detalles -->
+                <div id="detail-modal-601" class="modal hidden dark-mode">
+                    <div class="modal-content dark-mode">
+                        
+                        <!-- Botón para cerrar el modal -->
+                        <span class="close-btn" onclick="closeModal(601)">&times;</span>
+                        
+                        <!-- Contenedor principal del contenido (video o imagen) -->
+                        <div id="main-content-container" class="video-container dark-mode">
+                            <video id="main-content" controls autoplay muted>
+                                <source src="../Resource/PBEN1/DEPA601/601.mp4" type="video/mp4">
+                            </video>     
+                        </div>
+                        <div class="image-carousel">
+                         
+                            <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <div class="carousel-track">
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA601/601.mp4', true, 601)">
+                                    <img src="../Resource/PBEN1/DEPA601/601.png" alt="Vista 0">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA601/1.jpg', false, 601)">
+                                    <img src="../Resource/PBEN1/DEPA601/1.jpg" alt="Vista 1">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA601/2.jpg', false, 601)">
+                                    <img src="../Resource/PBEN1/DEPA601/2.jpg" alt="Vista 2">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA601/3.jpg', false, 601)">
+                                    <img src="../Resource/PBEN1/DEPA601/3.jpg" alt="Vista 3">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA601/4.jpg', false, 601)">
+                                    <img src="../Resource/PBEN1/DEPA601/4.jpg" alt="Vista 4">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA601/5.jpg', false, 601)">
+                                    <img src="../Resource/PBEN1/DEPA601/5.jpg" alt="Vista 5">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA601/6.jpg', false, 601)">
+                                    <img src="../Resource/PBEN1/DEPA601/6.jpg" alt="Vista 6">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA601/7.jpg', false, 601)">
+                                    <img src="../Resource/PBEN1/DEPA601/7.jpg" alt="Vista 7">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA601/8.jpg', false, 601)">
+                                    <img src="../Resource/PBEN1/DEPA601/8.jpg" alt="Vista 8">
+                                </div>
+                            </div>
+                            <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>          
+                </div>
+            </div>
+
+            <!-- Departamento 6 -->
+            <div class="departamento-card">
+                <img src="../Resource/PBEN1/DEPA602/602.jpg" alt="Departamento 602" class="departamento-img">
+                <div class="card-details">
+                    <h3 data-translate="Departamento 602">Departamento 602</h3>
+                    <p data-translate="3 Dormitorios, 2 Baños, 213.06 m²">3 Dormitorios, 2 Baños, 213.06 m²</p>
+                    <a href="#" class="btn-details" data-department="602" data-translate="Ver detalles">Ver detalles</a>
+                    <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                </div>
+            </div>
+            <!-- Layout emergente para detalles -->
+            <div id="detail-modal-602" class="modal hidden dark-mode">
+                <div class="modal-content dark-mode">
+                    
+                    <!-- Botón para cerrar el modal -->
+                    <span class="close-btn" onclick="closeModal(602)">&times;</span>
+                    
+                    <!-- Contenedor principal del contenido (video o imagen) -->
+                    <div id="main-content-container" class="video-container dark-mode">
+                        <video id="main-content" controls autoplay muted>
+                            <source src="../Resource/PBEN1/DEPA602/602.mp4" type="video/mp4">
+                        </video>
+                    </div>    
+                    <div class="image-carousel">
+                      
+                        <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <div class="carousel-track">
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA602/602.mp4', true, 602)">
+                                <img src="../Resource/PBEN1/DEPA602/602.jpg" alt="Vista 0">
+                            </div>
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA602/1.jpg', false, 602)">
+                                <img src="../Resource/PBEN1/DEPA602/1.jpg" alt="Vista 1">
+                            </div>
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA602/2.jpg', false, 602)">
+                                <img src="../Resource/PBEN1/DEPA602/2.jpg" alt="Vista 2">
+                            </div>
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA602/3.jpg', false, 602)">
+                                <img src="../Resource/PBEN1/DEPA602/3.jpg" alt="Vista 3">
+                            </div>
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA602/4.jpg', false, 602)">
+                                <img src="../Resource/PBEN1/DEPA602/4.jpg" alt="Vista 4">
+                            </div>
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA602/5.jpg', false, 602)">
+                                <img src="../Resource/PBEN1/DEPA602/5.jpg" alt="Vista 5">
+                            </div>
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA602/6.jpg', false, 602)">
+                                <img src="../Resource/PBEN1/DEPA602/6.jpg" alt="Vista 6">
+                            </div>
+                        </div>
+                        <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>        
+                </div>
+            </div>
+            <!-- Departamento 7 -->
+            <div class="departamento-card">
+                <img src="../Resource/PBEN1/DEPA603/603.jpg" alt="Departamento 603" class="departamento-img">
+                <div class="card-details">
+                    <h3 data-translate="Departamento 603">Departamento 603</h3>
+                    <p data-translate="3 Dormitorios, 2 Baños, 100 m²">3 Dormitorios, 2 Baños, 100 m²</p>
+                    <a href="#" class="btn-details" data-department="603" data-translate="Ver detalles">Ver detalles</a>
+                    <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                </div>
+            </div>
+            <!-- Layout emergente para detalles -->
+            <div id="detail-modal-603" class="modal hidden dark-mode">
+                <div class="modal-content dark-mode">
+                    
+                    <!-- Botón para cerrar el modal -->
+                    <span class="close-btn" onclick="closeModal(603)">&times;</span>
+                    
+                    <!-- Contenedor principal del contenido (video o imagen) -->
+                    <div id="main-content-container" class="video-container dark-mode">
+                        <video id="main-content" controls autoplay muted>
+                            <source src="../Resource/PBEN1/DEPA603/603.mp4" type="video/mp4">
+                        </video>
+                    </div>    
+                    <div class="image-carousel">
+                                            
+                    <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+
+                        <div class="carousel-track">
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA603/603.mp4', true, 603)">
+                                <img src="../Resource/PBEN1/DEPA603/603.jpg" alt="Vista 0">
+                            </div>
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA603/1.jpg', false, 603)">
+                                <img src="../Resource/PBEN1/DEPA603/1.jpg" alt="Vista 1">
+                            </div>
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA603/2.jpg', false, 603)">
+                                <img src="../Resource/PBEN1/DEPA603/2.jpg" alt="Vista 2">
+                            </div>
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA603/3.jpg', false, 603)">
+                                <img src="../Resource/PBEN1/DEPA603/3.jpg" alt="Vista 3">
+                            </div>
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA603/4.jpg', false, 603)">
+                                <img src="../Resource/PBEN1/DEPA603/4.jpg" alt="Vista 4">
+                            </div>
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA603/5.jpg', false, 603)">
+                                <img src="../Resource/PBEN1/DEPA603/5.jpg" alt="Vista 5">
+                            </div>
+                            <div class="carousel-item" onclick="changeContent('../Resource/PBEN1/DEPA603/6.jpg', false, 603)">
+                                <img src="../Resource/PBEN1/DEPA603/6.jpg" alt="Vista 6">
+                            </div>
+                        </div>
+                        <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>        
+                </div>
+            </div>
+        </section>
+ 
+    <!-- Botón de modo oscuro -->
+    <button id="dark-mode-toggle" class="dark-mode-button" style="position: fixed; bottom: 20px; right: 30px;"></button>
+
+    <script type="module" src="js/nav.html"></script>    
+    <script src="../scripts.js"></script>
+
+    <script>
+        // Add this before the existing scripts
+        document.addEventListener('DOMContentLoaded', () => {
+            // Enhanced animation timeline
+            anime.timeline({loop: false})
+            .add({
+                targets: '.letter',
+                scale: [0, 1],
+                duration: 1500,
+                elasticity: 600,
+                delay: (el, i) => 70 * (i+1),
+                opacity: {
+                    value: 1,
+                    duration: 1,
+                    delay: (el, i) => 70 * (i+1)
+                },
+                rotate: {
+                    value: [-360, 0],
+                    duration: 1500,
+                    easing: 'easeOutElastic'
+                }
+            }).add({
+                targets: '.subtitle',
+                opacity: [0, 1],
+                duration: 1000,
+                translateY: [20, 0],
+                easing: 'easeOutExpo',
+                offset: '-=1000'
+            });
+
+            // Enhanced hover effects
+            const letters = document.querySelectorAll('.letter');
+            letters.forEach(letter => {
+                letter.addEventListener('mouseenter', () => {
+                    anime({
+                        targets: letter,
+                        scale: 1.2,
+                        rotate: '15deg',
+                        duration: 300,
+                        color: '#007bff',
+                        textShadow: '0 0 10px rgba(0,123,255,0.5)'
+                    });
+                });
+                
+                letter.addEventListener('mouseleave', () => {
+                    anime({
+                        targets: letter,
+                        scale: 1,
+                        rotate: '0deg',
+                        duration: 300,
+                        color: '#333',
+                        textShadow: '2px 2px 4px rgba(0,0,0,0.2)'
+                    });
+                });
+            });
+        });
+    </script>
+
+    <script>
+        window.addEventListener('load', function () {
+            document.body.classList.add('loaded');
+        });
+    </script>
+
+    <script>
+        // Función para crear efecto de partículas
+        function createParticles(e) {
+            const particles = 10;
+            const button = e.target;
+            const rect = button.getBoundingClientRect();
+            const btnColor = window.getComputedStyle(button).backgroundColor;
+
+            for (let i = 0; i < particles; i++) {
+                const particle = document.createElement('span');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 3 + 2;
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 50 + 50;
+                
+                particle.style.cssText = `
+                    position: fixed;
+                    pointer-events: none;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: ${btnColor};
+                    border-radius: 50%;
+                    left: ${e.clientX}px;
+                    top: ${e.clientY}px;
+                    transform: translate(-50%, -50%);
+                    animation: particle-fade 1s ease-out forwards;
+                `;
+
+                document.body.appendChild(particle);
+
+                const animation = particle.animate([
+                    {
+                        transform: `translate(-50%, -50%)`,
+                        opacity: 1
+                    },
+                    {
+                        transform: `translate(${Math.cos(angle) * velocity}px, ${Math.sin(angle) * velocity}px)`,
+                        opacity: 0
+                    }
+                ], {
+                    duration: 1000,
+                    easing: 'cubic-bezier(0, .9, .57, 1)'
+                });
+
+                animation.onfinish = () => particle.remove();
+            }
+        }
+
+        // Función para actualizar el contador
+        function updateCountdown() {
+            const targetDate = new Date('2025-05-01T00:00:00').getTime();
+            const now = new Date().getTime();
+            const timeLeft = targetDate - now;
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            document.querySelector('.days').textContent = days.toString().padStart(3, '');
+            document.querySelector('.hours').textContent = hours.toString().padStart(2, '0');
+            document.querySelector('.minutes').textContent = minutes.toString().padStart(2, '0');
+            document.querySelector('.seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+
+        // Inicializar el contador
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Agregar efecto de partículas a los botones
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.btn-details, .btn-separate');
+            buttons.forEach(button => {
+                button.addEventListener('click', createParticles);
+            });
+        });
+    </script>
+
+    <style>
+        @keyframes particle-fade {
+            to {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty));
+            }
+        }
+    </style>
+
+
+    <footer class="seccion-footer">
+        <div class="contenedor-footer">
+            <div class="bloque-logo">
+                <img src="../Resource/Logo/logo.png" alt="Polyline">
+                <div class="texto-copyright" style="color: black;">
+                    <p>&copy; 2025 POLYLINE. Todos los derechos reservados.</p>
+                </div>
+            </div>
+            <div class="bloque-contacto" style="color: black;">
+                <h3>CONTACTOS:</h3>
+                <p>WhatsApp: <a href="https://wa.link/lkvfnb">+51 943 812 536</a></p>
+                <p>Email: <a href="mailto:contacto@polyline.com">contacto@polyline.com</a></p>
+                <p>Dirección: Av. Óscar R. Benavides</p>
+            </div>
+        </div>
+    </footer>
+
+      <div class="social-buttons" style="position: fixed; bottom: 20px; right: 85px;">
+        <button class="social-btn facebook" onclick="window.open('https//www.facebook.com/PolylineSalas')">
+            <i class="fab fa-facebook-f"></i>
+        </button>
+        <button class="social-btn whatsapp" onclick="window.open('https://wa.link/lkvfnb')">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+        <button class="social-btn instagram" onclick="window.open('https://www.instagram.com/arquitectosalasperu/')">
+            <i class="fab fa-instagram"></i>
+        </button>
+        <button class="social-btn linkedin" onclick="window.open('https://www.linkedin.com/in/arquitectosalas')">
+            <i class="fab fa-linkedin-in"></i>
+        </button>
+        <button class="social-btn youtube" onclick="window.open('https://www.youtube.com/channel/UC9wMT7_zsq7yE0MMCSxiVMw')">
+            <i class="fab fa-youtube"></i>
+        </button>
+    </div>
+    
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
+    const navMenu = document.querySelector('.nav-menu');
+    const menuOverlay = document.querySelector('.menu-overlay');
+    const dropdowns = document.querySelectorAll('.dropdown');
+
+    // Toggle menú móvil
+    mobileMenuButton.addEventListener('click', function() {
+        this.classList.toggle('active');
+        navMenu.classList.toggle('active');
+        menuOverlay.classList.toggle('active');
+        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+    });
+
+    // Cerrar menú al hacer click en el overlay
+    menuOverlay.addEventListener('click', function() {
+        mobileMenuButton.classList.remove('active');
+        navMenu.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    // Manejar dropdowns en móvil
+    dropdowns.forEach(dropdown => {
+        const link = dropdown.querySelector('a');
+        link.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                dropdown.classList.toggle('active');
+            }
+        });
+    });
+
+    // Cerrar menú al cambiar el tamaño de la ventana
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            mobileMenuButton.classList.remove('active');
+            navMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Agregar después de la inicialización de Firebase
+    document.getElementById('logoutButton').addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+            await signOut(auth);
+            console.log('Usuario cerró sesión');
+            window.location.href = '../index.html';
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+        }
+    });
+
+    // Toggle del menú desplegable
+    document.getElementById('userProfile').addEventListener('click', function(e) {
+        const dropdown = this.querySelector('.user-dropdown');
+        dropdown.classList.toggle('show');
+        e.stopPropagation();
+    });
+
+    // Cerrar el menú al hacer clic fuera
+    document.addEventListener('click', function() {
+        const dropdowns = document.getElementsByClassName('user-dropdown');
+        for (const dropdown of dropdowns) {
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        }
+    });
+});
+</script>
+</body>
+
+</html>
+    <script>
+        // Funciones para el selector de idiomas
+        function toggleLanguageOptions() {
+            const selector = document.querySelector('.language-selector');
+            const options = document.getElementById('languageOptions');
+            selector.classList.toggle('active');
+            options.classList.toggle('show');
+        }
+
+        function changeLanguage(lang) {
+            const currentFlag = document.getElementById('currentFlag');
+            const currentLanguage = document.getElementById('currentLanguage');
+            const options = document.getElementById('languageOptions');
+            
+            // Actualizar el botón con el idioma seleccionado
+            currentFlag.src = `../Resource/flags/${lang}.png`;
+            currentLanguage.textContent = {
+                'es': 'Español',
+                'en': 'English',
+                'pt': 'Português',
+                'zh': '中文',
+                'ja': '日本語',
+                'it': 'Italiano'
+            }[lang];
+            
+            // Ocultar las opciones
+            options.classList.remove('show');
+            
+            // Traducir el contenido
+            translatePage(lang);
+        }
+
+        // Objeto con las traducciones
+        const translations = {
+            'es': {
+                'Inicio': 'Inicio',
+                'Para Tí': 'Para Tí',
+                'Proyectos': 'Proyectos',
+                'Casas de Playa en Venta / Alquiler': 'Casas de Playa en Venta / Alquiler',
+                'Proyecto Benavides 1': 'Proyecto Benavides 1',
+                'Proyecto Benavides 2': 'Proyecto Benavides 2',
+                'Proyecto Sienna': 'Proyecto Sienna',
+                'Proyecto Varsovia': 'Proyecto Varsovia',
+                'Contacto': 'Contacto',
+                'Información': 'Información',
+                'Agenda Una Reunión': 'Agenda Una Reunión',
+                'Cotizar Proyecto': 'Cotizar Proyecto',
+                'BIENVENIDO A POLYLINE': 'BIENVENIDO A POLYLINE',
+                'Proyectos inmobiliarios creados para ti.': 'Proyectos inmobiliarios creados para ti.',
+                'Login': 'Login',
+                'Perfil': 'Perfil',
+                'Cerrar Sesión': 'Cerrar Sesión',
+                'Edificaciones': 'Edificaciones',
+                'EXCLUSIVOS DEPARTAMENTOS': 'EXCLUSIVOS DEPARTAMENTOS',
+                'Entrega Mayo 2025': 'Entrega Mayo 2025',
+                'Días': 'Días',
+                'Horas': 'Horas',
+                'Minutos': 'Minutos',
+                'Segundos': 'Segundos',
+                'Departamento': 'Departamento',
+                'Dormitorios': 'Dormitorios',
+                'Baños': 'Baños',
+                'Ver detalles': 'Ver detalles',
+                'Separar': 'Separar',
+                'DUPLEX': 'DUPLEX',
+                'Departamento 101 - DUPLEX': 'Departamento 101 - DUPLEX',
+                '3 Dormitorios, 2 Baños, 113.32 m²': '3 Dormitorios, 2 Baños, 113.32 m²',
+                'Departamento 201': 'Departamento 201',
+                '3 Dormitorios, 2 Baños, 103.81 m²': '3 Dormitorios, 2 Baños, 103.81 m²',
+                'Departamento 202': 'Departamento 202',
+                '2 Dormitorios, 2 Baños, 75.40 m²': '2 Dormitorios, 2 Baños, 75.40 m²',
+                'Departamento 301 - DUPLEX': 'Departamento 301 - DUPLEX',
+                'Departamento 303': 'Departamento 303',
+                '2 Dormitorios, (Estudio) 75.40 m²': '2 Dormitorios, (Estudio) 75.40 m²',
+                'Departamento 601': 'Departamento 601',
+                '3 Dormitorios, 2 Baños, 100 m²': '3 Dormitorios, 2 Baños, 100 m²',
+                'Departamento 602': 'Departamento 602',
+                '3 Dormitorios, 2 Baños, 213.06 m²': '3 Dormitorios, 2 Baños, 213.06 m²',
+                'Departamento 603': 'Departamento 603',
+                '3 Dormitorios, 2 Baños, 100 m²': '3 Dormitorios, 2 Baños, 100 m²',
+                'Mas Proyectos': 'Mas Proyectos',
+                'Anuncios': 'Anuncios'
+            },
+            'en': {
+                'Inicio': 'Home',
+                'Para Tí': 'For You',
+                'Proyectos': 'Projects',
+                'Casas de Playa en Venta / Alquiler': 'Beach Houses for Sale / Rent',
+                'Proyecto Benavides 1': 'Benavides Project 1',
+                'Proyecto Benavides 2': 'Benavides Project 2',
+                'Proyecto Sienna': 'Sienna Project',
+                'Proyecto Varsovia': 'Varsovia Project',
+                'Contacto': 'Contact',
+                'Información': 'Information',
+                'Agenda Una Reunión': 'Schedule a Meeting',
+                'Cotizar Proyecto': 'Quote Project',
+                'BIENVENIDO A POLYLINE': 'WELCOME TO POLYLINE',
+                'Proyectos inmobiliarios creados para ti.': 'Real estate projects created for you.',
+                'Login': 'Login',
+                'Perfil': 'Profile',
+                'Cerrar Sesión': 'Logout',
+                'Edificaciones': 'Single-family and multi-family buildings',
+                'EXCLUSIVOS DEPARTAMENTOS': 'EXCLUSIVE APARTMENTS',
+                'Entrega Mayo 2025': 'Delivery May 2025',
+                'Días': 'Days',
+                'Horas': 'Hours',
+                'Minutos': 'Minutes',
+                'Segundos': 'Seconds',
+                'Departamento': 'Apartment',
+                'Dormitorios': 'Bedrooms',
+                'Baños': 'Bathrooms',
+                'Ver detalles': 'View details',
+                'Separar': 'Reserve',
+                'DUPLEX': 'DUPLEX',
+                'Departamento 101 - DUPLEX': 'Apartment 101 - DUPLEX',
+                '3 Dormitorios, 2 Baños, 113.32 m²': '3 Bedrooms, 2 Bathrooms, 113.32 m²',
+                'Departamento 201': 'Apartment 201',
+                '3 Dormitorios, 2 Baños, 103.81 m²': '3 Bedrooms, 2 Bathrooms, 103.81 m²',
+                'Departamento 202': 'Apartment 202',
+                '2 Dormitorios, 2 Baños, 75.40 m²': '2 Bedrooms, 2 Bathrooms, 75.40 m²',
+                'Departamento 301 - DUPLEX': 'Apartment 301 - DUPLEX',
+                'Departamento 303': 'Apartment 303',
+                '2 Dormitorios, (Estudio) 75.40 m²': '2 Bedrooms, (Study) 75.40 m²',
+                'Departamento 601': 'Apartment 601',
+                '3 Dormitorios, 2 Baños, 100 m²': '3 Bedrooms, 2 Bathrooms, 100 m²',
+                'Departamento 602': 'Apartment 602',
+                '3 Dormitorios, 2 Baños, 213.06 m²': '3 Bedrooms, 2 Bathrooms, 213.06 m²',
+                'Departamento 603': 'Apartment 603',
+                '3 Dormitorios, 2 Baños, 100 m²': '3 Bedrooms, 2 Bathrooms, 100 m²',
+                'Mas Proyectos': 'More Projects',
+                'Anuncios': 'Ads'
+            },
+            'pt': {
+                'Inicio': 'Início',
+                'Para Tí': 'Para Você', 
+                'Proyectos': 'Projetos',
+                'Casas de Playa en Venta / Alquiler': 'Casas de Praia à Venda / Aluguel',
+                'Proyecto Benavides 1': 'Benavides Projeto 1',
+                'Proyecto Benavides 2': 'Benavides Projeto 2',
+                'Proyecto Sienna': 'Sienna Projeto',
+                'Proyecto Varsovia': 'Varsovia Projeto',
+                'Contacto': 'Contato',
+                'Información': 'Informações',
+                'Agenda Una Reunión': 'Agendar uma Reunião',
+                'Cotizar Proyecto': 'Orçar Projeto',
+                'BIENVENIDO A POLYLINE': 'BEM-VINDO À POLYLINE',
+                'Proyectos inmobiliarios creados para ti.': 'Projetos imobiliários criados para você.',
+                'Login': 'Entrar',
+                'Perfil': 'Perfil',
+                'Cerrar Sesión': 'Sair',
+                'EXCLUSIVOS DEPARTAMENTOS': 'APARTAMENTOS EXCLUSIVOS',
+                'Entrega Mayo 2025': 'Entrega Maio 2025',
+                'Días': 'Dias',
+                'Horas': 'Horas',
+                'Minutos': 'Minutos', 
+                'Segundos': 'Segundos',
+                'Departamento': 'Apartamento',
+                'Dormitorios': 'Quartos',
+                'Baños': 'Banheiros',
+                'Ver detalles': 'Ver detalhes',
+                'Separar': 'Reservar',
+                'DUPLEX': 'DUPLEX',
+                'Departamento 101 - DUPLEX': 'Apartamento 101 - DUPLEX',
+                '3 Dormitorios, 2 Baños, 113.32 m²': '3 Quartos, 2 Banheiros, 113,32 m²',
+                'Departamento 201': 'Apartamento 201',
+                '3 Dormitorios, 2 Baños, 103.81 m²': '3 Quartos, 2 Banheiros, 103,81 m²',
+                'Departamento 202': 'Apartamento 202',
+                '2 Dormitorios, 2 Baños, 75.40 m²': '2 Quartos, 2 Banheiros, 75,40 m²',
+                'Departamento 301 - DUPLEX': 'Apartamento 301 - DUPLEX',
+                'Departamento 303': 'Apartamento 303',
+                '2 Dormitorios, (Estudio) 75.40 m²': '2 Quartos, (Escritório) 75,40 m²',
+                'Departamento 601': 'Apartamento 601',
+                '3 Dormitorios, 2 Baños, 100 m²': '3 Quartos, 2 Banheiros, 100 m²',
+                'Departamento 602': 'Apartamento 602',
+                '3 Dormitorios, 2 Baños, 213.06 m²': '3 Quartos, 2 Banheiros, 213,06 m²',
+                'Departamento 603': 'Apartamento 603',
+                '3 Dormitorios, 2 Baños, 100 m²': '3 Quartos, 2 Banheiros, 100 m²',
+                'Mas Proyectos': 'Mais Projetos',
+                'Anuncios': 'Anúncios'
+            },
+            'zh': {
+                'Inicio': '首页',
+                'Para Tí': '为您服务',
+                'Proyectos': '项目',
+                'Casas de Playa en Venta / Alquiler': '出售/出租房屋',
+                'Proyecto Benavides 1': '贝纳维德斯项目 1',
+                'Proyecto Benavides 2': '贝纳维德斯项目 2',
+                'Proyecto Sienna': '锡耶纳项目',
+                'Proyecto Varsovia': '华沙项目',
+                'Contacto': '联系我们',
+                'Información': '信息',
+                'Agenda Una Reunión': '预约会议',
+                'Cotizar Proyecto': '项目报价',
+                'BIENVENIDO A POLYLINE': '欢迎来到POLYLINE',
+                'Proyectos inmobiliarios creados para ti.': '为您定制的房地产项目',
+                'Login': '登录',
+                'Perfil': '个人中心', 
+                'Cerrar Sesión': '退出登录',
+                'EXCLUSIVOS DEPARTAMENTOS': '精品公寓',
+                'Entrega Mayo 2025': '2025年5月交付',
+                'Días': '天',
+                'Horas': '小时',
+                'Minutos': '分钟',
+                'Segundos': '秒',
+                'Departamento': '公寓',
+                'Dormitorios': '卧室',
+                'Baños': '卫生间',
+                'Ver detalles': '查看详情',
+                'Separar': '预订',
+                'DUPLEX': '复式',
+                'Departamento 101 - DUPLEX': '101号复式公寓',
+                '3 Dormitorios, 2 Baños, 113.32 m²': '3室2卫，113.32平方米',
+                'Departamento 201': '201号公寓',
+                '3 Dormitorios, 2 Baños, 103.81 m²': '3室2卫，103.81平方米',
+                'Departamento 202': '202号公寓',
+                '2 Dormitorios, 2 Baños, 75.40 m²': '2室2卫，75.40平方米',
+                'Departamento 301 - DUPLEX': '301号复式公寓',
+                'Departamento 303': '303号公寓', 
+                '2 Dormitorios, (Estudio) 75.40 m²': '2室（书房），75.40平方米',
+                'Departamento 601': '601号公寓',
+                '3 Dormitorios, 2 Baños, 100 m²': '3室2卫，100平方米',
+                'Departamento 602': '602号公寓',
+                '3 Dormitorios, 2 Baños, 213.06 m²': '3室2卫，213.06平方米',
+                'Departamento 603': '603号公寓',
+                '3 Dormitorios, 2 Baños, 100 m²': '3室2卫，100平方米',
+                'Mas Proyectos': '更多项目',
+                'Anuncios': '公告'
+            },
+            'ja': {
+                'Inicio': 'ホーム',
+                'Para Tí': 'あなたのために',
+                'Proyectos': 'プロジェクト', 
+                'Casas de Playa en Venta / Alquiler': ' 販売/賃貸ビーチハウス',
+                'Proyecto Benavides 1': 'ベナビデス・プロジェクト1',
+                'Proyecto Benavides 2': 'ベナビデス・プロジェクト2',
+                'Proyecto Sienna': 'シエナ・プロジェクト',
+                'Proyecto Varsovia': 'ワルシャワ・プロジェクト',
+                'Contacto': 'お問い合わせ',
+                'Información': '情報',
+                'Agenda Una Reunión': '面談予約',
+                'Cotizar Proyecto': '見積もり依頼',
+                'BIENVENIDO A POLYLINE': 'POLYLINEへようこそ',
+                'Proyectos inmobiliarios creados para ti.': 'あなたのための不動産プロジェクト',
+                'Login': 'ログイン',
+                'Perfil': 'プロフィール',
+                'Cerrar Sesión': 'ログアウト',
+                'EXCLUSIVOS DEPARTAMENTOS': '高級マンション',
+                'Entrega Mayo 2025': '2025年5月完成予定',
+                'Días': '日',
+                'Horas': '時間', 
+                'Minutos': '分',
+                'Segundos': '秒',
+                'Departamento': '部屋',
+                'Dormitorios': '寝室',
+                'Baños': '浴室',
+                'Ver detalles': '詳細を見る',
+                'Separar': '予約する',
+                'DUPLEX': 'メゾネット',                
+                'Departamento 101 - DUPLEX': '101号室 - メゾネット',
+                '3 Dormitorios, 2 Baños, 113.32 m²': '3LDK、2浴室、113.32㎡',
+                'Departamento 201': '201号室',
+                '3 Dormitorios, 2 Baños, 103.81 m²': '3LDK、2浴室、103.81㎡',
+                'Departamento 202': '202号室',
+                '2 Dormitorios, 2 Baños, 75.40 m²': '2LDK、2浴室、75.40㎡',
+                'Departamento 301 - DUPLEX': '301号室 - メゾネット',
+                'Departamento 303': '303号室',
+                '2 Dormitorios, (Estudio) 75.40 m²': '2LDK＋書斎、75.40㎡',
+                'Departamento 601': '601号室',
+                '3 Dormitorios, 2 Baños, 100 m²': '3LDK、2浴室、100㎡',
+                'Departamento 602': '602号室', 
+                '3 Dormitorios, 2 Baños, 213.06 m²': '3LDK、2浴室、213.06㎡',
+                'Departamento 603': '603号室',
+                '3 Dormitorios, 2 Baños, 100 m²': '3LDK、2浴室、100㎡',
+                'Mas Proyectos': 'もっとプロジェクト',
+                'Anuncios': 'お知らせ'
+            },
+            'it': {
+                'Inicio': 'Inizio',
+                'Para Tí': 'Per Te',
+                'Proyectos': 'Progetti',
+                'Casas de Playa en Venta / Alquiler': 'Case in Spiaggia in Vendita / Affitto',
+                'Proyecto Benavides 1': 'Progetto Benavides 1',
+                'Proyecto Benavides 2': 'Progetto Benavides 2',
+                'Proyecto Sienna': 'Progetto Sienna',
+                'Proyecto Varsovia': 'Progetto Varsovia',
+                'Contacto': 'Contatti',
+                'Información': 'Informazioni',
+                'Agenda Una Reunión': 'Prenota un Appuntamento',
+                'Cotizar Proyecto': 'Preventivo Progetto',
+                'BIENVENIDO A POLYLINE': 'BENVENUTO A POLYLINE',
+                'Proyectos inmobiliarios creados para ti.': 'Progetti immobiliari creati per te.',
+                'Login': 'Accedi',
+                'Perfil': 'Profilo',
+                'Cerrar Sesión': 'Disconnetti',
+                'EXCLUSIVOS DEPARTAMENTOS': 'APPARTAMENTI ESCLUSIVI',
+                'Entrega Mayo 2025': 'Consegna Maggio 2025',
+                'Días': 'Giorni',
+                'Horas': 'Ore',
+                'Minutos': 'Minuti',
+                'Segundos': 'Secondi',
+                'Departamento': 'Appartamento',
+                'Dormitorios': 'Camere da letto',
+                'Baños': 'Bagni',
+                'Ver detalles': 'Vedi dettagli',
+                'Separar': 'Prenota',
+                'DUPLEX': 'DUPLEX',                
+                'Departamento 101 - DUPLEX': 'Appartamento 101 - DUPLEX',
+                '3 Dormitorios, 2 Baños, 113.32 m²': '3 Camere, 2 Bagni, 113.32 m²',
+                'Departamento 201': 'Appartamento 201',
+                '3 Dormitorios, 2 Baños, 103.81 m²': '3 Camere, 2 Bagni, 103.81 m²',
+                'Departamento 202': 'Appartamento 202',
+                '2 Dormitorios, 2 Baños, 75.40 m²': '2 Camere, 2 Bagni, 75.40 m²',
+                'Departamento 301 - DUPLEX': 'Appartamento 301 - DUPLEX',
+                'Departamento 303': 'Appartamento 303',
+                '2 Dormitorios, (Estudio) 75.40 m²': '2 Camere, (Studio) 75.40 m²',
+                'Departamento 601': 'Appartamento 601',
+                '3 Dormitorios, 2 Baños, 100 m²': '3 Camere, 2 Bagni, 100 m²',
+                'Departamento 602': 'Appartamento 602',
+                '3 Dormitorios, 2 Baños, 213.06 m²': '3 Camere, 2 Bagni, 213.06 m²',
+                'Departamento 603': 'Appartamento 603',
+                '3 Dormitorios, 2 Baños, 100 m²': '3 Camere, 2 Bagni, 100 m²',
+                'Mas Proyectos': 'Altri Progetti',
+                'Anuncios': 'Annunci'
+            }
+        };
+
+        // Add data-translate attributes to elements
+        document.querySelectorAll('.subtitle').forEach(el => {
+            el.setAttribute('data-translate', 'EXCLUSIVOS DEPARTAMENTOS');
+        });
+
+        document.querySelectorAll('.shine-text').forEach(el => {
+            el.setAttribute('data-translate', 'Entrega Mayo 2025');
+        });
+
+        document.querySelectorAll('.label').forEach(el => {
+            el.setAttribute('data-translate', el.textContent);
+        });
+
+        document.querySelectorAll('.btn-details').forEach(el => {
+            el.setAttribute('data-translate', 'Ver detalles');
+        });
+
+        document.querySelectorAll('.btn-separate').forEach(el => {
+            el.setAttribute('data-translate', 'Separar');
+        });
+
+        function translatePage(lang) {
+            if (lang === 'es') {
+                location.reload();
+                return;
+            }
+
+            // Usar un fragmento de documento para optimizar las manipulaciones del DOM
+            const fragment = document.createDocumentFragment();
+            const elements = document.querySelectorAll('[data-translate]');
+            
+            // Procesar elementos en lotes para evitar bloqueo del navegador
+            const batchSize = 10;
+            let currentBatch = 0;
+
+            function processBatch() {
+                const start = currentBatch * batchSize;
+                const end = Math.min(start + batchSize, elements.length);
+                
+                for (let i = start; i < end; i++) {
+                    const element = elements[i];
+                    const key = element.getAttribute('data-translate');
+                    
+                    if (translations[lang]?.[key]) {
+                        if (element.tagName.toLowerCase() === 'input' || 
+                            element.tagName.toLowerCase() === 'textarea') {
+                            element.placeholder = translations[lang][key];
+                        } else {
+                            const isTextOnly = element.innerHTML.trim() === element.textContent.trim();
+                            element[isTextOnly ? 'textContent' : 'innerHTML'] = translations[lang][key];
+                        }
+                    }
+                }
+
+                currentBatch++;
+                
+                if (currentBatch * batchSize < elements.length) {
+                    requestAnimationFrame(processBatch);
+                } else {
+                    // Actualizar título después de procesar todas las traducciones
+                    document.title = {
+                        'en': 'POLYLINE - Construction Company',
+                        'pt': 'POLYLINE - Construtora',
+                        'zh': 'POLYLINE - 建筑公司',
+                        'ja': 'POLYLINE - 建設会社',
+                        'it': 'POLYLINE - Società di costruzioni'
+                    }[lang] || 'POLYLINE - Constructora';
+
+                    // Reinicializar animaciones solo si es necesario
+                    if (typeof anime !== 'undefined' && typeof wrapLetters === 'function') {
+                        requestAnimationFrame(() => {
+                            const mainText = document.querySelector('.letters-main');
+                            const subText = document.querySelector('.letters-sub');
+                            
+                            if (mainText) mainText.style.opacity = '1';
+                            if (subText) subText.style.opacity = '1';
+                            
+                            wrapLetters('.letters-main');
+                            wrapLetters('.letters-sub');
+                            
+                            // Usar requestAnimationFrame para las animaciones
+                            requestAnimationFrame(() => {
+                                anime.timeline({
+                                    loop: false,
+                                    easing: 'easeOutExpo'
+                                })
+                                .add({
+                                    targets: '.hero-title .letter',
+                                    translateY: ["1.1em", 0],
+                                    translateX: ["0.55em", 0],
+                                    rotateZ: [180, 0],
+                                    duration: 600,
+                                    delay: anime.stagger(40)
+                                })
+                                .add({
+                                    targets: '.hero-subtitle .letter',
+                                    opacity: [0, 1],
+                                    duration: 800,
+                                    delay: anime.stagger(20),
+                                    offset: '-=400'
+                                });
+                            });
+                        });
+                    }
+                }
+            }
+
+            // Iniciar el procesamiento por lotes
+            requestAnimationFrame(processBatch);
+        }
+
+        // Cerrar el menú de idiomas cuando se hace clic fuera
+        document.addEventListener('click', function(event) {
+            const languageSelector = document.querySelector('.language-selector');
+            const languageOptions = document.getElementById('languageOptions');
+            
+            if (!languageSelector.contains(event.target)) {
+                languageOptions.classList.remove('show');
+            }
+        });
+    </script>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script type="module" src="../js/property-viewer.js"></script>
+
+<script>
+    function updateTitleLetters(newTitle) {
+        const mainTitle = document.querySelector('.main-title');
+        // Limpiar el título actual
+        mainTitle.innerHTML = '';
+        
+        // Crear nuevos spans para cada letra del nuevo título
+        newTitle.split('').forEach(letter => {
+            const span = document.createElement('span');
+            span.className = 'letter';
+            span.textContent = letter === ' ' ? '\u00A0' : letter; // Usar espacio no rompible para espacios
+            mainTitle.appendChild(span);
+        });
+
+        // Reiniciar la animación
+        anime.timeline({loop: false})
+        .add({
+            targets: '.letter',
+            scale: [0, 1],
+            duration: 1500,
+            elasticity: 600,
+            delay: (el, i) => 70 * (i+1),
+            opacity: {
+                value: 1,
+                duration: 1,
+                delay: (el, i) => 70 * (i+1)
+            },
+            rotate: {
+                value: [-360, 0],
+                duration: 1500,
+                easing: 'easeOutElastic'
+            }
+        });
+    }
+
+    // Modificar la función translatePage para manejar especialmente el título
+    const originalTranslatePage = translatePage;
+    translatePage = function(lang) {
+        if (lang === 'es') {
+            updateTitleLetters('PROYECTO BENAVIDES 1');
+        } else if (lang === 'en') {
+            updateTitleLetters('BENAVIDES PROJECT 1');
+        } else if (lang === 'pt') {
+            updateTitleLetters('PROJETO BENAVIDES 1'); 
+        } else if (lang === 'zh') {
+            updateTitleLetters('BENAVIDES 1号项目');
+        } else if (lang === 'ja') {
+            updateTitleLetters('ベナビデス1プロジェクト');
+        } else if (lang === 'it') {
+            updateTitleLetters('PROGETTO BENAVIDES 1');
+        } else if (translations[lang]?.['PROYECTO BENAVIDES 1']) {
+            updateTitleLetters(translations[lang]['PROYECTO BENAVIDES 1']);
+        }
+        
+        // Continuar con el resto de las traducciones
+        originalTranslatePage(lang);
+    };
+</script>
+
+<!-- Firebase SDK -->
+<script type="module" src="../js/firebase-config.js"></script>
+<script type="module" src="../js/auth-check.js"></script>

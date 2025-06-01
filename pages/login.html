@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Metadatos básicos -->
+    <meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polyline - Login</title>
+    
+    <!-- Hojas de estilo -->
+    <link rel="stylesheet" href="../css/login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../Resource/Logo/favicon.html">
+    
+    <!-- Scripts externos -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v18.0"></script>
+    
+    <!-- Scripts locales para animaciones y UI -->
+    <script src="../js/login.js" defer></script>
+    <script src="../js/auth-check.js" defer></script>
+</head>
+
+<body>
+    <!-- Botón de modo oscuro -->
+    <button id="dark-mode-toggle" class="dark-mode-toggle">🌙</button>
+    
+    <!-- Filtro SVG para efecto gooey -->
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="display: none;">
+        <defs>
+            <filter id="gooey">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 15 -7" result="goo" />
+                <feBlend in="SourceGraphic" in2="goo" />
+            </filter>
+        </defs>
+    </svg>
+    
+    <!-- Partículas de fondo -->
+    <div class="particles"></div>
+
+    <!-- Contenedor principal del login -->
+    <div class="login-container">
+        <div class="login-box">
+            <!-- Sección del logo -->
+            <div class="logo-section">
+                <img src="../Resource/Logo/logo1.png" alt="Polyline Logo" class="login-logo">
+                <h2 class="company-name">POLYLINE</h2>
+            </div>
+            
+            <!-- Contenido del login -->
+            <div class="login-content">
+                <!-- Botones de alternación -->
+                <div class="toggle-buttons" data-active="login">
+                    <button type="button" id="showLogin" class="active">Iniciar Sesión</button>
+                    <button type="button" id="showRegister">Registrarse</button>
+                    <div class="toggle-line"></div>
+                </div>
+
+                <!-- Formulario de login -->
+                <form id="loginForm" class="active-form">
+                    <div class="input-group">
+                        <input type="email" id="loginEmail" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="loginPassword" placeholder="Contraseña" required>
+                    </div>
+                    <button type="submit" class="login-btn primary-btn">
+                        <span>Ingresar</span>
+                    </button>
+                    <div id="login-error-message" class="error-message"></div>
+                    <div class="social-divider">
+                        <span>o continúa con</span>
+                    </div>
+                    <div class="social-buttons">
+                        <div class="social-buttons-row">
+                            <button type="button" id="googleBtn" class="social-btn">
+                                <img src="../Login/Logos/google-icon.png" alt="Google">
+                                <span>Google</span>
+                            </button>
+                            <button type="button" class="social-btn facebook-btn" onclick="handleFacebookLogin()">
+                                <img src="../Login/Logos/facebook-icon.png" alt="Facebook">
+                                <span>Facebook</span>
+                            </button>
+                        </div>
+                        <button type="button" class="login-btn primary-btn volver-btn" onclick="location.href='../index.html'">
+                            <span>Volver</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Formulario de registro -->
+                <form id="registerForm" class="hidden-form">
+                    <div class="input-group">
+                        <input type="text" id="regName" placeholder="Nombre completo" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" id="regEmail" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="regPassword" placeholder="Contraseña" required>
+                    </div>
+                    <button type="submit" class="login-btn primary-btn">
+                        <span>Registrarse</span>
+                    </button>
+                    <div id="reg-error-message" class="error-message"></div>
+                </form>
+
+                <!-- Formulario para redes sociales -->
+                <form id="socialLoginForm" class="hidden-form">
+                    <div class="social-login-content">
+                        <img id="socialProviderIcon" src="#" alt="Provider Icon" class="provider-icon">
+                        <h2 id="socialLoginTitle">Iniciando sesión con</h2>
+                        <p id="socialLoginEmail" class="social-email"></p>
+                        <button type="button" class="login-btn primary-btn" id="continueWithSocial">
+                            <span>Continuar</span>
+                        </button>
+                        <button type="button" class="login-btn secondary-btn" id="backToLogin">
+                            <span>Volver</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de verificación de correo -->
+    <div class="modal-backdrop" id="verificationBackdrop"></div>
+    <div class="verification-modal" id="verificationModal">
+        <i class="fas fa-envelope"></i>
+        <h3>Verificación de Correo</h3>
+        <p id="verificationMessage"></p>
+        <button onclick="closeVerificationModal()">Aceptar</button>
+    </div>
+
+    <style>
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+        }
+        .verification-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: slideIn 0.3s ease;
+            background-color: white;
+            color: var(--text-color);
+            max-width: 400px;
+            width: 90%;
+        }
+        .verification-modal i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        .verification-modal h3 {
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+        .verification-modal p {
+            color: var(--text-color);
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        .verification-modal button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .verification-modal button:hover {
+            filter: brightness(1.1);
+        }
+        body.dark-mode .verification-modal {
+            background-color: #333;
+        }
+        body.dark-mode .verification-modal h3,
+        body.dark-mode .verification-modal p {
+            color: #fff;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translate(-50%, -60%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+        }
+    </style>
+
+    <script type="module">
+        // Importaciones de Firebase
+        import { auth, db, saveUserData } from "../js/firebase-config.js";
+        import { 
+            registerUser,
+            loginUser,
+            loginWithGoogle,
+            checkEmailVerification,
+            checkInitialEmailVerification
+        } from "../js/auth.js";
+        import { 
+            GoogleAuthProvider, 
+            signInWithPopup,
+            getRedirectResult
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Variable para controlar el intervalo de verificación
+        let verificationInterval = null;
+
+        // Función para mostrar el modal de verificación
+        function showVerificationModal() {
+            document.getElementById('verificationBackdrop').style.display = 'block';
+            document.getElementById('verificationModal').style.display = 'block';
+            document.getElementById('verificationMessage').textContent = 'Te enviamos un correo de verificación. Por favor, revisa tu bandeja de entrada y haz clic en el enlace para activar tu cuenta. Luego podrás iniciar sesión normalmente.';
+        }
+
+        // Función para cerrar el modal de verificación
+        window.closeVerificationModal = function() {
+            document.getElementById('verificationBackdrop').style.display = 'none';
+            document.getElementById('verificationModal').style.display = 'none';
+        };
+
+        // Función para mostrar mensajes de error
+        function showMessage(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+            element.style.color = isError ? '#ff4444' : '#4CAF50';
+        }
+
+        // Registro de usuarios
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            const result = await registerUser(name, email, password);
+            
+            if (result.success) {
+                showVerificationModal();
+            } else {
+                showMessage('reg-error-message', result.error, true);
+            }
+        });
+
+        // Login con email/contraseña
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            const result = await loginUser(email, password);
+            
+            if (result.success) {
+                window.location.href = '../index.html';
+            } else {
+                if (result.requiresVerification) {
+                    showVerificationModal();
+                } else {
+                    showMessage('login-error-message', result.error, true);
+                }
+            }
+        });
+
+        // Login con Google
+        window.handleGoogleLogin = async function() {
+            const provider = new GoogleAuthProvider();
+            provider.setCustomParameters({
+                prompt: 'select_account'
+            });
+            try {
+                const result = await signInWithPopup(auth, provider);
+                if (result && result.user) {
+                    const user = result.user;
+                    await saveUserData(user);
+                    const userDocRef = doc(db, 'users', user.uid);
+                    const userDocSnap = await getDoc(userDocRef);
+                    if (!userDocSnap.exists()) {
+                        await setDoc(userDocRef, {
+                            email: user.email,
+                            displayName: user.displayName,
+                            photoURL: user.photoURL,
+                            createdAt: new Date(),
+                            isAdmin: false
+                        });
+                    }
+                    window.location.href = '../index.html';
+                }
+            } catch (error) {
+                console.log('Error en el inicio de sesión con Google:', error);
+                showMessage('login-error-message', 'Error al iniciar sesión con Google: ' + (error.message || error.code), true);
+            }
+        };
+
+        // Verificar resultado de redirect al cargar la página
+        window.addEventListener('load', async () => {
+            try {
+                const result = await getRedirectResult(auth);
+                if (result && result.user) {
+                    const user = result.user;
+                    await saveUserData(user);
+                    
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (!userDoc.exists) {
+                        await db.collection('users').doc(user.uid).set({
+                            email: user.email,
+                            displayName: user.displayName,
+                            photoURL: user.photoURL,
+                            createdAt: new Date(),
+                            isAdmin: false
+                        });
+                    }
+                    
+                    window.location.href = '../index.html';
+                }
+            } catch (error) {
+                console.log('Error al procesar el resultado del redirect:', error);
+            }
+        });
+
+        // Configurar el botón de Google
+        document.getElementById('googleBtn').addEventListener('click', handleGoogleLogin);
+    </script>
+ 
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const userSession = JSON.parse(localStorage.getItem('userSession'));
+        const loginLink = document.getElementById('loginLink');
+        const userProfile = document.getElementById('userProfile');
+        const profileLink = document.getElementById('profileLink');
+        const profileText = document.getElementById('profileText');
+
+        if (userSession && userSession.emailVerified) {
+            loginLink.style.display = 'none';
+            userProfile.style.display = 'flex';
+            if (profileLink && profileText) {
+                if (userSession.isAdmin) {
+                    profileLink.href = '../pages/perfilAdmin.html';
+                    profileText.textContent = 'Administrador';
+                    profileText.setAttribute('data-translate', 'Administrador');
+                } else {
+                    profileLink.href = '../pages/perfil.html';
+                    profileText.textContent = 'Perfil';
+                    profileText.setAttribute('data-translate', 'Perfil');
+                }
+            }
+        }
+    });
+    </script>
+        
+
+</body>
+</html>

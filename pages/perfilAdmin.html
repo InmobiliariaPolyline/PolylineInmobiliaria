@@ -1,0 +1,3104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Metadatos básicos -->
+    <meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POLYLINE - Panel de Administración</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon">
+    
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Hojas de estilo -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="../js/themes.js" defer></script>
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Estilos para el nuevo dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: 300px; /* Altura fija para las cards */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-card h3 {
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        /* Contenedor para los gráficos */
+        .chart-container {
+            flex: 1;
+            position: relative;
+            min-height: 0; /* Importante para evitar el crecimiento */
+        }
+
+        .trend {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .trend.up {
+            color: #4caf50;
+        }
+
+        .trend.down {
+            color: #f44336;
+        }
+
+        .popular-pages {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0; /* Importante para evitar el crecimiento */
+        }
+
+        .page-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .page-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-feed {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0; /* Importante para evitar el crecimiento */
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            margin-right: 1rem;
+            color: var(--accent-color);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: var(--danger-color, #e74c3c);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Estilos para la gestión de imágenes */
+        .image-management-section {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .image-upload-container {
+            margin-bottom: 2rem;
+        }
+
+        .drag-drop-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--input-bg);
+        }
+
+        .drag-drop-area:hover {
+            border-color: var(--accent-color);
+            background: var(--hover-bg);
+        }
+
+        .drag-drop-area i {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .drag-drop-area h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .drag-drop-area p {
+            color: var(--text-secondary);
+            margin: 0.5rem 0;
+        }
+
+        .file-types {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .image-preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .image-preview {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .image-preview .remove-image:hover {
+            background: rgba(255, 0, 0, 0.9);
+        }
+
+        .uploaded-images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .uploaded-image-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .uploaded-image-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .uploaded-image-info {
+            padding: 1rem;
+        }
+
+        .uploaded-image-info p {
+            margin: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .uploaded-image-info .image-url {
+            word-break: break-all;
+            font-size: 0.8rem;
+            color: var(--accent-color);
+        }
+
+        .upload-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--border-color);
+        }
+
+        .upload-progress-bar {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        /* Estilos para la sección de anuncios */
+        .announcement-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .announcement-thumbnail {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 1rem;
+        }
+
+        .no-image {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--border-color);
+            border-radius: 8px;
+            margin-right: 1rem;
+        }
+
+        .announcement-details {
+            flex: 1;
+        }
+
+        .announcement-type {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .announcement-type.general {
+            background: #2196f3;
+            color: #fff;
+        }
+
+        .announcement-type.promocion {
+            background: #4caf50;
+            color: #fff;
+        }
+
+        .announcement-type.evento {
+            background: #ff9800;
+            color: #fff;
+        }
+
+        .announcement-type.noticia {
+            background: #e91e63;
+            color: #fff;
+        }
+
+        .announcement-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .announcement-status.published {
+            background: #4caf50;
+            color: #fff;
+        }
+
+        .announcement-status.draft {
+            background: #9e9e9e;
+            color: #fff;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--accent-color-dark);
+        }
+
+        .edit-btn {
+            background: #2196f3;
+        }
+
+        .edit-btn:hover {
+            background: #1976d2;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Estilos para la sección de transacciones */
+        .transaction-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .transaction-status.pendiente {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .transaction-status.completada {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .transaction-status.rechazada {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .transaction-method {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .transaction-method.transferencia {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .transaction-method.yape {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        #transactions .data-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        #transactions .data-table th,
+        #transactions .data-table td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #transactions .data-table th:nth-child(1),
+        #transactions .data-table td:nth-child(1) {
+            width: 15%;
+        }
+
+        #transactions .data-table th:nth-child(2),
+        #transactions .data-table td:nth-child(2) {
+            width: 20%;
+        }
+
+        #transactions .data-table th:nth-child(3),
+        #transactions .data-table td:nth-child(3) {
+            width: 10%;
+        }
+
+        #transactions .data-table th:nth-child(4),
+        #transactions .data-table td:nth-child(4) {
+            width: 15%;
+        }
+
+        #transactions .data-table th:nth-child(5),
+        #transactions .data-table td:nth-child(5) {
+            width: 15%;
+        }
+
+        #transactions .data-table th:nth-child(6),
+        #transactions .data-table td:nth-child(6) {
+            width: 15%;
+        }
+
+        #transactions .data-table th:nth-child(7),
+        #transactions .data-table td:nth-child(7) {
+            width: 10%;
+        }
+
+        /* --- BLOQUES DINÁMICOS DE CONTENIDO --- */
+        .block-item {
+            display: flex; /* Mantener display: flex */
+            align-items: flex-start; /* Mantener alineación flex */
+            width: 95%;
+            gap: 1rem;
+            background: var(--input-bg, #f7f7f7);
+            border: 1px solid var(--border-color, #ddd);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .block-item label {
+            min-width: 80px;
+            font-weight: 500;
+            color: var(--text-color, #333);
+            margin-top: 0.3rem;
+        }
+        .block-item input[type="text"],
+        .block-item textarea {
+            width: 95%;
+            border: 1px solid var(--border-color, #ccc);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            font-size: 1rem;
+            background: #fff;
+            resize: vertical;
+        }
+        .block-item textarea {
+            min-height: 40px;
+            max-height: 120px;
+        }
+        .block-item input[type="file"] {
+            flex: 1;
+            margin-top: 0.2rem;
+        }
+        .block-item img {
+            max-width: 90px;
+            max-height: 90px;
+            border-radius: 6px;
+            margin-left: 1rem;
+            border: 1px solid #eee;
+            background: #fafafa;
+        }
+        .block-item .remove-image {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+            z-index: 2;
+        }
+        .block-item .remove-image:hover {
+            background: #c0392b;
+        }
+        .block-item .block-content {
+            flex: 1; /* Asegurar que ocupe el espacio horizontal disponible */
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        /* Estilos para el botón sticky y su menú */
+        .form-group.sticky-add-button {
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            width: auto;
+        }
+
+        #blockTypeMenu {
+            position: sticky;
+            top: 80px;
+            z-index: 999;
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .form-group.sticky-add-button .action-btn {
+            width: auto;
+            min-width: 120px;
+            padding: 10px 20px;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .block-item {
+                flex-direction: column;
+                align-items: stretch; /* Estirar elementos para ocupar el ancho completo */
+                gap: 0.5rem;
+            }
+            .block-item img {
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
+        }
+
+        [data-theme="dark"] input,
+        [data-theme="dark"] textarea {
+            color: #fff !important;
+            background: #222 !important;
+            border-color: #444 !important;
+        }
+
+        #editPhotoBtn:hover { background: #f0f0f0; }
+        #editPhotoBtn:active { background: #e0e0e0; }
+        #editAdminPhotoModal .modal-content { position:relative; }
+        #editAdminPhotoModal .close-modal:hover { color: #e74c3c; }
+        .admin-photo-modal-content {
+            height: auto;
+            max-width: 420px;
+            background: #232323;
+            color: #fff;
+            border-radius: 16px;
+            padding: 32px 32px 24px 32px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            position: relative;
+            margin: 60px auto;
+            text-align: center;
+        }
+        #editAdminPhotoModal .close-modal {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            font-size: 1.7em;
+            color: #fff;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        #editAdminPhotoModal .close-modal:hover {
+            color: #ff7800;
+        }
+        .success-modal {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: #232323;
+            color: #fff;
+            border-radius: 16px;
+            padding: 32px 32px 24px 32px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            text-align: center;
+            min-width: 320px;
+        }
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            z-index: 2999;
+            left: 0; top: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.5);
+        }
+        .success-modal i {
+            font-size: 3em;
+            color: #4caf50;
+            margin-bottom: 10px;
+        }
+        .success-modal button {
+            background: #ff7800;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 24px;
+            font-weight: 500;
+            margin-top: 18px;
+            cursor: pointer;
+        }
+        .success-modal button:hover {
+            filter: brightness(1.1);
+        }
+        /* --- ADAPTACIÓN AL MODO CLARO --- */
+        [data-theme="light"] .admin-photo-modal-content {
+            background: #fff;
+            color: #232323;
+        }
+        [data-theme="light"] #editAdminPhotoModal .close-modal {
+            color: #232323;
+        }
+        [data-theme="light"] #editAdminPhotoModal .close-modal:hover {
+            color: #ff7800;
+        }
+        [data-theme="light"] .success-modal {
+            background: #fff;
+            color: #232323;
+        }
+        [data-theme="light"] .success-modal i {
+            color: #4caf50;
+        }
+        [data-theme="light"] .success-modal button {
+            background: #ff7800;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-profile" style="position:relative; text-align:center;">
+                <div id="adminProfilePhotoContainer" style="position:relative; display:inline-block;">
+                    <img id="adminProfilePhoto" src="../Resource/Logo/logo.png" alt="Admin Profile" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:2px solid var(--primary-color); background:#fff;">
+                    <button id="editPhotoBtn" style="position:absolute; bottom:8px; right:8px; background:#fff; border:none; border-radius:50%; box-shadow:0 2px 6px rgba(0,0,0,0.15); width:36px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                        <i class="fas fa-pencil-alt" style="font-size:1.1em; color:var(--primary-color);"></i>
+                    </button>
+                </div>
+                <h3 id="adminName">Nombre del Administrador</h3>
+                <p id="adminEmail">admin@polyline.com</p>
+            </div>
+            
+            <ul class="admin-menu">
+                <li><a href="#dashboard" class="active"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="#pages"><i class="fas fa-file-alt"></i> Gestión de Páginas</a></li>
+                <li><a href="#users"><i class="fas fa-users"></i> Gestión de Usuarios</a></li>
+                <li><a href="#announcements"><i class="fas fa-bullhorn"></i> Gestión de Anuncios</a></li>
+                <li><a href="#transactions"><i class="fas fa-dollar-sign"></i> Gestión de Transacciones</a></li>
+                <li><a href="../index.html" class="return-home"><i class="fas fa-home"></i> Volver al Inicio</a></li>
+                <li><button id="logoutButton" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button></li>
+            </ul>
+
+            <div class="theme-toggle">
+                <button id="themeToggle" class="theme-btn">
+                    <i class="fas fa-moon"></i>
+                    <span>Modo Oscuro</span>
+                </button>
+            </div>
+        </aside>
+        <!-- Modal para cambiar foto de perfil admin -->
+        <div id="editAdminPhotoModal" class="modal" style="display:none;">
+            <div class="modal-content admin-photo-modal-content">
+                <span class="close-modal" id="closeEditAdminPhotoModal">&times;</span>
+                <h2 style="margin-bottom: 10px;">Editar Perfil</h2>
+                <label style="font-weight:500; color:#fff; margin-bottom:10px; display:block;">Foto de Perfil</label>
+                <div class="profile-avatar" id="adminPhotoPreview" style="margin:0 auto 18px auto; width:120px; height:120px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:#222; overflow:hidden; border:3px solid var(--primary-color);">
+                    <i class="fas fa-user" style="font-size:3em; color:#bbb;"></i>
+                </div>
+                <div class="photo-actions" style="display:flex; justify-content:center; gap:12px; margin-bottom:18px;">
+                    <input type="file" id="adminPhotoInputModal" accept="image/*" style="display:none;">
+                    <label for="adminPhotoInputModal" class="photo-upload-btn" style="background:#ff7800; color:#fff; border:none; border-radius:6px; padding:8px 18px; cursor:pointer; display:flex; align-items:center; gap:6px; font-weight:500;">
+                        <i class="fas fa-camera"></i> Cambiar Foto
+                    </label>
+                    <button type="button" id="deleteAdminPhotoBtn" style="background:#ff7800; color:#fff; border:none; border-radius:6px; padding:8px 18px; cursor:pointer; display:flex; align-items:center; gap:6px; font-weight:500;">
+                        <i class="fas fa-trash"></i> Borrar Foto
+                    </button>
+                </div>
+                <div style="display:flex; justify-content:center; gap:10px;">
+                    <button id="saveAdminPhotoBtn" class="save-profile-btn" style="background:#ff7800; color:#fff; border:none; border-radius:6px; padding:8px 24px; font-weight:500;">Guardar</button>
+                    <button id="cancelAdminPhotoBtn" class="save-profile-btn" style="background:#bbb; color:#fff; border:none; border-radius:6px; padding:8px 24px; font-weight:500;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+        <!-- Modal de éxito para admin -->
+        <div class="modal-backdrop" id="successBackdropAdmin"></div>
+        <div class="success-modal" id="successModalAdmin">
+            <i class="fas fa-check-circle"></i>
+            <h3>¡Éxito!</h3>
+            <p id="successMessageAdmin">Foto de perfil actualizada correctamente.</p>
+            <button onclick="closeSuccessModalAdmin()">Aceptar</button>
+        </div>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="admin-section">
+                <div class="admin-header">
+                    <h1 class="admin-title">Dashboard</h1>
+                    <div class="admin-actions">
+                        <button class="action-btn" onclick="loadDashboardStats()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Visitas Totales</h3>
+                        <div class="value">0</div>
+                        <div class="trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span class="trend-value">0%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Páginas Activas</h3>
+                        <div class="value">0</div>
+                        <div class="trend">
+                            <i class="fas fa-minus"></i>
+                            <span class="trend-value">0%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Usuarios Registrados</h3>
+                        <div class="value">0</div>
+                        <div class="trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span class="trend-value">0%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Tiempo Promedio</h3>
+                        <div class="value">0m 0s</div>
+                        <div class="trend down">
+                            <i class="fas fa-arrow-down"></i>
+                            <span class="trend-value">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Visitas por Día</h3>
+                        <div class="chart-container">
+                            <canvas id="visitsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Usuarios Activos</h3>
+                        <div class="chart-container">
+                            <canvas id="usersChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Páginas Populares</h3>
+                        <div class="popular-pages">
+                            <!-- Se llenará dinámicamente -->
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Actividad Reciente</h3>
+                        <div class="activity-feed">
+                            <!-- Se llenará dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Page Management Section -->
+            <section id="pages" class="admin-section" style="display: none;">
+                <div class="admin-header">
+                    <h1 class="admin-title">Gestión de Páginas</h1>
+                    <button class="action-btn" id="togglePageForm">
+                        <i class="fas fa-plus"></i> Nueva Página
+                    </button>
+                </div>
+
+                <div class="page-form-container" id="pageFormContainer" style="display: none;">
+                    <form class="page-form" id="createPageForm">
+                        <div class="form-group">
+                            <label for="pageTitle">Título de la Página</label>
+                            <input type="text" id="pageTitle" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pageDescription">Descripción Principal</label>
+                            <textarea id="pageDescription" rows="4"></textarea>
+                        </div>
+
+                        <!-- Botón para agregar bloques dinámicos -->
+                        <div class="form-group sticky-add-button">
+                            <button type="button" id="addBlockBtn" class="action-btn">Agregar +</button>
+                        </div>
+
+                        <!-- Menú para elegir tipo de bloque -->
+                        <div id="blockTypeMenu" style="display:none; margin-bottom: 1rem;">
+                            <button type="button" class="action-btn" data-type="title">Título</button>
+                            <button type="button" class="action-btn" data-type="description">Descripción</button>
+                            <button type="button" class="action-btn" data-type="image">Imagen</button>
+                        </div>
+
+                        <!-- Contenedor de bloques dinámicos -->
+                        <div id="dynamicBlocksContainer"></div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="pageCategory">Categoría</label>
+                                <input type="text" id="pageCategory">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pageStatus">Estado</label>
+                                <select id="pageStatus">
+                                    <option value="draft">Borrador</option>
+                                    <option value="published">Publicado</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="action-btn cancel-btn" id="cancelPage">Cancelar</button>
+                            <button type="submit" class="action-btn save-btn">Guardar Página</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="page-list">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Categoría</th>
+                                <th>Estado</th>
+                                <th>Fecha de Creación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pagesTableBody">
+                            <!-- Page rows will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- User Management Section -->
+            <section id="users" class="admin-section" style="display: none;">
+                <div class="admin-header">
+                    <h1 class="admin-title">Gestión de Usuarios</h1>
+                </div>
+
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- User rows will be added here -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Anuncios Section -->
+            <section id="announcements" class="admin-section" style="display: none;">
+                <div class="section-header">
+                    <h1 class="admin-title">Gestión de Anuncios</h1>
+                    <button class="action-btn" id="toggleAnnouncementForm">
+                        <i class="fas fa-plus"></i> Nuevo Anuncio
+                    </button>
+                </div>
+                <br></br>
+                <div class="announcement-form-container" id="announcementFormContainer" style="display: none;">
+                    <form class="announcement-form" id="createAnnouncementForm">
+                        <div class="form-group">
+                            <label for="announcementTitle">Título del Anuncio</label>
+                            <input type="text" id="announcementTitle" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="announcementDescription">Descripción</label>
+                            <textarea id="announcementDescription" rows="4"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="announcementType">Tipo de Anuncio</label>
+                                <select id="announcementType">
+                                    <option value="general">General</option>
+                                    <option value="promocion">Promoción</option>
+                                    <option value="evento">Evento</option>
+                                    <option value="noticia">Noticia</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="announcementStatus">Estado</label>
+                                <select id="announcementStatus">
+                                    <option value="draft">Borrador</option>
+                                    <option value="published">Publicado</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="announcementImageInput">Imagen Principal</label>
+                            <div class="drag-drop-area" id="announcementImageArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <h3>Arrastra y suelta la imagen aquí</h3>
+                                <p>o haz clic para seleccionar una imagen</p>
+                                <p class="file-types">Formatos soportados: JPG, PNG, GIF</p>
+                                <input type="file" id="announcementImageInput" accept="image/*" style="display: none;">
+                            </div>
+                            <div class="image-preview-container" id="announcementImagePreview"></div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="action-btn cancel-btn" id="cancelAnnouncement">Cancelar</button>
+                            <button type="submit" class="action-btn save-btn">Guardar Anuncio</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Fecha de Creación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="announcementsTableBody">
+                            <!-- Los anuncios se cargarán aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Transacciones Section -->
+            <section id="transactions" class="admin-section" style="display: none;">
+                <div class="section-header">
+                    <h1 class="admin-title">Gestión de Transacciones</h1>
+                </div>
+                <br></br>
+                <div class="table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>ID Transacción</th>
+                                <th>Usuario</th>
+                                <th>Monto</th>
+                                <th>Método de Pago</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTableBody">
+                            <!-- Las transacciones se cargarán aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Settings Section QUITADO PORQUE NO HAY NADA QUE CONFIGURAR, SI SE ELIMINA EL PERFIL ADMIN CRASHEA -->
+            <section id="settings" class="admin-section" style="display: none;">
+                <div class="admin-header">
+                    <h1 class="admin-title">Configuración</h1>
+                </div>
+
+                <!-- Sección de Gestión de Imágenes -->
+                <div class="image-management-section">
+                    <h2 class="section-title">Gestión de Imágenes</h2>
+                    <div class="image-upload-container">
+                        <div class="drag-drop-area" id="imageUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Arrastra y suelta imágenes aquí</h3>
+                            <p>o haz clic para seleccionar imágenes</p>
+                            <p class="file-types">Formatos soportados: JPG, PNG, GIF</p>
+                            <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
+                        </div>
+                        <div class="image-preview-container" id="imagePreview"></div>
+                    </div>
+                    <div class="uploaded-images-grid" id="uploadedImagesGrid">
+                        <!-- Las imágenes subidas se mostrarán aquí -->
+                    </div>
+                </div>
+
+                <form class="settings-form">
+                    <div class="form-group">
+                        <label for="siteTitle">Título del Sitio</label>
+                        <input type="text" id="siteTitle" placeholder="Título del sitio">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="siteDescription">Descripción del Sitio</label>
+                        <textarea id="siteDescription" placeholder="Descripción del sitio"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="theme">Tema</label>
+                        <select id="theme">
+                            <option value="light">Claro</option>
+                            <option value="dark">Oscuro</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="action-btn">Guardar Cambios</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { auth, db, storage, checkAuth } from '../js/firebase-config.js';
+        import { 
+            collection, 
+            query, 
+            where, 
+            getDocs, 
+            addDoc, 
+            updateDoc, 
+            deleteDoc, 
+            doc, 
+            getDoc,
+            serverTimestamp, 
+            orderBy, 
+            limit 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { 
+            getDownloadURL, 
+            ref, 
+            uploadBytes 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+        import { onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // Manejar el cierre de sesión
+        document.getElementById('logoutButton').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                localStorage.removeItem('userSession');
+                window.location.href = '../index.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+                alert('Error al cerrar sesión: ' + error.message);
+            }
+        });
+
+        // --- Mostrar nombre y correo del admin de forma robusta ---
+        window.addEventListener('DOMContentLoaded', () => {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    try {
+                        const userDoc = await getDoc(doc(db, 'users', user.uid));
+                        const userData = userDoc.data() || {};
+                        if (userData.isAdmin) {
+                            // Foto de perfil: priorizar Firestore, luego Auth, luego por defecto
+                            let photoURL = userData.photoURL;
+                            if (!photoURL || photoURL === '') {
+                                photoURL = user.photoURL;
+                            }
+                            if (!photoURL || photoURL === '') {
+                                photoURL = '../Resource/Logo/logo.png';
+                            }
+                            document.getElementById('adminProfilePhoto').src = photoURL;
+                            // Nombre y correo
+                            const nameEl = document.getElementById('adminName');
+                            const emailEl = document.getElementById('adminEmail');
+                            if (nameEl) nameEl.textContent = userData.displayName || userData.name || user.displayName || "Administrador";
+                            if (emailEl) emailEl.textContent = user.email;
+                        } else {
+                            alert('No tienes permisos de administrador');
+                            window.location.href = '/pages/perfil.html';
+                        }
+                    } catch (err) {
+                        alert('Error al cargar datos del usuario administrador');
+                    }
+                } else {
+                    window.location.href = '/pages/login.html';
+                }
+            });
+        });
+
+        // Configuración de Cloudinary
+        const CLOUDINARY_CLOUD_NAME = 'ddqe5f2br';
+        const CLOUDINARY_API_KEY = '142722212461979';
+        const CLOUDINARY_UPLOAD_PRESET = 'PolylineIMG';
+
+        // Elementos del DOM
+        const imageUploadArea = document.getElementById('imageUploadArea');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadedImagesGrid = document.getElementById('uploadedImagesGrid');
+
+        // Función para subir imagen a Cloudinary
+        async function uploadToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            try {
+                const response = await fetch(
+                    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+                    {
+                        method: 'POST',
+                        body: formData
+                    }
+                );
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || 'Error al subir la imagen');
+                }
+
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error detallado:', error);
+                throw new Error(`Error al subir la imagen: ${error.message}`);
+            }
+        }
+
+        // Función para guardar la URL en Firebase
+        async function saveImageToFirebase(imageData) {
+            try {
+                const docRef = await addDoc(collection(db, 'imagenes'), {
+                    url: imageData.secure_url,
+                    publicId: imageData.public_id,
+                    nombre: imageData.original_filename,
+                    tipo: imageData.format,
+                    tamaño: imageData.bytes,
+                    createdAt: serverTimestamp()
+                });
+                return docRef.id;
+            } catch (error) {
+                console.error('Error al guardar en Firebase:', error);
+                throw error;
+            }
+        }
+
+        // Función para mostrar la imagen en la galería
+        function displayUploadedImage(imageData, docId) {
+            const imageCard = document.createElement('div');
+            imageCard.className = 'uploaded-image-card';
+            imageCard.innerHTML = `
+                <img src="${imageData.secure_url}" alt="${imageData.original_filename}">
+                <div class="uploaded-image-info">
+                    <p>${imageData.original_filename}</p>
+                    <p class="image-url">${imageData.secure_url}</p>
+                    <p>${(imageData.bytes / 1024).toFixed(2)} KB</p>
+                </div>
+            `;
+            uploadedImagesGrid.insertBefore(imageCard, uploadedImagesGrid.firstChild);
+        }
+
+        // Función para manejar la carga de archivos
+        async function handleFiles(files) {
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) {
+                    alert('Por favor, selecciona solo archivos de imagen');
+                    continue;
+                }
+
+                // Crear preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.createElement('div');
+                    preview.className = 'image-preview';
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <div class="upload-progress">
+                            <div class="upload-progress-bar"></div>
+                        </div>
+                    `;
+                    imagePreview.appendChild(preview);
+
+                    // Subir a Cloudinary
+                    uploadToCloudinary(file)
+                        .then(async (imageData) => {
+                            // Guardar en Firebase
+                            const docId = await saveImageToFirebase(imageData);
+                            // Mostrar en la galería
+                            displayUploadedImage(imageData, docId);
+                            // Actualizar la barra de progreso
+                            preview.querySelector('.upload-progress-bar').style.width = '100%';
+                            // Remover preview después de 2 segundos
+                            setTimeout(() => preview.remove(), 2000);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            preview.remove();
+                            alert('Error al subir la imagen: ' + error.message);
+                        });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Configurar drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            imageUploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            imageUploadArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            imageUploadArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            imageUploadArea.classList.add('highlight');
+        }
+
+        function unhighlight(e) {
+            imageUploadArea.classList.remove('highlight');
+        }
+
+        // Manejar el drop de archivos
+        imageUploadArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        // Manejar la selección de archivos
+        imageUploadArea.addEventListener('click', () => {
+            imageInput.click();
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        // Cargar imágenes existentes
+        async function loadExistingImages() {
+            try {
+                const q = query(collection(db, 'imagenes'), orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+                
+                querySnapshot.forEach(doc => {
+                    const imageData = doc.data();
+                    displayUploadedImage({
+                        secure_url: imageData.url,
+                        original_filename: imageData.nombre,
+                        bytes: imageData.tamaño
+                    }, doc.id);
+                });
+            } catch (error) {
+                console.error('Error al cargar imágenes:', error);
+            }
+        }
+
+        // Cargar imágenes al iniciar
+        loadExistingImages();
+
+        // Navigation
+        document.querySelectorAll('.admin-menu a[href^="#"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = link.getAttribute('href').substring(1);
+                // Update active link
+                document.querySelectorAll('.admin-menu a').forEach(a => a.classList.remove('active'));
+                link.classList.add('active');
+                // Show target section
+                document.querySelectorAll('.admin-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                document.getElementById(target).style.display = 'block';
+
+                // Cargar datos específicos de la sección
+                if (target === 'users') {
+                    loadUsers();
+                } else if (target === 'pages') {
+                    loadPages();
+                } else if (target === 'announcements') {
+                    loadAnnouncements();
+                } else if (target === 'transactions') {
+                    loadTransactions();
+                }
+            });
+        });
+
+        // Tema oscuro
+        const themeToggle = document.getElementById('themeToggle');
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+        // Cargar tema guardado o usar preferencias del sistema
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButton(savedTheme);
+        } else if (prefersDarkScheme.matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            updateThemeButton('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeButton(newTheme);
+        });
+
+        function updateThemeButton(theme) {
+            const icon = themeToggle.querySelector('i');
+            const text = themeToggle.querySelector('span');
+            
+            if (theme === 'dark') {
+                icon.className = 'fas fa-sun';
+                text.textContent = 'Modo Claro';
+            } else {
+                icon.className = 'fas fa-moon';
+                text.textContent = 'Modo Oscuro';
+            }
+        }
+
+        // Escuchar cambios en las preferencias del sistema
+        prefersDarkScheme.addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                const newTheme = e.matches ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                updateThemeButton(newTheme);
+            }
+        });
+
+        // Registrar visita
+        async function registerVisit() {
+            try {
+                const visitStart = Date.now();
+                
+                // Registrar cuando el usuario abandona la página
+                window.addEventListener('beforeunload', async () => {
+                    const visitDuration = Math.floor((Date.now() - visitStart) / 1000);
+                    await addDoc(collection(db, 'visits'), {
+                        timestamp: serverTimestamp(),
+                        duration: visitDuration,
+                        page: 'admin_dashboard',
+                        userId: auth.currentUser?.uid || 'anonymous'
+                    });
+                });
+            } catch (error) {
+                console.error('Error al registrar visita:', error);
+            }
+        }
+
+        // Variables para los gráficos
+        let visitsChart = null;
+        let usersChart = null;
+
+        // Función para inicializar los gráficos
+        function initCharts() {
+            const visitsCtx = document.getElementById('visitsChart').getContext('2d');
+            const usersCtx = document.getElementById('usersChart').getContext('2d');
+
+            visitsChart = new Chart(visitsCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Visitas',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            usersChart = new Chart(usersCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Usuarios Activos',
+                        data: [],
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Función para actualizar los gráficos
+        async function updateCharts() {
+            try {
+                // Obtener datos de visitas de los últimos 7 días
+                const sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+                const visitsQuery = query(
+                    collection(db, 'visits'),
+                    where('timestamp', '>=', sevenDaysAgo),
+                    orderBy('timestamp', 'asc')
+                );
+                const visitsSnapshot = await getDocs(visitsQuery);
+
+                // Crear array de fechas para los últimos 7 días
+                const dates = Array.from({length: 7}, (_, i) => {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    return date.toLocaleDateString();
+                }).reverse();
+
+                // Inicializar contador de visitas por día
+                const visitsByDay = {};
+                dates.forEach(date => visitsByDay[date] = 0);
+
+                // Contar visitas por día
+                visitsSnapshot.forEach(doc => {
+                    const visit = doc.data();
+                    const date = new Date(visit.timestamp.toDate()).toLocaleDateString();
+                    if (visitsByDay[date] !== undefined) {
+                        visitsByDay[date]++;
+                    }
+                });
+
+                // Actualizar gráfico de visitas
+                visitsChart.data.labels = dates;
+                visitsChart.data.datasets[0].data = dates.map(date => visitsByDay[date] || 0);
+                visitsChart.update();
+
+                // Obtener datos de usuarios activos
+                const usersQuery = query(
+                    collection(db, 'users'),
+                    where('lastActive', '>=', sevenDaysAgo),
+                    orderBy('lastActive', 'asc')
+                );
+                const usersSnapshot = await getDocs(usersQuery);
+
+                // Inicializar contador de usuarios por día
+                const usersByDay = {};
+                dates.forEach(date => usersByDay[date] = 0);
+
+                // Contar usuarios activos por día
+                usersSnapshot.forEach(doc => {
+                    const user = doc.data();
+                    const date = new Date(user.lastActive.toDate()).toLocaleDateString();
+                    if (usersByDay[date] !== undefined) {
+                        usersByDay[date]++;
+                    }
+                });
+
+                // Actualizar gráfico de usuarios
+                usersChart.data.labels = dates;
+                usersChart.data.datasets[0].data = dates.map(date => usersByDay[date] || 0);
+                usersChart.update();
+
+            } catch (error) {
+                console.error('Error al actualizar gráficos:', error);
+            }
+        }
+
+        // Función para cargar páginas populares
+        async function loadPopularPages() {
+            try {
+                const pagesQuery = query(
+                    collection(db, 'pages'),
+                    orderBy('views', 'desc'),
+                    limit(5)
+                );
+                const pagesSnapshot = await getDocs(pagesQuery);
+
+                const popularPagesContainer = document.querySelector('.popular-pages');
+                popularPagesContainer.innerHTML = '';
+
+                pagesSnapshot.forEach(doc => {
+                    const page = doc.data();
+                    const pageItem = document.createElement('div');
+                    pageItem.className = 'page-item';
+                    pageItem.innerHTML = `
+                        <div class="page-info">
+                            <h4>${page.title}</h4>
+                            <p>${page.views || 0} visitas</p>
+                        </div>
+                        <span class="page-status ${page.status}">${page.status}</span>
+                    `;
+                    popularPagesContainer.appendChild(pageItem);
+                });
+            } catch (error) {
+                console.error('Error al cargar páginas populares:', error);
+            }
+        }
+
+        // Función para cargar actividad reciente
+        async function loadRecentActivity() {
+            try {
+                const activityQuery = query(
+                    collection(db, 'activity'),
+                    orderBy('timestamp', 'desc'),
+                    limit(10)
+                );
+                const activitySnapshot = await getDocs(activityQuery);
+
+                const activityFeed = document.querySelector('.activity-feed');
+                activityFeed.innerHTML = '';
+
+                activitySnapshot.forEach(doc => {
+                    const activity = doc.data();
+                    const activityItem = document.createElement('div');
+                    activityItem.className = 'activity-item';
+                    activityItem.innerHTML = `
+                        <div class="activity-icon">
+                            <i class="fas ${getActivityIcon(activity.type)}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p>${activity.description}</p>
+                            <span class="activity-time">${new Date(activity.timestamp.toDate()).toLocaleString()}</span>
+                        </div>
+                    `;
+                    activityFeed.appendChild(activityItem);
+                });
+            } catch (error) {
+                console.error('Error al cargar actividad reciente:', error);
+            }
+        }
+
+        // Función auxiliar para obtener el ícono según el tipo de actividad
+        function getActivityIcon(type) {
+            const icons = {
+                'page_created': 'fa-file-alt',
+                'user_registered': 'fa-user-plus',
+                'page_updated': 'fa-edit',
+                'user_updated': 'fa-user-edit',
+                'page_deleted': 'fa-trash',
+                'user_deleted': 'fa-user-minus'
+            };
+            return icons[type] || 'fa-info-circle';
+        }
+
+        // Modificar la función loadDashboardStats
+        async function loadDashboardStats() {
+            try {
+                // Registrar nueva visita
+                await registerVisit();
+
+                // Obtener estadísticas de visitas
+                const visitsQuery = query(collection(db, 'visits'));
+                const visitsSnapshot = await getDocs(visitsQuery);
+                const totalVisits = visitsSnapshot.size;
+                document.querySelector('.stat-card:nth-child(1) .value').textContent = totalVisits;
+
+                // Obtener páginas activas
+                const pagesQuery = query(
+                    collection(db, 'paginas'),
+                    where('status', '==', 'published')
+                );
+                const pagesSnapshot = await getDocs(pagesQuery);
+                const activePages = pagesSnapshot.size;
+                document.querySelector('.stat-card:nth-child(2) .value').textContent = activePages;
+
+                // Obtener usuarios registrados
+                const usersQuery = query(collection(db, 'users'));
+                const usersSnapshot = await getDocs(usersQuery);
+                const totalUsers = usersSnapshot.size;
+                document.querySelector('.stat-card:nth-child(3) .value').textContent = totalUsers;
+
+                // Calcular tiempo promedio de visita
+                const visits = [];
+                visitsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.duration) {
+                        visits.push(data.duration);
+                    }
+                });
+                
+                let avgDurationText = 'Sin datos';
+                if (visits.length > 0) {
+                    const avgDuration = Math.round(visits.reduce((a, b) => a + b, 0) / visits.length);
+                    const minutes = Math.floor(avgDuration / 60);
+                    const seconds = avgDuration % 60;
+                    avgDurationText = `${minutes}m ${seconds}s`;
+                }
+                document.querySelector('.stat-card:nth-child(4) .value').textContent = avgDurationText;
+
+                // Actualizar gráficos y datos adicionales
+                await updateCharts();
+                await loadPopularPages();
+                await loadRecentActivity();
+
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+            }
+        }
+
+        // Actualizar estadísticas cada 5 minutos
+        let statsInterval = null;
+
+        function startStatsInterval() {
+            // Limpiar intervalo existente si lo hay
+            if (statsInterval) {
+                clearInterval(statsInterval);
+            }
+            // Establecer nuevo intervalo
+            statsInterval = setInterval(loadDashboardStats, 5 * 60 * 1000);
+        }
+
+        // Inicializar cuando se carga la página
+        window.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            loadDashboardStats();
+            startStatsInterval();
+        });
+
+        // Limpiar intervalo cuando se desmonta la página
+        window.addEventListener('beforeunload', () => {
+            if (statsInterval) {
+                clearInterval(statsInterval);
+            }
+        });
+
+        // Función para cargar usuarios
+        async function loadUsers() {
+            try {
+                const usersTableBody = document.getElementById('usersTableBody');
+                usersTableBody.innerHTML = '<tr><td colspan="5">Cargando usuarios...</td></tr>';
+
+                const usersQuery = query(collection(db, 'users'));
+                const usersSnapshot = await getDocs(usersQuery);
+                
+                if (usersSnapshot.empty) {
+                    usersTableBody.innerHTML = '<tr><td colspan="5">No hay usuarios registrados</td></tr>';
+                    return;
+                }
+
+                usersTableBody.innerHTML = '';
+                usersSnapshot.forEach(doc => {
+                    const user = doc.data();
+                    // --- Traducción amigable del rol ---
+                    let rol = 'Usuario';
+                    if (typeof user.isAdmin === 'boolean') {
+                        rol = user.isAdmin ? 'Administrador' : 'Usuario';
+                    } else if (user.role) {
+                        rol = user.role === 'admin' ? 'Administrador' : 'Usuario';
+                    }
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.displayName || 'Sin nombre'}</td>
+                        <td>${user.email}</td>
+                        <td>${rol}</td>
+                        <td>
+                            <button class="action-btn edit-btn" onclick="editUser('${doc.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteUser('${doc.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    usersTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error al cargar usuarios:', error);
+                const usersTableBody = document.getElementById('usersTableBody');
+                usersTableBody.innerHTML = `<tr><td colspan="5">Error al cargar usuarios: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Función para editar usuario
+        window.editUser = async function(uid) {
+            try {
+                const userDoc = await getDoc(doc(db, 'users', uid));
+                if (!userDoc.exists()) {
+                    throw new Error('Usuario no encontrado');
+                }
+                
+                const user = userDoc.data();
+                
+                // Crear modal de edición (sin campo Estado)
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <h2>Editar Usuario</h2>
+                        <form id="editUserForm">
+                            <div class="form-group">
+                                <label for="editUserName">Nombre</label>
+                                <input type="text" id="editUserName" value="${user.displayName || ''}" required readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="editUserEmail">Email</label>
+                                <input type="email" id="editUserEmail" value="${user.email}" required readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="editUserRole">Rol</label>
+                                <select id="editUserRole" required>
+                                    <option value="user" ${(user.isAdmin ? '' : 'selected')}>Usuario</option>
+                                    <option value="admin" ${(user.isAdmin ? 'selected' : '')}>Administrador</option>
+                                </select>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="action-btn cancel-btn" onclick="closeModal()">Cancelar</button>
+                                <button type="submit" class="action-btn save-btn">Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Manejar el envío del formulario
+                const editUserForm = document.getElementById('editUserForm');
+                editUserForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    try {
+                        const updatedData = {
+                            displayName: document.getElementById('editUserName').value,
+                            email: document.getElementById('editUserEmail').value,
+                            isAdmin: document.getElementById('editUserRole').value === 'admin'
+                        };
+                        await updateDoc(doc(db, 'users', uid), updatedData);
+                        // Registrar actividad
+                        await addDoc(collection(db, 'activity'), {
+                            type: 'user_updated',
+                            description: `Usuario ${updatedData.displayName} actualizado`,
+                            timestamp: serverTimestamp()
+                        });
+                        closeModal();
+                        loadUsers();
+                        const successMessage = document.createElement('div');
+                        successMessage.className = 'success-message';
+                        successMessage.innerHTML = `
+                            <i class="fas fa-check-circle"></i>
+                            <p>Rol del usuario cambiado</p>
+                        `;
+                        document.body.appendChild(successMessage);
+                        setTimeout(() => successMessage.remove(), 3000);
+                    } catch (error) {
+                        console.error('Error al actualizar usuario:', error);
+                        alert('Error al actualizar usuario: ' + error.message);
+                    }
+                });
+            } catch (error) {
+                console.error('Error al editar usuario:', error);
+                alert('Error al editar usuario: ' + error.message);
+            }
+        };
+
+        // Función para eliminar usuario
+        window.deleteUser = async function(uid) {
+            // Crear modal de confirmación
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content confirm-modal">
+                    <h2>Eliminar Usuario</h2>
+                    <p>¿Desea eliminar este usuario?</p>
+                    <div class="form-actions">
+                        <button type="button" class="action-btn cancel-btn" onclick="closeModal()">Cancelar</button>
+                        <button type="button" class="action-btn delete-btn" id="confirmDeleteUser">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Manejar la confirmación
+            document.getElementById('confirmDeleteUser').addEventListener('click', async () => {
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', uid));
+                    if (!userDoc.exists()) {
+                        throw new Error('Usuario no encontrado');
+                    }
+
+                    const userData = userDoc.data();
+                    await deleteDoc(doc(db, 'users', uid));
+                    
+                    // Registrar actividad
+                    await addDoc(collection(db, 'activity'), {
+                        type: 'user_deleted',
+                        description: `Usuario ${userData.displayName || userData.email} eliminado`,
+                        timestamp: serverTimestamp()
+                    });
+
+                    closeModal();
+                    loadUsers();
+
+                    // Mostrar mensaje de éxito
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'success-message error';
+                    successMessage.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <p>Usuario eliminado exitosamente</p>
+                    `;
+                    document.body.appendChild(successMessage);
+                    setTimeout(() => successMessage.remove(), 3000);
+
+                } catch (error) {
+                    console.error('Error al eliminar usuario:', error);
+                    alert('Error al eliminar usuario: ' + error.message);
+                }
+            });
+        };
+
+        // Función para cerrar el modal
+        window.closeModal = function() {
+            document.querySelectorAll('.modal').forEach(m => m.remove());
+        };
+
+        // Agregar estilos para el mensaje de éxito en rojo y el modal de confirmación
+        const successStyles = document.createElement('style');
+        successStyles.textContent = `
+            /* Estilos base del modal */
+            .modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            }
+
+            .modal-content {
+                background: var(--card-bg);
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
++               flex-shrink: 0; /* Evitar que el contenido del modal se estire innecesariamente */
+            }
+
+            .success-message {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 2rem;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            }
+
+            .success-message.error {
+                background-color: #ff4444;
+                color: white;
+            }
+
+            .success-message i {
+                font-size: 1.5rem;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            .delete-btn {
+                background-color: #ff4444 !important;
+                color: white !important;
+            }
+
+            .delete-btn:hover {
+                background-color: #cc0000 !important;
+            }
+
+            /* Estilos para el modal de confirmación */
+            .confirm-modal {
+                width: auto !important;
+                height: auto !important;
+                min-width: 250px !important;
+                max-width: 300px !important;
+                padding: 0.75rem !important;
+                display: flex !important; /* Volver a usar flexbox */
+                flex-direction: column !important; /* Apilar contenido verticalmente */
+                align-items: center !important;
+                text-align: center; /* Centrar texto */
+            }
+
+            .confirm-modal h2 {
+                font-size: 1.1rem !important;
+                margin-bottom: 0.25rem !important;
+                color: var(--text-color) !important;
+                font-weight: 600 !important;
+                text-align: center !important;
+            }
+
+            .confirm-modal p {
+                color: var(--text-secondary) !important;
+                margin-bottom: 0.75rem !important;
+                font-size: 0.9rem !important;
+                text-align: center !important;
+            }
+
+            .confirm-modal .form-actions {
+                display: flex !important;
+                justify-content: center !important;
+                gap: 0.75rem !important;
+                margin-top: 0 !important;
+                width: 100% !important;
+            }
+
+            .confirm-modal .action-btn {
+                padding: 0.3rem 0.75rem !important;
+                font-size: 0.85rem !important;
+                min-width: 70px !important;
+                height: 28px !important;
+            }
+        `;
+        document.head.appendChild(successStyles);
+
+        // Función para cargar páginas
+        async function loadPages() {
+            try {
+                const pagesTableBody = document.getElementById('pagesTableBody');
+                pagesTableBody.innerHTML = '<tr><td colspan="5">Cargando páginas...</td></tr>';
+
+                const pagesQuery = query(collection(db, 'paginas'), orderBy('createdAt', 'desc'));
+                const pagesSnapshot = await getDocs(pagesQuery);
+
+                if (pagesSnapshot.empty) {
+                    pagesTableBody.innerHTML = '<tr><td colspan="5">No hay páginas creadas</td></tr>';
+                    return;
+                }
+
+                pagesTableBody.innerHTML = '';
+                pagesSnapshot.forEach(doc => {
+                    const page = doc.data();
+                    const row = document.createElement('tr');
+                    const displayStatus = page.status === 'published' ? 'Publicado' : (page.status === 'draft' ? 'Borrador' : page.status);
+                    row.innerHTML = `
+                        <td>${page.title}</td>
+                        <td>${page.category}</td>
+                        <td>${displayStatus}</td>
+                        <td>${page.createdAt ? new Date(page.createdAt.toDate()).toLocaleDateString() : 'N/A'}</td>
+                        <td>
+                            <button class="action-btn edit-btn" onclick="editPage('${doc.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deletePage('${doc.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    pagesTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error al cargar páginas:', error);
+                const pagesTableBody = document.getElementById('pagesTableBody');
+                pagesTableBody.innerHTML = `<tr><td colspan="5">Error al cargar páginas: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Manejo del formulario de página
+        const pageFormContainer = document.getElementById('pageFormContainer');
+        const cancelPage = document.getElementById('cancelPage');
+        const createPageForm = document.getElementById('createPageForm');
+        const togglePageForm = document.getElementById('togglePageForm');
+
+        // Funcionalidad del formulario de página
+        if (togglePageForm) {
+            togglePageForm.addEventListener('click', () => {
+                pageFormContainer.style.display = pageFormContainer.style.display === 'none' ? 'block' : 'none';
+                // --- CORRECCIÓN: resetear modo edición y limpiar formulario ---
+                editingPageId = null;
+                contentBlocks = [];
+                renderBlocks();
+                if (createPageForm) {
+                    createPageForm.reset();
+                    const submitButton = createPageForm.querySelector('button[type="submit"]');
+                    if (submitButton) submitButton.textContent = 'Guardar Página';
+                }
+            });
+        }
+
+        if (cancelPage) {
+            cancelPage.addEventListener('click', () => {
+                pageFormContainer.style.display = 'none';
+                // --- CORRECCIÓN: resetear modo edición y limpiar formulario ---
+                editingPageId = null;
+                contentBlocks = [];
+                renderBlocks();
+                if (createPageForm) {
+                    createPageForm.reset();
+                    const submitButton = createPageForm.querySelector('button[type="submit"]');
+                    if (submitButton) submitButton.textContent = 'Guardar Página';
+                }
+            });
+        }
+
+        // Variables para edición
+        let editingPageId = null;
+
+        // Función para editar página
+        window.editPage = async function(pageId) {
+            try {
+                const pageDoc = await getDoc(doc(db, 'paginas', pageId));
+                if (!pageDoc.exists()) {
+                    throw new Error('Página no encontrada');
+                }
+                const page = pageDoc.data();
+                // Mostrar el formulario principal
+                pageFormContainer.style.display = 'block';
+                // Rellenar campos básicos
+                document.getElementById('pageTitle').value = page.title || '';
+                document.getElementById('pageDescription').value = page.description || '';
+                document.getElementById('pageCategory').value = page.category || '';
+                document.getElementById('pageStatus').value = page.status || 'draft';
+                // No rellenamos imágenes principales por simplicidad
+                // Rellenar bloques dinámicos
+                contentBlocks = Array.isArray(page.contentBlocks) ? JSON.parse(JSON.stringify(page.contentBlocks)) : [];
+                editingPageId = pageId;
+                renderBlocks();
+                // Cambiar el botón de guardar
+                const submitButton = createPageForm.querySelector('button[type="submit"]');
+                submitButton.textContent = 'Actualizar Página';
+            } catch (error) {
+                console.error('Error al editar página:', error);
+                alert('Error al editar página: ' + error.message);
+            }
+        };
+
+        // Al guardar la página, si editingPageId está definido, hacer update en vez de add
+        if (createPageForm) {
+            createPageForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Mover la obtención del botón aquí, dentro del try/catch
+
+                try {
+                    // Obtener el botón de envío de forma segura (movido aquí)
+                    const submitButton = createPageForm.querySelector('button[type="submit"]');
+
+                    // Mostrar indicador de carga solo si se encontró el botón
+                    if (submitButton) {
+                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+                        submitButton.disabled = true;
+                    }
+
+                    const pageData = {
+                        title: document.getElementById('pageTitle').value.trim(),
+                        description: document.getElementById('pageDescription').value.trim() || '',
+                        category: document.getElementById('pageCategory').value.trim() || 'Sin categoría',
+                        status: document.getElementById('pageStatus').value || 'draft',
+                        updatedAt: serverTimestamp()
+                    };
+
+                    if (!pageData.title) {
+                        throw new Error('El título de la página es obligatorio');
+                    }
+
+                    // Subir imágenes de los bloques dinámicos antes de guardar
+                    const blocksToSave = [];
+                    for (let i = 0; i < contentBlocks.length; i++) {
+                        const block = contentBlocks[i];
+                        if (block.type === 'image' && block.value && typeof block.value !== 'string') {
+                            const file = block.value;
+                            if (!file.type.startsWith('image/')) {
+                                throw new Error('Solo se permiten archivos de imagen en los bloques');
+                            }
+                            try {
+                                const cloudinaryData = await uploadToCloudinary(file);
+                                blocksToSave.push({ type: 'image', value: cloudinaryData.secure_url });
+                            } catch (error) {
+                                throw new Error(`Error al subir imagen de bloque: ${error.message}`);
+                            }
+                        } else if (block.type === 'image' && block.value && typeof block.value === 'string') {
+                            blocksToSave.push(block);
+                        } else if (block.type !== 'image') {
+                            blocksToSave.push(block);
+                        }
+                    }
+                    pageData.contentBlocks = blocksToSave.filter(b => b.value && b.value !== '');
+
+                    if (editingPageId) {
+                        await updateDoc(doc(db, 'paginas', editingPageId), pageData);
+                    } else {
+                        pageData.createdAt = serverTimestamp();
+                        pageData.views = 0;
+                        pageData.createdBy = auth.currentUser.uid;
+                        await addDoc(collection(db, 'paginas'), pageData);
+                    }
+
+                    await loadPages();
+                    createPageForm.reset();
+                    pageFormContainer.style.display = 'none';
+                    contentBlocks = [];
+                    renderBlocks();
+                    editingPageId = null;
+                    submitButton.textContent = 'Guardar Página';
+
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'success-message';
+                    successMessage.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <p>Página ${editingPageId ? 'actualizada' : 'creada'} exitosamente</p>
+                    `;
+                    document.body.appendChild(successMessage);
+                    setTimeout(() => successMessage.remove(), 3000);
+
+                } catch (error) {
+                    console.error('Error al guardar la página:', error);
+                    alert('Error al guardar la página: ' + error.message);
+                } finally {
+                    // Restaurar el botón solo si se encontró
+                    const submitButton = createPageForm.querySelector('button[type="submit"]'); // Obtener de nuevo para el finally
+                    if (submitButton) {
+                        submitButton.innerHTML = editingPageId ? 'Actualizar Página' : 'Guardar Página';
+                        submitButton.disabled = false;
+                    }
+                }
+            });
+        }
+
+        // Función para eliminar página (modificada para verificar existencia y obtener título)
+        window.deletePage = async function(pageId) {
+            // Eliminar cualquier otro modal existente antes de crear uno nuevo
+            document.querySelectorAll('.modal').forEach(m => m.remove());
+            // Crear modal de confirmación
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content confirm-modal">
+                    <h2>Eliminar Página</h2>
+                    <p>¿Desea eliminar esta página?</p>
+                    <div class="form-actions">
+                        <button type="button" class="action-btn cancel-btn" onclick="closeModal()">Cancelar</button>
+                        <button type="button" class="action-btn delete-btn" id="confirmDeletePage">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Manejar la confirmación
+            document.getElementById('confirmDeletePage').addEventListener('click', async () => {
+                try {
+                    // Obtener datos de la página antes de eliminar
+                    const pageDoc = await getDoc(doc(db, 'paginas', pageId));
+                    if (!pageDoc.exists()) {
+                        throw new Error('Página no encontrada');
+                    }
+                    const pageData = pageDoc.data();
+                    const pageTitle = pageData.title || 'Página sin título';
+
+                    // Eliminar la página
+                    await deleteDoc(doc(db, 'paginas', pageId));
+
+                    // Registrar actividad con el título de la página
+                    await addDoc(collection(db, 'activity'), {
+                        type: 'page_deleted',
+                        description: `Página "${pageTitle}" eliminada`,
+                        timestamp: serverTimestamp()
+                    });
+
+                    closeModal();
+                    await loadPages();
+
+                    // Mostrar mensaje de éxito
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'success-message';
+                    successMessage.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <p>Página eliminada exitosamente</p>
+                    `;
+                    document.body.appendChild(successMessage);
+                    setTimeout(() => successMessage.remove(), 3000);
+
+                } catch (error) {
+                    console.error('Error al eliminar página:', error);
+                    closeModal();
+                    alert('Error al eliminar página: ' + error.message);
+                }
+            });
+        };
+
+        // Función para eliminar anuncio
+        window.deleteAnnouncement = async function(announcementId) {
+            // Crear modal de confirmación
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content confirm-modal">
+                    <h2>Eliminar Anuncio</h2>
+                    <p>¿Desea eliminar este anuncio?</p>
+                    <div class="form-actions">
+                        <button type="button" class="action-btn cancel-btn" onclick="closeModal()">Cancelar</button>
+                        <button type="button" class="action-btn delete-btn" id="confirmDeleteAnnouncement">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Manejar la confirmación
+            document.getElementById('confirmDeleteAnnouncement').addEventListener('click', async () => {
+                try {
+                    const docRef = doc(db, 'anuncios', announcementId);
+                    await deleteDoc(docRef);
+                    closeModal();
+                    await loadAnnouncements();
+
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'success-message error';
+                    successMessage.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <p>Anuncio eliminado exitosamente</p>
+                    `;
+                    document.body.appendChild(successMessage);
+                    setTimeout(() => successMessage.remove(), 3000);
+
+                } catch (error) {
+                    console.error('Error al eliminar anuncio:', error);
+                    alert('Error al eliminar anuncio: ' + error.message);
+                }
+            });
+        };
+
+        // Función para cargar transacciones
+        async function loadTransactions() {
+            try {
+                const transactionsTableBody = document.getElementById('transactionsTableBody');
+                transactionsTableBody.innerHTML = '<tr><td colspan="6">Cargando transacciones...</td></tr>';
+
+                const transactionsQuery = query(collection(db, 'transacciones'), orderBy('createdAt', 'desc'));
+                const transactionsSnapshot = await getDocs(transactionsQuery);
+
+                if (transactionsSnapshot.empty) {
+                    transactionsTableBody.innerHTML = '<tr><td colspan="6">No hay transacciones registradas</td></tr>';
+                        return;
+                    }
+
+                transactionsTableBody.innerHTML = '';
+                transactionsSnapshot.forEach(doc => {
+                    const transaction = doc.data();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${transaction.id}</td>
+                        <td>${transaction.usuario}</td>
+                        <td>${transaction.monto}</td>
+                        <td>${transaction.metodoPago}</td>
+                        <td>${transaction.estado}</td>
+                        <td>${new Date(transaction.createdAt.toDate()).toLocaleString()}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit-btn" onclick="editTransaction('${doc.id}')">
+                                    <i class="fas fa-edit"></i>
+                            </button>
+                                <button class="action-btn delete-btn" onclick="deleteTransaction('${doc.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    transactionsTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error al cargar transacciones:', error);
+                const transactionsTableBody = document.getElementById('transactionsTableBody');
+                transactionsTableBody.innerHTML = `<tr><td colspan="6">Error al cargar transacciones: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Función para editar transacción
+        window.editTransaction = async function(transactionId) {
+            try {
+                const transactionDoc = await getDoc(doc(db, 'transacciones', transactionId));
+                if (!transactionDoc.exists()) {
+                    throw new Error('Transacción no encontrada');
+                }
+                
+                const transaction = transactionDoc.data();
+                
+                // Crear modal de edición
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <h2>Editar Transacción</h2>
+                        <form id="editTransactionForm">
+                            <div class="form-group">
+                                <label for="editTransactionUsuario">Usuario</label>
+                                <input type="text" id="editTransactionUsuario" value="${transaction.usuario}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editTransactionMonto">Monto</label>
+                                <input type="number" id="editTransactionMonto" value="${transaction.monto}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editTransactionMetodoPago">Método de Pago</label>
+                                <input type="text" id="editTransactionMetodoPago" value="${transaction.metodoPago}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editTransactionEstado">Estado</label>
+                                <input type="text" id="editTransactionEstado" value="${transaction.estado}" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="action-btn cancel-btn" onclick="closeModal()">Cancelar</button>
+                                <button type="submit" class="action-btn save-btn">Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Manejar el envío del formulario
+                const editTransactionForm = document.getElementById('editTransactionForm');
+                editTransactionForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    try {
+                        const updatedData = {
+                            usuario: document.getElementById('editTransactionUsuario').value,
+                            monto: document.getElementById('editTransactionMonto').value,
+                            metodoPago: document.getElementById('editTransactionMetodoPago').value,
+                            estado: document.getElementById('editTransactionEstado').value,
+                            updatedAt: serverTimestamp()
+                        };
+
+                        await updateDoc(doc(db, 'transacciones', transactionId), updatedData);
+                        closeModal();
+                        loadTransactions();
+                        alert('Transacción actualizada exitosamente');
+                    } catch (error) {
+                        console.error('Error al actualizar transacción:', error);
+                        alert('Error al actualizar transacción: ' + error.message);
+                    }
+                });
+            } catch (error) {
+                console.error('Error al editar transacción:', error);
+                alert('Error al editar transacción: ' + error.message);
+            }
+        };
+
+        // Función para eliminar transacción
+        window.deleteTransaction = async function(transactionId) {
+            // Crear modal de confirmación
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content confirm-modal">
+                    <h2>Eliminar Transacción</h2>
+                    <p>¿Desea eliminar esta transacción?</p>
+                    <div class="form-actions">
+                        <button type="button" class="action-btn cancel-btn" onclick="closeModal()">Cancelar</button>
+                        <button type="button" class="action-btn delete-btn" id="confirmDeleteTransaction">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Manejar la confirmación
+            document.getElementById('confirmDeleteTransaction').addEventListener('click', async () => {
+                try {
+                    const transactionDoc = await getDoc(doc(db, 'transacciones', transactionId));
+                    if (!transactionDoc.exists()) {
+                        throw new Error('Transacción no encontrada');
+                    }
+
+                    const transactionData = transactionDoc.data();
+                    await deleteDoc(doc(db, 'transacciones', transactionId));
+                    
+                    // Registrar actividad
+                    await addDoc(collection(db, 'activity'), {
+                        type: 'transaction_deleted',
+                        description: `Transacción ${transactionData.usuario} eliminada`,
+                        timestamp: serverTimestamp()
+                    });
+
+                    closeModal();
+                    loadTransactions();
+
+                    // Mostrar mensaje de éxito
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'success-message error';
+                    successMessage.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <p>Transacción eliminada exitosamente</p>
+                    `;
+                    document.body.appendChild(successMessage);
+                    setTimeout(() => successMessage.remove(), 3000);
+
+                } catch (error) {
+                    console.error('Error al eliminar transacción:', error);
+                    alert('Error al eliminar transacción: ' + error.message);
+                }
+            });
+        };
+
+        // --- BLOQUES DINÁMICOS DE CONTENIDO ---
+        const addBlockBtn = document.getElementById('addBlockBtn');
+        const blockTypeMenu = document.getElementById('blockTypeMenu');
+        const dynamicBlocksContainer = document.getElementById('dynamicBlocksContainer');
+        let contentBlocks = [];
+
+        // Mostrar menú de tipos de bloque
+        addBlockBtn.addEventListener('click', () => {
+            blockTypeMenu.style.display = blockTypeMenu.style.display === 'none' ? 'flex' : 'none';
+        });
+
+        // Elegir tipo de bloque
+        blockTypeMenu.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.getAttribute('data-type');
+                addBlock(type);
+                blockTypeMenu.style.display = 'none';
+            });
+        });
+
+        // Función para agregar un bloque
+        function addBlock(type) {
+            let block = { type, value: '' };
+            if (type === 'image') {
+                block.value = '';
+            }
+            contentBlocks.push(block);
+            renderBlocks();
+        }
+
+        // Función para eliminar un bloque
+        function removeBlock(index) {
+            contentBlocks.splice(index, 1);
+            renderBlocks();
+        }
+
+        // Renderizar los bloques en el contenedor
+        function renderBlocks() {
+            dynamicBlocksContainer.innerHTML = '';
+            if (contentBlocks.length === 0) {
+                dynamicBlocksContainer.innerHTML = '<div class="no-images">No hay bloques agregados</div>';
+                return;
+            }
+            contentBlocks.forEach((block, idx) => {
+                let html = '';
+                if (block.type === 'title') {
+                    html = `<div class="block-item form-group">
+                        <div class="block-content">
+                            <label>Título:</label>
+                            <input type="text" class="form-control" value="${block.value || ''}" oninput="this.dispatchEvent(new CustomEvent('blockinput', {detail: {idx: ${idx}, value: this.value}}))">
+                        </div>
+                        <button type="button" class="remove-image" title="Eliminar" onclick="this.dispatchEvent(new CustomEvent('blockremove', {detail: {idx: ${idx}}}))"><i class='fas fa-times'></i></button>
+                    </div>`;
+                } else if (block.type === 'description') {
+                    html = `<div class="block-item form-group">
+                        <div class="block-content">
+                            <label>Descripción:</label>
+                            <textarea class="form-control" rows="2" oninput="this.dispatchEvent(new CustomEvent('blockinput', {detail: {idx: ${idx}, value: this.value}}))">${block.value || ''}</textarea>
+                        </div>
+                        <button type="button" class="remove-image" title="Eliminar" onclick="this.dispatchEvent(new CustomEvent('blockremove', {detail: {idx: ${idx}}}))"><i class='fas fa-times'></i></button>
+                    </div>`;
+                } else if (block.type === 'image') {
+                    // Texto condicional para edición o creación
+                    const isEditing = !!editingPageId;
+                    const imageDropTitle = isEditing
+                        ? "Arrastra y suelta una imagen aquí para reemplazar la actual"
+                        : "Arrastra y suelta una imagen aquí";
+                    const imageDropSubtitle = isEditing
+                        ? "o haz clic para seleccionar una nueva imagen"
+                        : "o haz clic para seleccionar una imagen";
+                    html = `<div class="block-item form-group">
+                        <div class="block-content">
+                            <label>Imagen:</label>
+                            <div class="drag-drop-area block-image-drop" data-idx="${idx}">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <h3>${imageDropTitle}</h3>
+                                <p>${imageDropSubtitle}</p>
+                                <p class="file-types">Formatos soportados: JPG, PNG, GIF</p>
+                                <input type="file" accept="image/*" style="display:none;">
+                            </div>
+                            <div class="image-preview-container block-image-preview">
+                                ${block.value ? `<div class='image-preview'><img src='${block.value}' alt='Imagen' /></div>` : ''}
+                            </div>
+                        </div>
+                        <button type="button" class="remove-image" title="Eliminar" onclick="this.dispatchEvent(new CustomEvent('blockremove', {detail: {idx: ${idx}}}))"><i class='fas fa-times'></i></button>
+                    </div>`;
+                }
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = html;
+                // Eventos personalizados para inputs
+                wrapper.querySelectorAll('input[type="text"],textarea').forEach(el => {
+                    el.addEventListener('blockinput', e => {
+                        contentBlocks[e.detail.idx].value = e.detail.value;
+                    });
+                });
+                // Evento para imagen
+                if (block.type === 'image') {
+                    const dropArea = wrapper.querySelector('.block-image-drop');
+                    const fileInput = dropArea.querySelector('input[type="file"]');
+                    const previewContainer = wrapper.querySelector('.block-image-preview');
+                    // Drag & drop
+                    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                        dropArea.addEventListener(eventName, function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (eventName === 'dragenter' || eventName === 'dragover') {
+                                dropArea.classList.add('highlight');
+                            } else {
+                                dropArea.classList.remove('highlight');
+                            }
+                        }, false);
+                    });
+                    dropArea.addEventListener('drop', function(e) {
+                        const files = e.dataTransfer.files;
+                        if (files.length > 0) handleBlockImage(files[0], idx);
+                    });
+                    dropArea.addEventListener('click', function() {
+                        fileInput.click();
+                    });
+                    fileInput.addEventListener('change', function(e) {
+                        if (e.target.files.length > 0) handleBlockImage(e.target.files[0], idx);
+                    });
+                }
+                // Evento para eliminar
+                wrapper.querySelectorAll('.remove-image').forEach(btn => {
+                    btn.addEventListener('blockremove', e => {
+                        removeBlock(e.detail.idx);
+                    });
+                });
+                dynamicBlocksContainer.appendChild(wrapper.firstElementChild);
+            });
+        }
+
+        // Limpiar bloques al cancelar o guardar
+        if (cancelPage) {
+            cancelPage.addEventListener('click', () => {
+                contentBlocks = [];
+                renderBlocks();
+            });
+        }
+
+        // Agregar la función handleBlockImage para subir y previsualizar la imagen en el bloque dinámico
+        function handleBlockImage(file, idx) {
+            if (!file.type.startsWith('image/')) {
+                alert('Por favor, selecciona solo archivos de imagen');
+                return;
+            }
+            // Previsualización inmediata
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewHtml = `<div class='image-preview'><img src='${e.target.result}' alt='Preview' /></div>`;
+                const block = dynamicBlocksContainer.querySelectorAll('.block-item')[idx];
+                if (block) {
+                    const previewContainer = block.querySelector('.block-image-preview');
+                    if (previewContainer) previewContainer.innerHTML = previewHtml;
+                }
+            };
+            reader.readAsDataURL(file);
+            // Subida a Cloudinary
+            uploadToCloudinary(file)
+                .then(data => {
+                    contentBlocks[idx].value = data.secure_url;
+                    renderBlocks();
+                })
+                .catch(error => {
+                    alert('Error al subir la imagen: ' + error.message);
+                });
+        }
+
+        // Funcionalidad para anuncios
+        const announcementFormContainer = document.getElementById('announcementFormContainer');
+        const toggleAnnouncementForm = document.getElementById('toggleAnnouncementForm');
+        const cancelAnnouncement = document.getElementById('cancelAnnouncement');
+        const createAnnouncementForm = document.getElementById('createAnnouncementForm');
+        const announcementImageArea = document.getElementById('announcementImageArea');
+        const announcementImageInput = document.getElementById('announcementImageInput');
+        const announcementImagePreview = document.getElementById('announcementImagePreview');
+
+        // Variable para edición de anuncios
+        let editingAnnouncementId = null;
+
+        // Obtener contenedor de la tabla de anuncios
+        const announcementsTableContainer = document.querySelector('#announcements .table-container');
+
+        // Mostrar/ocultar formulario de anuncio
+        if (toggleAnnouncementForm && announcementFormContainer && announcementsTableContainer) {
+            toggleAnnouncementForm.addEventListener('click', () => {
+                const isFormVisible = announcementFormContainer.style.display !== 'none';
+                if (!isFormVisible) {
+                    // Mostrar formulario para crear nuevo
+                    announcementFormContainer.style.display = 'block';
+                    announcementsTableContainer.classList.add('hidden-table'); // Ocultar tabla con clase CSS
+                    createAnnouncementForm.reset();
+                    announcementImagePreview.innerHTML = '';
+                    const imageUrlInput = createAnnouncementForm.querySelector('input[name="announcementImageUrl"]');
+                    if (imageUrlInput) imageUrlInput.remove();
+                    editingAnnouncementId = null;
+                    createAnnouncementForm.querySelector('button[type="submit"]').textContent = 'Guardar Anuncio';
+                } else {
+                    // Ocultar formulario
+                    announcementFormContainer.style.display = 'none';
+                    announcementsTableContainer.classList.remove('hidden-table'); // Mostrar tabla removiendo clase CSS
+                    createAnnouncementForm.reset();
+                    announcementImagePreview.innerHTML = '';
+                    const imageUrlInput = createAnnouncementForm.querySelector('input[name="announcementImageUrl"]');
+                    if (imageUrlInput) imageUrlInput.remove();
+                    editingAnnouncementId = null;
+                    createAnnouncementForm.querySelector('button[type="submit"]').textContent = 'Guardar Anuncio';
+                }
+            });
+        }
+
+        // Cancelar creación/edición de anuncio
+        if (cancelAnnouncement && announcementFormContainer && announcementsTableContainer) {
+            cancelAnnouncement.addEventListener('click', () => {
+                announcementFormContainer.style.display = 'none';
+                announcementsTableContainer.classList.remove('hidden-table'); // Mostrar tabla removiendo clase CSS
+                createAnnouncementForm.reset();
+                announcementImagePreview.innerHTML = '';
+                const imageUrlInput = createAnnouncementForm.querySelector('input[name="announcementImageUrl"]');
+                if (imageUrlInput) imageUrlInput.remove();
+                editingAnnouncementId = null;
+                createAnnouncementForm.querySelector('button[type="submit"]').textContent = 'Guardar Anuncio';
+            });
+        }
+
+        // Manejar la subida de imágenes
+        if (announcementImageArea && announcementImageInput) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                announcementImageArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                announcementImageArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                announcementImageArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            announcementImageArea.addEventListener('drop', handleDrop, false);
+            announcementImageArea.addEventListener('click', () => {
+                announcementImageInput.click();
+            });
+
+            announcementImageInput.addEventListener('change', (e) => {
+                handleAnnouncementImage(e.target.files);
+            });
+        }
+
+        // Función para manejar la imagen del anuncio
+        // Reutilizamos uploadToCloudinary del script principal
+        function handleAnnouncementImage(files) {
+            announcementImagePreview.innerHTML = '';
+            if (files.length === 0) {
+                announcementImagePreview.innerHTML = '<div class="no-images">No hay imagen seleccionada</div>';
+                return;
+            }
+
+            const file = files[0];
+            if (!file.type.startsWith('image/')) {
+                alert('Por favor, selecciona solo archivos de imagen');
+                return;
+            }
+
+            // Previsualización inmediata
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewHtml = `<div class='image-preview'><img src='${e.target.result}' alt='Preview' /></div>`;
+                announcementImagePreview.innerHTML = previewHtml;
+            };
+            reader.readAsDataURL(file);
+
+            // Subida a Cloudinary
+            // Removemos el input hidden anterior si existe
+            const oldImageUrlInput = createAnnouncementForm.querySelector('input[name="announcementImageUrl"]');
+            if (oldImageUrlInput) oldImageUrlInput.remove();
+
+            uploadToCloudinary(file)
+                .then(data => {
+                    // Guardar la URL de la imagen en un campo oculto
+                    const imageUrlInput = document.createElement('input');
+                    imageUrlInput.type = 'hidden';
+                    imageUrlInput.name = 'announcementImageUrl'; // Usamos un nombre específico
+                    imageUrlInput.value = data.secure_url;
+                    createAnnouncementForm.appendChild(imageUrlInput);
+                })
+                .catch(error => {
+                    alert('Error al subir la imagen: ' + error.message);
+                });
+        }
+
+        // Función para cargar anuncios (modificada para traducir el estado)
+        async function loadAnnouncements() {
+            try {
+                const announcementsTableBody = document.getElementById('announcementsTableBody');
+                announcementsTableBody.innerHTML = '<tr><td colspan="5">Cargando anuncios...</td></tr>';
+
+                const announcementsQuery = query(collection(db, 'anuncios'), orderBy('createdAt', 'desc'));
+                const announcementsSnapshot = await getDocs(announcementsQuery);
+
+                if (announcementsSnapshot.empty) {
+                    announcementsTableBody.innerHTML = '<tr><td colspan="5">No hay anuncios creados</td></tr>';
+                    return;
+                }
+
+                announcementsTableBody.innerHTML = '';
+                announcementsSnapshot.forEach(doc => {
+                    const announcement = doc.data();
+                    
+                    // Traducir el estado
+                    const displayStatus = announcement.status === 'published' ? 'Publicado' : 'Borrador';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>
+                            <div class="announcement-info">
+                                ${announcement.imageUrl ? 
+                                    `<img src="${announcement.imageUrl}" alt="${announcement.title}" class="announcement-thumbnail">` :
+                                    `<div class="no-image"><i class="fas fa-image"></i></div>`
+                                }
+                                <div class="announcement-details">
+                                    <h4>${announcement.title}</h4>
+                                    <p>${announcement.description || ''}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="announcement-type ${announcement.type}">${announcement.type}</span></td>
+                        <td><span class="announcement-status ${announcement.status}">${displayStatus}</span></td>
+                        <td>${announcement.createdAt ? new Date(announcement.createdAt.toDate()).toLocaleDateString() : 'N/A'}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit-btn" onclick="editAnnouncement('${doc.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteAnnouncement('${doc.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    announcementsTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error al cargar anuncios:', error);
+                const announcementsTableBody = document.getElementById('announcementsTableBody');
+                announcementsTableBody.innerHTML = `<tr><td colspan="5">Error al cargar anuncios: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Manejar el envío del formulario de anuncio (modificado para crear/actualizar y mostrar tabla)
+        if (createAnnouncementForm && announcementFormContainer && announcementsTableContainer) {
+            createAnnouncementForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    const submitButton = createAnnouncementForm.querySelector('button[type="submit"]');
+                    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+                    submitButton.disabled = true;
+
+                    const announcementData = {
+                        title: document.getElementById('announcementTitle').value.trim(),
+                        description: document.getElementById('announcementDescription').value.trim(),
+                        type: document.getElementById('announcementType').value,
+                        status: document.getElementById('announcementStatus').value,
+                        updatedAt: serverTimestamp()
+                    };
+
+                    const imageUrlInput = createAnnouncementForm.querySelector('input[name="announcementImageUrl"]');
+                    if (imageUrlInput && imageUrlInput.value) {
+                        announcementData.imageUrl = imageUrlInput.value;
+                    } else {
+                         announcementData.imageUrl = null;
+                    }
+
+                    if (!announcementData.title) {
+                        throw new Error('El título del anuncio es obligatorio');
+                    }
+
+                    if (editingAnnouncementId) {
+                        await updateDoc(doc(db, 'anuncios', editingAnnouncementId), announcementData);
+                        await addDoc(collection(db, 'activity'), {
+                            type: 'announcement_updated',
+                            description: `Anuncio "${announcementData.title}" actualizado`,
+                            timestamp: serverTimestamp()
+                        });
+                    } else {
+                        announcementData.createdAt = serverTimestamp();
+                        announcementData.createdBy = auth.currentUser.uid;
+                        await addDoc(collection(db, 'anuncios'), announcementData);
+                        await addDoc(collection(db, 'activity'), {
+                            type: 'announcement_created',
+                            description: `Anuncio "${announcementData.title}" creado`,
+                            timestamp: serverTimestamp()
+                        });
+                    }
+
+                    createAnnouncementForm.reset();
+                    announcementImagePreview.innerHTML = '';
+                    announcementFormContainer.style.display = 'none';
+                    announcementsTableContainer.classList.remove('hidden-table'); // Mostrar tabla removiendo clase CSS
+                    if (imageUrlInput) imageUrlInput.remove();
+
+                    editingAnnouncementId = null;
+                    submitButton.textContent = 'Guardar Anuncio';
+
+                    await loadAnnouncements();
+
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'success-message';
+                    successMessage.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <p>Anuncio ${editingAnnouncementId ? 'actualizado' : 'creado'} exitosamente</p>
+                    `;
+                    document.body.appendChild(successMessage);
+                    setTimeout(() => successMessage.remove(), 3000);
+
+                } catch (error) {
+                    console.error('Error al guardar anuncio:', error);
+                    alert('Error al guardar anuncio: ' + error.message);
+                } finally {
+                    const submitButton = createAnnouncementForm.querySelector('button[type="submit"]');
+                    submitButton.innerHTML = editingAnnouncementId ? 'Actualizar Anuncio' : 'Guardar Anuncio';
+                    submitButton.disabled = false;
+                }
+            });
+        }
+
+        // Función para editar anuncio (modificada para usar editingAnnouncementId y ocultar tabla)
+        window.editAnnouncement = async function(announcementId) {
+            try {
+                const announcementDoc = await getDoc(doc(db, 'anuncios', announcementId));
+                if (!announcementDoc.exists()) {
+                    throw new Error('Anuncio no encontrado');
+                }
+
+                const announcement = announcementDoc.data();
+
+                announcementFormContainer.style.display = 'block';
+                if (announcementsTableContainer) announcementsTableContainer.classList.add('hidden-table'); // Ocultar tabla con clase CSS
+                editingAnnouncementId = announcementId;
+
+                document.getElementById('announcementTitle').value = announcement.title || '';
+                document.getElementById('announcementDescription').value = announcement.description || '';
+                document.getElementById('announcementType').value = announcement.type || 'general';
+                document.getElementById('announcementStatus').value = announcement.status || 'draft';
+
+                announcementImagePreview.innerHTML = '';
+                const oldImageUrlInput = createAnnouncementForm.querySelector('input[name="announcementImageUrl"]');
+                if (oldImageUrlInput) oldImageUrlInput.remove();
+
+                if (announcement.imageUrl) {
+                    const previewHtml = `<div class='image-preview'><img src='${announcement.imageUrl}' alt='Preview' /></div>`;
+                    announcementImagePreview.innerHTML = previewHtml;
+
+                    const imageUrlInput = document.createElement('input');
+                    imageUrlInput.type = 'hidden';
+                    imageUrlInput.name = 'announcementImageUrl';
+                    imageUrlInput.value = announcement.imageUrl;
+                    createAnnouncementForm.appendChild(imageUrlInput);
+                } else {
+                     announcementImagePreview.innerHTML = '<div class="no-images">No hay imagen seleccionada</div>';
+                }
+
+                createAnnouncementForm.querySelector('button[type="submit"]').textContent = 'Actualizar Anuncio';
+
+            } catch (error) {
+                console.error('Error al editar anuncio:', error);
+                alert('Error al editar anuncio: ' + error.message);
+            }
+        };
+
+        // ... BLOQUES DINÁMICOS DE CONTENIDO ...
+
+        // --- MODAL CAMBIO DE FOTO PERFIL ADMIN ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const editPhotoBtn = document.getElementById('editPhotoBtn');
+            const editAdminPhotoModal = document.getElementById('editAdminPhotoModal');
+            const closeEditAdminPhotoModal = document.getElementById('closeEditAdminPhotoModal');
+            const adminPhotoInputModal = document.getElementById('adminPhotoInputModal');
+            const adminPhotoPreview = document.getElementById('adminPhotoPreview');
+            const saveAdminPhotoBtn = document.getElementById('saveAdminPhotoBtn');
+            const cancelAdminPhotoBtn = document.getElementById('cancelAdminPhotoBtn');
+            const deleteAdminPhotoBtn = document.getElementById('deleteAdminPhotoBtn');
+            let newAdminPhotoURL = null;
+
+            // Abrir modal y mostrar preview actual
+            editPhotoBtn.addEventListener('click', async () => {
+                const currentPhoto = document.getElementById('adminProfilePhoto').src;
+                adminPhotoPreview.innerHTML = currentPhoto.includes('logo.png') ? '<i class="fas fa-user" style="font-size:3em; color:#bbb;"></i>' : `<img src="${currentPhoto}" alt="Preview" style="width:100%;height:100%;object-fit:cover;">`;
+                newAdminPhotoURL = null;
+                editAdminPhotoModal.style.display = 'block';
+            });
+            // Cerrar modal
+            closeEditAdminPhotoModal.onclick = () => editAdminPhotoModal.style.display = 'none';
+            cancelAdminPhotoBtn.onclick = () => editAdminPhotoModal.style.display = 'none';
+            window.addEventListener('click', (e) => { if (e.target === editAdminPhotoModal) editAdminPhotoModal.style.display = 'none'; });
+            // Preview y subida a Cloudinary
+            adminPhotoInputModal.addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    if (!file.type.startsWith('image/')) {
+                        alert('Por favor, selecciona un archivo de imagen válido');
+                        this.value = '';
+                        return;
+                    }
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('La imagen no debe superar los 5MB');
+                        this.value = '';
+                        return;
+                    }
+                    try {
+                        const data = await uploadToCloudinary(file);
+                        adminPhotoPreview.innerHTML = `<img src="${data.secure_url}" alt="Preview" style="width:100%;height:100%;object-fit:cover;">`;
+                        newAdminPhotoURL = data.secure_url;
+                    } catch (err) {
+                        alert('Error al subir la imagen: ' + err.message);
+                    }
+                }
+            });
+            // Guardar cambios
+            saveAdminPhotoBtn.addEventListener('click', async () => {
+                if (!newAdminPhotoURL) {
+                    alert('Selecciona una nueva foto para guardar.');
+                    return;
+                }
+                try {
+                    const user = auth.currentUser;
+                    if (user) {
+                        await updateProfile(user, { photoURL: newAdminPhotoURL });
+                        const userRef = doc(db, 'users', user.uid);
+                        await updateDoc(userRef, { photoURL: newAdminPhotoURL, lastUpdate: new Date().toISOString() });
+                        document.getElementById('adminProfilePhoto').src = newAdminPhotoURL;
+                        editAdminPhotoModal.style.display = 'none';
+                        showSuccessModalAdmin('Foto de perfil actualizada correctamente.');
+                    }
+                } catch (err) {
+                    alert('Error al actualizar la foto: ' + err.message);
+                }
+            });
+            // Borrar foto (deja el ícono por defecto y borra la url para guardar)
+            deleteAdminPhotoBtn.addEventListener('click', () => {
+                adminPhotoPreview.innerHTML = '<i class="fas fa-user" style="font-size:3em; color:#bbb;"></i>';
+                newAdminPhotoURL = '';
+            });
+        });
+        // Modal éxito admin
+        function showSuccessModalAdmin(msg = 'Foto de perfil actualizada correctamente.') {
+            document.getElementById('successMessageAdmin').textContent = msg;
+            document.getElementById('successBackdropAdmin').style.display = 'block';
+            document.getElementById('successModalAdmin').style.display = 'block';
+        }
+        window.closeSuccessModalAdmin = function() {
+            document.getElementById('successBackdropAdmin').style.display = 'none';
+            document.getElementById('successModalAdmin').style.display = 'none';
+        }
+        document.getElementById('successBackdropAdmin').onclick = window.closeSuccessModalAdmin;
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const userSession = JSON.parse(localStorage.getItem('userSession'));
+        const loginLink = document.getElementById('loginLink');
+        const userProfile = document.getElementById('userProfile');
+        const profileLink = document.getElementById('profileLink');
+        const profileText = document.getElementById('profileText');
+
+        if (userSession && userSession.emailVerified) {
+            loginLink.style.display = 'none';
+            userProfile.style.display = 'flex';
+            if (profileLink && profileText) {
+                if (userSession.isAdmin) {
+                    profileLink.href = '../pages/perfilAdmin.html';
+                    profileText.textContent = 'Administrador';
+                    profileText.setAttribute('data-translate', 'Administrador');
+                } else {
+                    profileLink.href = '../pages/perfil.html';
+                    profileText.textContent = 'Perfil';
+                    profileText.setAttribute('data-translate', 'Perfil');
+                }
+            }
+        }
+    });
+    </script>
+</body>
+</html> 

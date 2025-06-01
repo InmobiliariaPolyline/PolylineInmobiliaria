@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>POLYLINE - Constructora</title>
+    <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/assistant.css">
+    <link rel="stylesheet" href="../css/idiomas.css">
+    <link rel="stylesheet" href="../css/information.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script type="module" src="../js/Login_Perfil.js"></script>
+    
+</head>
+<body>
+    <header>
+        <!-- Botón de menú móvil -->
+        <button class="mobile-menu-button" aria-label="Menú">
+            <div class="hamburger"></div>
+        </button>
+        <div id="loading-screen" class="loading-screen">
+            <div class="logo-container">
+                <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+                <h1 class="company-name">POLYLINE</h1>
+                <p class="slogan">CONSTRUCTORA</p>
+            </div>
+        </div>
+        <div class="logo-container">
+            <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+            <h1 class="company-name">POLYLINE</h1>
+            <p class="slogan"> CONSTRUCTORA</p>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="language-selector">
+                    <button class="language-btn" onclick="toggleLanguageOptions()">
+                        <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
+                        <span id="currentLanguage">Español</span>
+                    </button>
+                    <div class="language-options" id="languageOptions">
+                        <div class="language-option" onclick="changeLanguage('es')">
+                            <img src="../Resource/flags/es.png" alt="Español">
+                            <span>Español</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('en')">
+                            <img src="../Resource/flags/en.png" alt="English">
+                            <span>English</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('pt')">
+                            <img src="../Resource/flags/pt.png" alt="Português">
+                            <span>Português</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('zh')">
+                            <img src="../Resource/flags/zh.png" alt="中文">
+                            <span>中文</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('ja')">
+                            <img src="../Resource/flags/ja.png" alt="日本語">
+                            <span>日本語</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('it')">
+                            <img src="../Resource/flags/it.png" alt="Italiano">
+                            <span>Italiano</span>
+                        </div>
+                    </div>
+                </li>
+                <li><a class='active' data-translate='Inicio' href='../index.html'>Inicio</a></li>
+                <li><a href="../index.html#para-ti" data-translate="Para Tí">Para Tí</a></li>
+                <li class="dropdown">
+                    <a data-translate='Proyectos' href='../proyectos/proyectos.html' id='proyectos-link'>Proyectos</a>
+                    <ul class="dropdown-menu">
+                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='../proyectos/proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
+                        <li><a data-translate='Proyecto Benavides 1' href='../proyectos/pben1.html'>Proyecto Benavides 1</a></li>
+                        <li><a data-translate='Proyecto Benavides 2' href='../proyectos/pben2.html'>Proyecto Benavides 2</a></li>
+                        <li><a data-translate='Proyecto Pueblo Libre Sienna' href='../proyectos/ppl1.html'>Proyecto Pueblo Libre Sienna</a></li>
+                        <li><a data-translate='Proyecto Varsovia Lince' href='../proyectos/plin.html'>Proyecto Varsovia Lince</a></li>
+                        <li><a data-translate='Mas Proyectos' href='../proyectos/mas-proyectos.html'>Mas Proyectos</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="informaci%c3%b3n.html" id="proyectos-link" data-translate="Contacto">Contacto</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="informaci%c3%b3n.html" data-translate="Información">Información</a></li>
+                        <li><a href="agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda una Reunión">Agenda una Reunión</a></li>
+                    </ul>
+                </li>
+                <li><a data-translate='Cotizar Proyecto' href='../proyectos/cotizar.html'>Cotizar Proyecto</a></li>
+                <li><a data-translate='Anuncios' href='../proyectos/Anuncios.html'>Anuncios</a></li>
+                <li id="translateContainer" class="translate-container">
+                    <div id="google_translate_element" title="Seleccionar idioma"></div>
+                </li>
+                <li id="loginContainer" class="mobile-login">
+                    <a class='login-link' href='../pages/login.html' id='loginLink'>
+                        <i class="fas fa-sign-in-alt"></i> 
+                        <span data-translate="Login">Login</span>
+                    </a>
+                    <div id="userProfile" style="display: none;">
+                        <div class="profile-header">
+                            <a id="profileLink" href='../pages/perfil.html' style='text-decoration: none; color: inherit;'>
+                                <i class="fas fa-user"></i>
+                                <span id="profileText" data-translate="Perfil">Perfil</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Overlay para el menú móvil -->
+    <div class="menu-overlay"></div>
+    
+    <section id="inicio" class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h2 class="hero-title" data-translate="Información">Información</h2>
+            <p class="hero-subtitle" data-translate="Conoce más sobre nosotros y nuestro trabajo">Conoce más sobre nosotros y nuestro trabajo</p>
+        </div>
+    </section>
+
+    <section class="stats-container">
+        <div class="stat-item">
+            <div class="stat-number" data-target="20">0</div>
+            <div class="stat-label" data-translate="Años de Experiencia">Años de Experiencia</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" data-target="50">0</div>
+            <div class="stat-label" data-translate="Proyectos Completados">Proyectos Completados</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" data-target="100">0</div>
+            <div class="stat-label" data-translate="Clientes Satisfechos">Clientes Satisfechos</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" data-target="30">0</div>
+            <div class="stat-label" data-translate="Profesionales">Profesionales</div>
+        </div>
+    </section>
+
+    <section class="info-card">
+        <h2 data-translate="Información de la Empresa">Información de la Empresa</h2>
+        <p data-translate="descripcion-empresa-completa">Polyline SAC es una empresa constructora con más de 20 años de experiencia, especializada en proyectos inmobiliarios de alta calidad. Iniciamos nuestras actividades en marzo de 2002 y desde entonces hemos entregado más de 50 proyectos, todos ellos enfocados en brindar soluciones innovadoras y sostenibles para nuestros clientes.</p>
+    </section>
+
+    <section class="info-card">
+        <h2 data-translate="MISIÓN">MISIÓN</h2>
+        <p data-translate="mision-texto">Asesoramiento integral, a personas y empresas, que permita solucionar todas sus necesidades relacionadas con el mercado inmobiliario.</p>
+    </section>
+
+    <section class="info-card">
+        <h2 data-translate="VISIÓN">VISIÓN</h2>
+        <p data-translate="vision-texto">Desarrollar proyectos de viviendas con calidad Arquitectónica: Muy buena iluminación, ventilación, buenos acabados, que haga de la vivienda, una experiencia para toda su vida.</p>
+    </section>
+
+    <section id="equipo" style="flex-direction: column;">
+        <h2 class="section-title" data-translate="Nuestro Equipo">Nuestro Equipo</h2>
+        <div class="team-section">
+            <div class="team-member">
+                <img src="../Resource/Equipo/carlos-valdivia.jpg" alt="Carlos Valdivia">
+                <div class="member-info">
+                    <h3>Carlos Valdivia</h3>
+                    <p data-translate="Ing. Mecánico Electricista">Ing. Mecánico Electricista</p>
+                </div>
+            </div>
+
+
+            <div class="team-member">
+                <img src="../Resource/Equipo/luis-salas.jpg" alt="Luis Salas">
+                <div class="member-info">
+                    <h3>Luis Salas</h3>
+                    <p data-translate="Arquitecto">Arquitecto</p>
+                </div>
+            </div>
+
+            <div class="team-member">
+                <img src="../Resource/Equipo/juan-valenzuela.jpg" alt="Juan Valenzuela">
+                <div class="member-info">
+                    <h3>Juan Valenzuela</h3>
+                    <p data-translate="Ingeniero">Ingeniero</p>
+                </div>
+            </div>
+
+            <div class="team-member">
+                <img src="../Resource/Equipo/robert-rose.jpg" alt="Robert Rose">
+                <div class="member-info">
+                    <h3>Robert Rose</h3>
+                    <p data-translate="Product Designer">Product Designer</p>
+                </div>
+            </div>
+
+            <div class="team-member">
+                <img src="../Resource/Equipo/JHOSTING.jpg" alt="Jhosting">
+                <div class="member-info">
+                    <h3>Jhosting Rivas</h3>
+                    <p data-translate="Desarrollador Web">Desarrollador Web</p>
+                    <p data-translate="ING. de Sistemas">ING. de Sistemas</p>
+                </div>
+            </div>
+            
+            <div class="team-member">
+                <img src="../Resource/Equipo/AMIR.png" alt="Amir">
+                <div class="member-info">
+                    <h3>Amir Urbano</h3>
+                    <p data-translate="Desarrollador de Software">Desarrollador de Software</p>
+                    <p data-translate="ING. de Sistemas">ING. de Sistemas</p>
+                </div>
+            </div>
+
+            
+        </div>
+    </section>
+
+    <section class="location-section">
+        <h2 class="section-title" data-translate="Nuestra Ubicación">Nuestra Ubicación</h2>
+        <div class="map-container" style="margin-top: -1%; height: 400px;">
+            <iframe src="https://www.google.com/maps/embed/v1/place?q=Av.%20%C3%93scar%20R.%20Benavides,%20Lima&key=AIzaSyC5GN_erCBHDs1cUtj2unzCuevpDtQHC04" width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+        </div>
+    </section>
+
+    <script>
+        // Animación del héroe
+        window.addEventListener('load', () => {
+            anime({
+                targets: '.hero-title',
+                opacity: [0, 1],
+                translateY: [50, 0],
+                duration: 1500,
+                easing: 'easeOutExpo'
+            });
+
+            anime({
+                targets: '.hero-subtitle',
+                opacity: [0, 1],
+                translateY: [30, 0],
+                duration: 1500,
+                delay: 500,
+                easing: 'easeOutExpo'
+            });
+
+            // Animación de las tarjetas de información
+            anime({
+                targets: '.info-card',
+                opacity: [0, 1],
+                translateY: [50, 0],
+                duration: 1000,
+                delay: anime.stagger(200),
+                easing: 'easeOutQuad'
+            });
+
+            // Animación de los miembros del equipo
+            anime({
+                targets: '.team-member',
+                opacity: [0, 1],
+                scale: [0.8, 1],
+                duration: 1000,
+                delay: anime.stagger(200),
+                easing: 'easeOutElastic(1, .5)'
+            });
+
+            // Animación del contenedor del mapa
+            anime({
+                targets: '.map-container',
+                opacity: [0, 1],
+                translateY: [50, 0],
+                duration: 1000,
+                easing: 'easeOutQuad'
+            });
+
+            // Animación del contenedor de estadísticas
+            anime({
+                targets: '.stats-container',
+                opacity: [0, 1],
+                translateY: [30, 0],
+                duration: 1000,
+                easing: 'easeOutQuad'
+            });
+        });
+
+        // Animación de los números de estadísticas
+        const stats = document.querySelectorAll('.stat-number');
+        stats.forEach(stat => {
+            const target = parseInt(stat.getAttribute('data-target'));
+            let current = 0;
+            const increment = target / 50; // Velocidad de la animación
+            const updateCount = () => {
+                if(current < target) {
+                    current += increment;
+                    stat.textContent = Math.ceil(current);
+                    requestAnimationFrame(updateCount);
+                } else {
+                    stat.textContent = target;
+                }
+            };
+            
+            // Iniciar la animación cuando el elemento sea visible
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if(entry.isIntersecting) {
+                        updateCount();
+                        observer.unobserve(entry.target);
+                    }
+                });
+            });
+            
+            observer.observe(stat);
+        });
+    
+        // Efecto parallax en el héroe
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroContent = document.querySelector('.hero-content');
+            heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
+        });
+    </script>
+</head>
+<body>
+    
+
+<!-- Botón de modo oscuro -->
+<button id="dark-mode-toggle" class="dark-mode-button" style="position: fixed; bottom: 20px; right: 30px;"></button>
+
+</button>
+
+<script src="../scripts.js"></script>
+
+
+<script>
+    window.addEventListener('load', function () {
+        document.body.classList.add('loaded');
+    });
+</script>
+
+
+<footer class="seccion-footer">
+    <div class="contenedor-footer">
+        <div class="bloque-logo">
+            <img src="../Resource/Logo/logo.png" alt="Polyline">
+            <div class="texto-copyright" style="color: black;">
+                <p>&copy; 2025 POLYLINE. Todos los derechos reservados.</p>
+            </div>
+        </div>
+        <div class="bloque-contacto" style="color: black;">
+            <h3>CONTACTOS:</h3>
+            <p>WhatsApp: <a href="https://wa.link/lkvfnb">+51 943 812 536</a></p>
+            <p>Email: <a href="mailto:contacto@polyline.com">contacto@polyline.com</a></p>
+            <p>Dirección: Av. Óscar R. Benavides</p>
+        </div>
+    </div>
+</footer>
+
+    <script src="../js/assistant.js"></script>
+        
+    <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px;">
+        <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
+            <i class="fab fa-facebook-f"></i>
+        </button>
+        <button class="social-btn whatsapp" onclick="window.open('https://wa.link/lkvfnb')">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+        <button class="social-btn instagram" onclick="window.open('https://www.instagram.com/arquitectosalasperu/')">
+            <i class="fab fa-instagram"></i>
+        </button>
+        <button class="social-btn linkedin" onclick="window.open('https://www.linkedin.com/in/arquitectosalas')">
+            <i class="fab fa-linkedin-in"></i>
+        </button>
+        <button class="social-btn youtube" onclick="window.open('https://www.youtube.com/channel/UC9wMT7_zsq7yE0MMCSxiVMw')">
+            <i class="fab fa-youtube"></i>
+        </button>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+const mobileMenuButton = document.querySelector('.mobile-menu-button');
+const navMenu = document.querySelector('.nav-menu');
+const menuOverlay = document.querySelector('.menu-overlay');
+const dropdowns = document.querySelectorAll('.dropdown');
+
+// Toggle menú móvil
+mobileMenuButton.addEventListener('click', function() {
+    this.classList.toggle('active');
+    navMenu.classList.toggle('active');
+    menuOverlay.classList.toggle('active');
+    document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+});
+
+// Cerrar menú al hacer click en el overlay
+menuOverlay.addEventListener('click', function() {
+    mobileMenuButton.classList.remove('active');
+    navMenu.classList.remove('active');
+    menuOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+});
+
+// Manejar dropdowns en móvil
+dropdowns.forEach(dropdown => {
+    const link = dropdown.querySelector('a');
+    link.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+            e.preventDefault();
+            dropdown.classList.toggle('active');
+        }
+    });
+});
+
+// Cerrar menú al cambiar el tamaño de la ventana
+window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+        mobileMenuButton.classList.remove('active');
+        navMenu.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+});
+
+// Agregar después de la inicialización de Firebase
+document.getElementById('logoutButton').addEventListener('click', async (e) => {
+    e.preventDefault();
+    try {
+        await signOut(auth);
+        console.log('Usuario cerró sesión');
+        window.location.href = '../index.html';
+    } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+    }
+});
+
+// Toggle del menú desplegable
+document.getElementById('userProfile').addEventListener('click', function(e) {
+    const dropdown = this.querySelector('.user-dropdown');
+    dropdown.classList.toggle('show');
+    e.stopPropagation();
+});
+
+// Cerrar el menú al hacer clic fuera
+document.addEventListener('click', function() {
+    const dropdowns = document.getElementsByClassName('user-dropdown');
+    for (const dropdown of dropdowns) {
+        if (dropdown.classList.contains('show')) {
+            dropdown.classList.remove('show');
+        }
+    }
+});
+});
+</script>
+
+<script type="module">
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+// Función para manejar el cierre de sesión
+document.getElementById('logoutButton').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const auth = getAuth();
+    try {
+        await signOut(auth);
+        console.log('Sesión cerrada exitosamente');
+        window.location.href = '../index.html'; // Redirige al inicio después de cerrar sesión
+    } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+    }
+});
+</script>
+<script type="module" src="js/nav.html"></script>
+</body>
+
+</html>
+<script>
+    // Funciones para el selector de idiomas
+    function toggleLanguageOptions() {
+        const selector = document.querySelector('.language-selector');
+        const options = document.getElementById('languageOptions');
+        selector.classList.toggle('active');
+        options.classList.toggle('show');
+    }
+
+    function changeLanguage(lang) {
+        const currentFlag = document.getElementById('currentFlag');
+        const currentLanguage = document.getElementById('currentLanguage');
+        const options = document.getElementById('languageOptions');
+        
+        // Actualizar el botón con el idioma seleccionado
+        currentFlag.src = `../Resource/flags/${lang}.png`;
+        currentLanguage.textContent = {
+            'es': 'Español',
+            'en': 'English',
+            'pt': 'Português',
+            'zh': '中文',
+            'ja': '日本語',
+            'it': 'Italiano'
+        }[lang];
+        
+        // Ocultar las opciones
+        options.classList.remove('show');
+        
+        // Traducir el contenido
+        translatePage(lang);
+    }
+
+    // Objeto con las traducciones
+    const translations = {
+        'en': {
+            'Inicio': 'Home',
+            'Para Tí': 'For You', 
+            'Proyectos': 'Projects',
+            'Casas de Playa en Venta / Alquiler': 'Beach Houses for Sale / Rent',
+            'Proyecto Benavides 1': 'Benavides Project 1',
+            'Proyecto Benavides 2': 'Benavides Project 2', 
+            'Proyecto Pueblo Libre Sienna': 'Pueblo Libre Sienna Project',
+            'Proyecto Varsovia Lince': 'Varsovia Lince Project',
+            'Mas Proyectos': 'More Projects',
+            'Contacto': 'Contact',
+            'Información': 'Information',
+            'Agenda una Reunión': 'Schedule a Meeting',
+            'Cotizar Proyecto': 'Request Quote',
+            'Login': 'Login',
+            'Perfil': 'Profile',
+            'Información de la Empresa': 'Company Information',
+            'descripcion-empresa-completa': 'Polyline SAC is a construction company with more than 20 years of experience, specializing in high-quality real estate projects. We started our activities in March 2002 and since then we have delivered more than 50 projects, all focused on providing innovative and sustainable solutions for our clients.',
+            'MISIÓN': 'MISSION',
+            'mision-texto': 'Comprehensive advice to individuals and companies, solving all their needs related to the real estate market.',
+            'VISIÓN': 'VISION', 
+            'vision-texto': 'Develop housing projects with architectural quality: Very good lighting, ventilation, good finishes, making housing a lifelong experience.',
+            'Nuestro Equipo': 'Our Team',
+            'Ing. Mecánico Electricista': 'Electrical Mechanical Engineer',
+            'Arquitecto': 'Architect',
+            'Ingeniero': 'Engineer',
+            'Product Designer': 'Product Designer',
+            'Desarrollador Web': 'Web Developer',
+            'ING. de Sistemas': 'Systems Engineer',
+            'Desarrollador de Software': 'Software Developer',
+            'Nuestra Ubicación': 'Our Location',
+            'Años de Experiencia': 'Years of Experience',
+            'Proyectos Completados': 'Completed Projects', 
+            'Clientes Satisfechos': 'Satisfied Clients',
+            'Profesionales': 'Professionals',
+            'CONSTRUCTORA': 'CONSTRUCTION COMPANY',
+            'Construyendo sueños con pasión y calidad': 'Building dreams with passion and quality',
+            'Derechos Reservados': 'All Rights Reserved',
+            'Conoce más sobre nosotros y nuestro trabajo': 'Learn more about us and our work'
+        
+        },
+        'pt': {
+            'Inicio': 'Início',
+            'Para Tí': 'Para Você',
+            'Proyectos': 'Projetos', 
+            'Casas de Playa en Venta / Alquiler': 'Casas de Praia à Venda / Aluguel',
+            'Proyecto Benavides 1': 'Projeto Benavides 1',
+            'Proyecto Benavides 2': 'Projeto Benavides 2',
+            'Proyecto Pueblo Libre Sienna': 'Projeto Pueblo Libre Sienna',
+            'Proyecto Varsovia Lince': 'Projeto Varsovia Lince',
+            'Mas Proyectos': 'Mais Projetos',
+            'Contacto': 'Contato',
+            'Información': 'Informações',
+            'Agenda una Reunión': 'Agendar uma Reunião',
+            'Cotizar Proyecto': 'Orçar Projeto',
+            'Login': 'Entrar',
+            'Perfil': 'Perfil',
+            'Conoce más sobre nosotros y nuestro trabajo': 'Saiba mais sobre nós e nosso trabalho',
+            'Años de Experiencia': 'Anos de Experiência',
+            'Proyectos Completados': 'Projetos Concluídos',
+            'Clientes Satisfechos': 'Clientes Satisfeitos',
+            'Profesionales': 'Profissionais',
+            'Información de la Empresa': 'Informações da Empresa',
+            'descripcion-empresa-completa': 'A Polyline SAC é uma empresa construtora com mais de 20 anos de experiência, especializada em projetos imobiliários de alta qualidade. Iniciamos nossas atividades em março de 2002 e desde então entregamos mais de 50 projetos, todos focados em fornecer soluções inovadoras e sustentáveis para nossos clientes.',
+            'MISIÓN': 'MISSÃO',
+            'mision-texto': 'Assessoria integral a pessoas e empresas, permitindo solucionar todas as suas necessidades relacionadas ao mercado imobiliário.',
+            'VISIÓN': 'VISÃO',
+            'vision-texto': 'Desenvolver projetos habitacionais com qualidade arquitetônica: Excelente iluminação, ventilação, bons acabamentos, fazendo da moradia uma experiência para toda a vida.',
+            'Nuestro Equipo': 'Nossa Equipe',
+            'Ing. Mecánico Electricista': 'Eng. Mecânico Eletricista',
+            'Arquitecto': 'Arquiteto',
+            'Ingeniero': 'Engenheiro',
+            'Product Designer': 'Designer de Produto',
+            'Desarrollador Web': 'Desenvolvedor Web',
+            'ING. de Sistemas': 'Eng. de Sistemas',
+            'Desarrollador de Software': 'Desenvolvedor de Software',
+            'Nuestra Ubicación': 'Nossa Localização',
+            'CONSTRUCTORA': 'CONSTRUTORA',
+            'Construyendo sueños con pasión y calidad': 'Construindo sonhos com paixão e qualidade',
+            'Derechos Reservados': 'Todos os direitos reservados'
+        
+        },
+        'zh': {
+            'Inicio': '首页',
+            'Para Tí': '为您服务',
+            'Proyectos': '项目',
+            'Casas de Playa en Venta / Alquiler': '出售/出租房屋',
+            'Proyecto Benavides 1': '贝纳维德斯项目1',
+            'Proyecto Benavides 2': '贝纳维德斯项目2',
+            'Proyecto Pueblo Libre Sienna': '普韦布洛利布雷西耶纳项目',
+            'Proyecto Varsovia Lince': '华沙林斯项目',
+            'Mas Proyectos': '更多项目',
+            'Contacto': '联系我们',
+            'Información': '信息',
+            'Agenda una Reunión': '预约会议',
+            'Cotizar Proyecto': '项目报价', 
+            'Login': '登录',
+            'Perfil': '个人中心',
+            'Información de la Empresa': '公司信息',
+            'descripcion-empresa-completa': 'Polyline SAC是一家拥有20多年经验的建筑公司，专门从事高质量房地产项目。我们于2002年3月开始运营，至今已完成50多个项目，所有项目都致力于为客户提供创新和可持续的解决方案。',
+            'MISIÓN': '使命',
+            'mision-texto': '为个人和企业提供全面咨询，解决其在房地产市场相关的所有需求。',
+            'VISIÓN': '愿景',
+            'vision-texto': '开发具有建筑品质的住宅项目：良好的采光、通风、优质的装修，让住宅成为终身体验。',
+            'Nuestro Equipo': '我们的团队',
+            'Ing. Mecánico Electricista': '机电工程师',
+            'Arquitecto': '建筑师',
+            'Ingeniero': '工程师',
+            'Product Designer': '产品设计师',
+            'Desarrollador Web': '网页开发员',
+            'ING. de Sistemas': '系统工程师',
+            'Desarrollador de Software': '软件开发员',
+            'Nuestra Ubicación': '我们的位置',
+            'Años de Experiencia': '年经验',
+            'Proyectos Completados': '已完成项目',
+            'Clientes Satisfechos': '满意客户',
+            'Profesionales': '专业人员',
+            'CONSTRUCTORA': '建筑公司',
+            'Construyendo sueños con pasión y calidad': '用热情和品质构建梦想',
+            'Derechos Reservados': '版权所有',
+            'Conoce más sobre nosotros y nuestro trabajo': '了解更多关于我们和我们的工作'
+        
+        },
+        'ja': {
+            'Inicio': 'ホーム',
+            'Para Tí': 'あなたのために',
+            'Proyectos': 'プロジェクト',
+            'Casas de Playa en Venta / Alquiler': ' 販売/賃貸ビーチハウス',
+            'Proyecto Benavides 1': 'ベナビデスプロジェクト1',
+            'Proyecto Benavides 2': 'ベナビデスプロジェクト2',
+            'Proyecto Pueblo Libre Sienna': 'プエブロ・リブレ・シエナプロジェクト',
+            'Proyecto Varsovia Lince': 'バルソビア・リンセプロジェクト',
+            'Mas Proyectos': 'もっとプロジェクト',
+            'Contacto': 'お問い合わせ',
+            'Información': '情報',
+            'Agenda una Reunión': '面談予約',
+            'Cotizar Proyecto': '見積もり依頼',
+            'Login': 'ログイン',
+            'Perfil': 'プロフィール',
+            'Información de la Empresa': '会社情報',
+            'descripcion-empresa-completa': 'Polyline SACは20年以上の経験を持つ建設会社で、高品質の不動産プロジェクトを専門としています。2002年3月に事業を開始して以来、50以上のプロジェクトを完了し、お客様に革新的で持続可能なソリューションを提供してきました。',
+            'MISIÓN': '企業理念',
+            'mision-texto': '不動産市場に関連するすべてのニーズに対して、個人と企業に包括的なアドバイスを提供します。',
+            'VISIÓN': 'ビジョン',
+            'vision-texto': '優れた照明、換気、高品質な仕上げを備えた建築品質の高い住宅プロジェクトを開発し、一生の経験となる住まいを実現します。',
+            'Nuestro Equipo': '私たちのチーム',
+            'Ing. Mecánico Electricista': '機械電気技師',
+            'Arquitecto': '建築家',
+            'Ingeniero': 'エンジニア',
+            'Product Designer': 'プロダクトデザイナー',
+            'Desarrollador Web': 'ウェブ開発者',
+            'ING. de Sistemas': 'システムエンジニア',
+            'Desarrollador de Software': 'ソフトウェア開発者',
+            'Nuestra Ubicación': '所在地',
+            'Años de Experiencia': '年の経験',
+            'Proyectos Completados': '完了したプロジェクト',
+            'Clientes Satisfechos': '満足いただいたお客様',
+            'Profesionales': 'プロフェッショナル',
+            'CONSTRUCTORA': '建設会社',
+            'Construyendo sueños con pasión y calidad': '情熱と品質で夢を形に',
+            'Derechos Reservados': '全著作権所有',
+            'Conoce más sobre nosotros y nuestro trabajo': '私たちと私たちの仕事についてもっと知る'
+        },
+        'it': {
+            'Inicio': 'Home',
+            'Para Tí': 'Per Te', 
+            'Proyectos': 'Progetti',
+            'Casas de Playa en Venta / Alquiler': 'Case in Spiaggia in Vendita / Affitto',
+            'Proyecto Benavides 1': 'Progetto Benavides 1',
+            'Proyecto Benavides 2': 'Progetto Benavides 2',
+            'Proyecto Pueblo Libre Sienna': 'Progetto Pueblo Libre Sienna',
+            'Proyecto Varsovia Lince': 'Progetto Varsovia Lince',
+            'Mas Proyectos': 'Altri Progetti',
+            'Contacto': 'Contatti',
+            'Información': 'Informazioni',
+            'Agenda una Reunión': 'Prenota un Appuntamento',
+            'Cotizar Proyecto': 'Richiedi un Preventivo',
+            'Login': 'Accedi',
+            'Perfil': 'Profilo',
+            'Información de la Empresa': 'Informazioni Aziendali',
+            'descripcion-empresa-completa': 'Polyline SAC è un\'azienda di costruzioni con più di 20 anni di esperienza, specializzata in progetti immobiliari di alta qualità. Abbiamo iniziato la nostra attività nel marzo 2002 e da allora abbiamo consegnato più di 50 progetti, tutti focalizzati nel fornire soluzioni innovative e sostenibili per i nostri clienti.',
+            'MISIÓN': 'MISSIONE',
+            'mision-texto': 'Consulenza integrale per persone e aziende, per risolvere tutte le loro esigenze relative al mercato immobiliare.',
+            'VISIÓN': 'VISIONE',
+            'vision-texto': 'Sviluppare progetti abitativi con qualità architettonica: Ottima illuminazione, ventilazione, finiture di pregio, rendendo l\'abitazione un\'esperienza per tutta la vita.',
+            'Nuestro Equipo': 'Il Nostro Team',
+            'Ing. Mecánico Electricista': 'Ing. Meccanico Elettrico',
+            'Arquitecto': 'Architetto',
+            'Ingeniero': 'Ingegnere',
+            'Product Designer': 'Product Designer',
+            'Desarrollador Web': 'Sviluppatore Web',
+            'ING. de Sistemas': 'Ing. Informatico',
+            'Desarrollador de Software': 'Sviluppatore Software',
+            'Nuestra Ubicación': 'La Nostra Sede',
+            'Años de Experiencia': 'Anni di Esperienza',
+            'Proyectos Completados': 'Progetti Completati',
+            'Clientes Satisfechos': 'Clienti Soddisfatti',
+            'Profesionales': 'Professionisti',
+            'CONSTRUCTORA': 'IMPRESA DI COSTRUZIONI',
+            'Construyendo sueños con pasión y calidad': 'Costruiamo sogni con passione e qualità',
+            'Derechos Reservados': 'Tutti i diritti riservati',
+            'Conoce más sobre nosotros y nuestro trabajo': 'Scopri di più su di noi e il nostro lavoro'
+        }
+    };
+
+    function translatePage(lang) {
+        if (lang === 'es') {
+            location.reload();
+            return;
+        }
+
+        // Usar un fragmento de documento para optimizar las manipulaciones del DOM
+        const fragment = document.createDocumentFragment();
+        const elements = document.querySelectorAll('[data-translate]');
+        
+        // Procesar elementos en lotes para evitar bloqueo del navegador
+        const batchSize = 10;
+        let currentBatch = 0;
+
+        function processBatch() {
+            const start = currentBatch * batchSize;
+            const end = Math.min(start + batchSize, elements.length);
+            
+            for (let i = start; i < end; i++) {
+                const element = elements[i];
+                const key = element.getAttribute('data-translate');
+                
+                if (translations[lang]?.[key]) {
+                    if (element.tagName.toLowerCase() === 'input' || 
+                        element.tagName.toLowerCase() === 'textarea') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        const isTextOnly = element.innerHTML.trim() === element.textContent.trim();
+                        element[isTextOnly ? 'textContent' : 'innerHTML'] = translations[lang][key];
+                    }
+                }
+            }
+
+            currentBatch++;
+            
+            if (currentBatch * batchSize < elements.length) {
+                requestAnimationFrame(processBatch);
+            } else {
+                // Actualizar título después de procesar todas las traducciones
+                document.title = {
+                    'en': 'POLYLINE - Construction Company',
+                    'pt': 'POLYLINE - Construtora',
+                    'zh': 'POLYLINE - 建筑公司',
+                    'ja': 'POLYLINE - 建設会社',
+                    'it': 'POLYLINE - Società di costruzioni'
+                }[lang] || 'POLYLINE - Constructora';
+
+                // Reinicializar animaciones solo si es necesario
+                if (typeof anime !== 'undefined' && typeof wrapLetters === 'function') {
+                    requestAnimationFrame(() => {
+                        const mainText = document.querySelector('.letters-main');
+                        const subText = document.querySelector('.letters-sub');
+                        
+                        if (mainText) mainText.style.opacity = '1';
+                        if (subText) subText.style.opacity = '1';
+                        
+                        wrapLetters('.letters-main');
+                        wrapLetters('.letters-sub');
+                        
+                        // Usar requestAnimationFrame para las animaciones
+                        requestAnimationFrame(() => {
+                            anime.timeline({
+                                loop: false,
+                                easing: 'easeOutExpo'
+                            })
+                            .add({
+                                targets: '.hero-title .letter',
+                                translateY: ["1.1em", 0],
+                                translateX: ["0.55em", 0],
+                                rotateZ: [180, 0],
+                                duration: 600,
+                                delay: anime.stagger(40)
+                            })
+                            .add({
+                                targets: '.hero-subtitle .letter',
+                                opacity: [0, 1],
+                                duration: 800,
+                                delay: anime.stagger(20),
+                                offset: '-=400'
+                            });
+                        });
+                    });
+                }
+            }
+        }
+
+        // Iniciar el procesamiento por lotes
+        requestAnimationFrame(processBatch);
+    }
+
+    // Cerrar el menú de idiomas cuando se hace clic fuera
+    document.addEventListener('click', function(event) {
+        const languageSelector = document.querySelector('.language-selector');
+        const languageOptions = document.getElementById('languageOptions');
+        
+        if (!languageSelector.contains(event.target)) {
+            languageOptions.classList.remove('show');
+        }
+    });
+</script>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script type="module" src="../js/property-viewer.js"></script>
+
+<!-- Firebase SDK -->
+<script type="module" src="../js/firebase-config.js"></script>
+<script type="module" src="../js/auth-check.js"></script>

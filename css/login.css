@@ -1,0 +1,888 @@
+:root {
+    --primary-color: #2B2B2B;
+    --secondary-color: #4A4A4A;
+    --accent-color: #FF6B35;      /* Naranja principal */
+    --accent-hover: #FF8659;      /* Naranja más claro */
+    --accent-dark: #E85A2C;       /* Naranja más oscuro */
+    --text-color: #333333;
+    --text-light: #666666;
+    --box-background: rgba(255, 255, 255, 0.98);
+    --body-bg: #F4F4F4;
+    --shadow-color: rgba(255, 107, 53, 0.25); /* Aumentado la opacidad del naranja */
+    --input-focus-color: rgba(255, 107, 53, 0.15); /* Color naranja para focus */
+    --particle-primary: rgba(255, 107, 53, 0.4);   /* Partículas naranjas */
+    --particle-secondary: rgba(255, 147, 107, 0.3);
+    --particle-tertiary: rgba(255, 187, 167, 0.2);
+}
+
+/* Reemplazar estilos del modo oscuro */
+body.dark-mode {
+    --body-bg: #1A1A1A;
+    --box-background: #2B2B2B;
+    --text-color: #FFFFFF;
+    --text-light: #CCCCCC;
+    --shadow-color: rgba(255, 107, 53, 0.15);
+    --particle-primary: rgba(255, 107, 53, 0.3);
+    --particle-secondary: rgba(255, 147, 107, 0.2);
+    --particle-tertiary: rgba(255, 187, 167, 0.1);
+}
+
+/* Estilos base del body */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: var(--body-bg);
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-color);
+    transition: background-color 0.3s ease;
+}
+
+/* Eliminar el patrón de fondo anterior */
+body::before {
+    display: none;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+/* Ajustar el contenedor de login para incluir el halo */
+.login-box {
+    width: 400px;
+    background: rgba(208, 208, 208, 0.9);
+    border-radius: 20px;
+    box-shadow: 
+        0 8px 24px var(--shadow-color),
+        0 0 50px rgba(216, 92, 47, 0.422); /* Halo naranja */
+    overflow: hidden;
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+    color: var(--text-color);
+}
+
+.login-box:hover {
+    transform: translateY(-5px);
+}
+
+body.dark-mode .login-box {
+    
+    background: rgba(25, 31, 45, 0.9);
+}
+
+.geometric-shapes .shape {
+    position: absolute;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    backdrop-filter: blur(5px);
+}
+
+.shape-1 {
+    width: 100px;
+    height: 100px;
+    background: var(--secondary-color);
+    top: -50px;
+    left: -50px;
+}
+
+.shape-2 {
+    width: 80px;
+    height: 80px;
+    background: var(--accent-color);
+    top: 50%;
+    right: -40px;
+}
+
+.shape-3 {
+    width: 60px;
+    height: 60px;
+    background: var(--primary-color);
+    bottom: -30px;
+    left: 50%;
+}
+
+.logo-section {
+    padding: 2rem;
+    text-align: center;
+    background: var(--primary-color);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.login-logo {
+    height: 60px;
+    filter: brightness(0) invert(1);
+    margin-bottom: 1rem;
+    transition: filter 0.3s ease;
+    transform-origin: center;
+    animation: float 3s ease-in-out infinite;
+}
+
+.company-name {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.login-content {
+    padding: 2rem;
+    z-index: 1;
+    position: relative;
+    padding-top: 20px;
+    min-height: 400px; /* Altura mínima para evitar saltos */
+    overflow: hidden; /* Importante para la animación */
+}
+
+#loginForm, #registerForm, #socialLoginForm {
+    position: absolute;
+    width: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(100%);
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+#loginForm.active-form, 
+#registerForm.active-form, 
+#socialLoginForm.active-form {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+.toggle-buttons {
+    background: #F8F9FA;
+    border-radius: 8px;
+    padding: 4px;
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    padding: 5px;
+    position: relative;
+    overflow: hidden;
+    background: none;
+}
+
+.toggle-buttons button {
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 12px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--light-text);
+    font-size: 16px;
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+    flex: 1;
+    text-align: center;
+}
+
+/* Actualizar estilos de los botones */
+.toggle-buttons button.active {
+    background: var(--accent-color);
+    color: white;
+}
+
+/* Eliminar el estilo anterior del ::before */
+.toggle-buttons::before {
+    display: none;
+}
+
+/* Agregar la línea animada */
+.toggle-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 50%;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: left;
+}
+
+/* Posición de la línea para el botón activo */
+.toggle-buttons[data-active="register"] .toggle-line {
+    transform: translateX(100%);
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+    margin-bottom: 30px;
+    animation: fadeInSlide 0.5s ease forwards;
+    animation-delay: calc(var(--index) * 0.1s);
+    opacity: 0;
+}
+
+.input-group {
+    --index: 0;
+    margin-bottom: 25px;
+}
+
+.input-group:nth-child(1) { --index: 1; }
+.input-group:nth-child(2) { --index: 2; }
+.input-group:nth-child(3) { --index: 3; }
+
+.input-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #DEE2E6;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: white;
+    color: var(--primary-color);
+    padding: 10px 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+/* Actualizar estilos de inputs */
+.input-group input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px var(--input-focus-color);
+}
+
+label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 10px 0;
+    font-size: 16px;
+    color: var(--text-color);
+    pointer-events: none;
+    transition: 0.3s ease all;
+}
+
+.line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #ddd;
+    background: var(--input-border-color);
+}
+
+/* Actualizar estilos de inputs */
+.line::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--accent-color);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: 0.3s ease all;
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+input:focus ~ .line::after,
+input:valid ~ .line::after {
+    transform: scaleX(1);
+    box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+}
+
+input:focus ~ label,
+input:valid ~ label {
+    transform: translateY(-20px);
+    font-size: 12px;
+    color: var(--secondary-color);
+}
+
+/* Actualizar estilos de los botones */
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    background: var(--accent-color);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    background: var(--gradient-1);
+    background-size: 200% 200%;
+    animation: gradientMove 5s ease infinite;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+}
+
+/* Actualizar estilos de los botones */
+.login-btn {
+    background: var(--accent-color);
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+}
+
+/* Actualizar estilos de los botones */
+.login-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.login-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255,255,255,0.2);
+    border-radius: 90%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.login-btn:hover::after {
+    width: 300px;
+    height: 300px;
+}
+
+.primary-btn {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    color: white;
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.social-divider {
+    margin: 2rem 0;
+    text-align: center;
+    position: relative;
+    color: var(--light-text);
+}
+
+.social-divider::before,
+.social-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 30px);
+    height: 1px;
+    background: #E0E0E0;
+}
+
+.social-divider::before {
+    left: 0;
+}
+
+social-divider::after {
+    right: 0;
+}
+
+.social-divider span {
+    background: var(--box-background);
+    padding: 0 10px;
+    color: var(--text-color);
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.social-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 15px;
+}
+
+.social-buttons-row {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.volver-btn {
+    width: 100%;
+    max-width: 200px; /* Ajusta este valor según necesites */
+    margin: 10px 0 0 0;
+}
+
+/* Actualizar estilos de los botones sociales */
+.social-btn {
+    padding: 12px;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    background: var(--box-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    background: var(--box-background);
+    color: var(--text-color);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Actualizar estilos de los botones sociales */
+.social-btn:hover {
+    border-color: var(--accent-color);
+    background: rgba(255, 107, 53, 0.05);
+}
+
+.social-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+.google-btn {
+    border-color: #DADCE0;
+}
+
+.facebook-btn {
+    border-color: #3b5998;
+}
+
+.btn-line {
+    display: none;
+}
+
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 2;
+}
+
+.theme-switch {
+    margin-left: 10px;
+}
+
+.hidden-form {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.active-form {
+    display: block;
+}
+
+.social-login-content {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.provider-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+}
+
+.social-email {
+    color: var(--text-color);
+    font-size: 16px;
+    margin: 20px 0;
+    padding: 10px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 8px;
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    margin-top: 10px;
+}
+
+.secondary-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Animación para el cambio de formularios */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.hidden-form {
+    display: none;
+}
+
+.active-form {
+    display: block;
+}
+
+ /*#reg-error-message {
+    color: #ff0000;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 14px;
+}*/
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideUp {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Restaurar las partículas a su estado original */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    filter: url(#gooey);
+    opacity: 1;
+}
+
+.particle {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    background: var(--particle-color-1, #F57C00);
+    border-radius: 80%;
+    box-shadow: 
+        0 0 15px var(--particle-color-1, #a75400),
+        0 0 30px var(--particle-color-2, #ff9429),
+        0 0 45px var(--particle-color-3, rgba(236, 240, 241, 0.4));
+    animation: floatParticle 15s infinite ease-in-out;
+    will-change: transform;
+}
+
+@keyframes floatParticle {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    25% {
+        transform: translate(100px, -150px) scale(1.2);
+    }
+    50% {
+        transform: translate(200px, 0) scale(0.8);
+    }
+    75% {
+        transform: translate(100px, 150px) scale(1.1);
+    }
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+}
+
+.input-group:hover .line::after {
+    transform: scaleX(0.5);
+    background: var(--gradient-2);
+}
+
+@keyframes patternMove {
+    from { background-position: 0 0; }
+    to { background-position: 50px 50px; }
+}
+
+@media (max-width: 480px) {
+    .login-box {
+        width: 100%;
+        margin: 1rem;
+    }
+    
+    .social-buttons {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-box {
+        width: 90%;
+        margin: 20px;
+    }
+    
+    .social-buttons {
+        flex-direction: column;
+    }
+}
+
+/* Estilos para el botón de modo oscuro */
+.dark-mode-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: var(--box-background);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    color: var(--text-color);
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+/* Actualizar botón de modo oscuro */
+.dark-mode-toggle:hover {
+    background: var(--accent-color);
+    color: white;
+}
+
+
+/* Transiciones suaves para cambios de tema */
+body, .login-box, input, label, .line, .particle {
+    transition: 
+        background-color 0.3s ease,
+        color 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+/* Ajustes responsivos */
+@media screen and (max-width: 768px) {
+    .login-container {
+        padding: 1rem;
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
+
+    .login-box {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .logo-section {
+        padding: 1.5rem;
+    }
+
+    .login-logo {
+        height: 50px;
+    }
+
+    .company-name {
+        font-size: 1.25rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .login-container {
+        padding: 0.5rem;
+    }
+
+    .login-box {
+        border-radius: 15px;
+    }
+
+    .login-content {
+        padding: 1.5rem;
+    }
+
+    .toggle-buttons {
+        margin-bottom: 1.5rem;
+    }
+
+    .toggle-buttons button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .input-group input {
+        font-size: 14px;
+        padding: 10px 14px;
+    }
+
+    .social-buttons {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+
+    .social-btn {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .social-btn img {
+        width: 18px;
+        height: 18px;
+    }
+
+    .dark-mode-toggle {
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        padding: 8px;
+    }
+}
+
+@media screen and (max-height: 700px) {
+    .login-container {
+        align-items: flex-start;
+        padding-top: 1rem;
+    }
+
+    .login-box {
+        margin: 1rem auto;
+    }
+
+    .logo-section {
+        padding: 1rem;
+    }
+
+    .login-logo {
+        height: 45px;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media screen and (max-width: 360px) {
+    .login-content {
+        padding: 1rem;
+    }
+
+    .toggle-buttons button {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    .input-group input {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    .login-btn {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .social-divider {
+        margin: 1.5rem 0;
+    }
+
+    .social-divider span {
+        font-size: 12px;
+    }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media screen and (max-width: 320px) {
+    .company-name {
+        font-size: 1.1rem;
+    }
+
+    .login-content {
+        padding: 0.8rem;
+    }
+
+    .toggle-buttons {
+        margin-bottom: 1.2rem;
+    }
+}
+
+/* Ajustes para dispositivos en orientación landscape */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    .login-container {
+        padding: 0.5rem;
+    }
+
+    .login-box {
+        display: flex;
+        max-width: 90%;
+    }
+
+    .logo-section {
+        width: 30%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .login-content {
+        width: 70%;
+    }
+}
+
+/* Ajuste para evitar que el teclado virtual cause problemas en móviles */
+@media screen and (max-height: 450px) {
+    .login-container {
+        min-height: auto;
+        height: auto;
+    }
+}
+
+body:not(.dark-mode) .verification-modal {
+    background: #fff !important;
+    color: #222 !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+}

@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>POLYLINE - Constructora</title>
+    <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/idiomas.css">
+    <!-- Firebase SDK -->
+    <script type="module" src="../js/firebase-config.js"></script>
+    <script type="module" src="../js/auth-check.js"></script>
+    <script type="module" src="../js/Login_Perfil.js"></script>
+    <!-- Add Anime.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        .animated-title {
+            position: relative;
+            padding: 40px 0;
+            text-align: center;
+            perspective: 1000px;
+            margin-bottom: 50px;
+        }
+        
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            transform-origin: center;
+            font-size: 3.5em; /* Increased size */
+            font-weight: bold;
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: text-shadow 0.3s;
+        }
+
+        .letter:hover {
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            opacity: 0;
+            font-size: 2em; /* Increased size */
+            color: #505050;
+            margin-top: 20px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* New styles for cards enhancement */
+        .departamento-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .departamento-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-details, .btn-separate {
+            transition: all 0.3s;
+        }
+
+        .btn-details:hover, .btn-separate:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Botón de menú móvil -->
+        <button class="mobile-menu-button" aria-label="Menú">
+            <div class="hamburger"></div>
+        </button>
+        <div id="loading-screen" class="loading-screen">
+            <div class="logo-container">
+                <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+                <h1 class="company-name">POLYLINE</h1>
+                <p class="slogan">CONSTRUCTORA</p>
+            </div>
+        </div>
+        <div class="logo-container">
+            <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+            <h1 class="company-name">POLYLINE</h1>
+            <p class="slogan"> CONSTRUCTORA</p>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="language-selector">
+                    <button class="language-btn" onclick="toggleLanguageOptions()">
+                        <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
+                        <span id="currentLanguage">Español</span>
+                    </button>
+                    <div class="language-options" id="languageOptions">
+                        <div class="language-option" onclick="changeLanguage('es')">
+                            <img src="../Resource/flags/es.png" alt="Español">
+                            <span>Español</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('en')">
+                            <img src="../Resource/flags/en.png" alt="English">
+                            <span>English</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('pt')">
+                            <img src="../Resource/flags/pt.png" alt="Português">
+                            <span>Português</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('zh')">
+                            <img src="../Resource/flags/zh.png" alt="中文">
+                            <span>中文</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('ja')">
+                            <img src="../Resource/flags/ja.png" alt="日本語">
+                            <span>日本語</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('it')">
+                            <img src="../Resource/flags/it.png" alt="Italiano">
+                            <span>Italiano</span>
+                        </div>
+                    </div>
+                </li>
+                <li><a class='active' data-translate='Inicio' href='../index.html'>Inicio</a></li>
+                <li><a href="../index.html#para-ti" data-translate="Para Tí">Para Tí</a></li>
+                <li class="dropdown">
+                    <a data-translate='Proyectos' href='proyectos.html' id='proyectos-link'>Proyectos</a>
+                    <ul class="dropdown-menu">
+                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
+                        <li><a data-translate='Proyecto Benavides 1' href='pben1.html'>Proyecto Benavides 1</a></li>
+                        <li><a data-translate='Proyecto Benavides 2' href='pben2.html'>Proyecto Benavides 2</a></li>
+                        <li><a data-translate='Proyecto Sienna' href='ppl1.html'>Proyecto Sienna</a></li>
+                        <li><a data-translate='Proyecto Varsovia' href='plin.html'>Proyecto Varsovia</a></li>
+                        <li><a data-translate='Mas Proyectos' href='mas-proyectos.html'>Mas Proyectos</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="../contact/informaci%c3%b3n.html" id="proyectos-link" data-translate="Contacto">Contacto</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../contact/informaci%c3%b3n.html" data-translate="Información">Información</a></li>
+                        <li><a href="../contact/agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
+                    </ul>
+                </li>
+                <li><a data-translate='Cotizar Proyecto' href='cotizar.html'>Cotizar Proyecto</a></li>
+                <li><a data-translate='Anuncios' href='Anuncios.html'>Anuncios</a></li>
+                <li id="translateContainer" class="translate-container">
+                    <div id="google_translate_element" title="Seleccionar idioma"></div>
+                </li>
+                <li id="loginContainer" class="mobile-login">
+                    <a class='login-link' href='../pages/login.html' id='loginLink'>
+                        <i class="fas fa-sign-in-alt"></i> 
+                        <span data-translate="Login">Login</span>
+                    </a>
+                    <div id="userProfile" style="display: none;">
+                        <div class="profile-header">
+                            <a id="profileLink" href='../pages/perfil.html' style='text-decoration: none; color: inherit;'>
+                                <i class="fas fa-user"></i>
+                                <span id="profileText" data-translate="Perfil">Perfil</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+   
+
+        <!-- Sección de Proyectos -->
+        <section id="departamentos" class=departamentos-section>
+            <div class="animated-title">
+            <div class="main-title">
+                <span class="letter" data-translate="P">P</span>
+                <span class="letter" data-translate="R">R</span>
+                <span class="letter" data-translate="O">O</span>
+                <span class="letter" data-translate="Y">Y</span>
+                <span class="letter" data-translate="E">E</span>
+                <span class="letter" data-translate="C">C</span>
+                <span class="letter" data-translate="T">T</span>
+                <span class="letter" data-translate="O">O</span>
+                <span class="letter" data-translate="space">&nbsp;</span>
+                <span class="letter" data-translate="V">V</span>
+                <span class="letter" data-translate="A">A</span>
+                <span class="letter" data-translate="R">R</span>
+                <span class="letter" data-translate="S">S</span>
+                <span class="letter" data-translate="O">O</span>
+                <span class="letter" data-translate="V">V</span>
+                <span class="letter" data-translate="I">I</span>
+                <span class="letter" data-translate="A">A</span>
+            </div>
+            <div class="subtitle" data-translate="EXCLUSIVOS DEPARTAMENTOS">EXCLUSIVOS DEPARTAMENTOS</div>
+            </div>
+            
+            <div class="launch-countdown">
+                <div class="countdown-title">
+                    <span class="shine-text" data-translate="ENTREGA INMEDIATA"> ENTREGA INMEDIATA</span>
+                </div>
+                
+            </div>
+
+            <div class="departamentos-grid">
+                <!-- Departamento 1 -->
+                <div class="departamento-card">
+                    <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%209.jpg" alt="Departamento 1201" class="departamento-img">
+                    <div class="card-details">
+                        <h3 data-translate="Departamento 1201">Departamento 1201</h3>
+                        <p><span data-translate="2 Dormitorios">2 Dormitorios</span>, 77.36 m²</p>
+                        <a href="#" class="btn-details" data-department="1201" data-translate="Ver detalles">Ver detalles</a>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                </div>
+                
+                <!-- Layout emergente para detalles -->
+                <div id="detail-modal-1201" class="modal hidden dark-mode">
+                    <div class="modal-content dark-mode">
+                        <!-- Botón para cerrar el modal -->
+                        <span class="close-btn" onclick="closeModal(1201)">&times;</span>
+                        
+                        <!-- Contenedor principal del contenido (video o imagen) -->
+                        <div id="main-content-container"   class="video-container dark-mode">
+                            <video id="main-content" controls autoplay muted>
+                                <source src="../Resource/PLIN/DEPA%201201/video%20cocina%20depa%201201.mp4" type="video/mp4">
+                                <source src="../Resource/PLIN/DEPA%201201/video%20dormitorio%20depa%201201.mp4" type="video/mp4">
+                            </video>
+                        </div>
+
+                        <!-- Carrusel de imágenes -->
+                        <div class="image-carousel">
+                            <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <div class="carousel-track">
+                                <!-- Ítem Principal -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1201/video cocina depa 1201.mp4', true, 1201)">
+                                    <img src="../Resource/PLIN/DEPA%201201/1.jpg" alt="Vista 0">
+                                </div>
+                                <!-- Ítem 1 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1201/video dormitorio depa 1201.mp4', true, 1201)">
+                                    <img src="../Resource/PLIN/DEPA%201201/2.jpg" alt="Vista 1">
+                                </div>
+                                <!-- Ítem 2 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201-%2014.jpg', false, 1201)">
+                                    <img src="../Resource/PLIN/DEPA%201201/dpto%201201-%2014.jpg" alt="Vista 2">
+                                </div>
+                                <!-- Ítem 3 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%201.jpg', false, 1201)">
+                                    <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%201.jpg" alt="Vista 4">
+                                </div>
+                                <!-- Ítem 4 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%209.jpg', false, 1201)">
+                                    <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%209.jpg" alt="Vista 4">
+                                </div>
+                                <!-- Ítem 5 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%207.jpg', false, 1201)">
+                                    <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%207.jpg" alt="Vista 4">
+                                </div>
+                                <!-- Ítem 6 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%206.jpg', false, 1201)">
+                                    <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%206.jpg" alt="Vista 4">
+                                </div>
+                                <!-- Ítem 7 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%2010.jpg', false, 1201)">
+                                    <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%2010.jpg" alt="Vista 4">
+                                </div>
+                                <!-- Ítem 8 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%202.jpg', false, 1201)">
+                                    <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%202.jpg" alt="Vista 4">
+                                </div>
+                                <!-- Ítem 10 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%2012.jpg', false, 1201)">
+                                    <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%2012.jpg" alt="Vista 4">
+                                </div>
+                            </div>
+                            <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Departamento 2 -->
+                <div class="departamento-card">
+                    <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2013.jpg" alt="Departamento 1202" class="departamento-img">
+                    <div class="card-details">
+                        <h3 data-translate="Departamento 1202">Departamento 1202</h3>
+                        <p><span data-translate="3 Dormitorios">3 Dormitorios</span>, 86.73 m²</p>
+                        <a href="#" class="btn-details" data-department="1202" data-translate="Ver detalles">Ver detalles</a>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                </div>
+                
+                <!-- Layout emergente para detalles -->
+                <div id="detail-modal-1202" class="modal hidden dark-mode">
+                    <div class="modal-content dark-mode">
+                        <!-- Botón para cerrar el modal -->
+                        <span class="close-btn" onclick="closeModal(1202)">&times;</span>
+                        
+                        <!-- Contenedor principal del contenido (video o imagen) -->
+                        <div id="main-content-container" class="video-container dark-mode">
+                            <video id="main-content" controls autoplay muted>
+                                <source src="../Resource/PLIN/DEPA%201202/video%20depa%201202.mp4" type="video/mp4">
+                            </video>
+                        </div>
+
+                        <!-- Carrusel de imágenes -->
+                        <div class="image-carousel">
+                            <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>    
+                            <div class="carousel-track">
+                                <!-- Ítem Principal -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1202/video depa 1202.mp4', true, 1202)">
+                                    <img src="../Resource/PLIN/DEPA%201202/1.jpg" alt="Vista 0">
+                                </div>
+                                <!-- Ítem 2 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%201.jpg', false, 1202)">
+                                    <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%201.jpg" alt="Vista 1">
+                                </div>
+                                <!-- Ítem 3 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2013.jpg', false, 1202)">
+                                    <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2013.jpg" alt="Vista 2">
+                                </div>
+                                <!-- Ítem 4 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2012.jpg', false, 1202)">
+                                    <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2012.jpg" alt="Vista 3">
+                                </div>
+                                <!-- Ítem 5 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%204.jpg', false, 1202)">
+                                    <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%204.jpg" alt="Vista 4">
+                                </div>
+                                <!-- Ítem 6 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2016.jpg', false, 1202)">
+                                    <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2016.jpg" alt="Vista 5">
+                                </div>
+                                <!-- Ítem 7 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%202.jpg', false, 1202)">
+                                    <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%202.jpg" alt="Vista 6">
+                                </div>
+                                <!-- Ítem 8 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2020.jpg', false, 1202)">
+                                    <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2020.jpg" alt="Vista 7">
+                                </div>
+                                <!-- Ítem 10 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2021.jpg', false, 1202)">
+                                    <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2021.jpg" alt="Vista 8">
+                                </div>
+                                <!-- Ítem 10 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20%20-%2010.jpg', false, 1202)">
+                                    <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20%20-%2010.jpg" alt="Vista 9">
+                                </div>
+                            </div>
+                            <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Departamento 3 -->
+                <div class="departamento-card">
+                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%205.jpg" alt="Departamento 1301" class="departamento-img">
+                    <div class="card-details">
+                        <h3 data-translate="Departamento 1301 - Dúplex con Patio">Departamento 1301 - Dúplex con Patio</h3>
+                        <p><span data-translate="2 Dormitorios">2 Dormitorios</span>, 134.21 m²</p>
+                        <a href="#" class="btn-details" data-department="1301" data-translate="Ver detalles">Ver detalles</a>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                </div>
+                
+                <!-- Layout emergente para detalles -->
+                <div id="detail-modal-1301" class="modal hidden dark-mode">
+                    <div class="modal-content dark-mode">
+                        <!-- Botón para cerrar el modal -->
+                        <span class="close-btn" onclick="closeModal(1301)">&times;</span>
+                        <!-- Contenedor principal del contenido (video o imagen) -->
+                        <div id="main-content-container" class="video-container dark-mode">
+                            <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%201.jpg" alt="Vista 0">
+                        </div>
+
+                        <!-- Carrusel de imágenes -->
+                        <div class="image-carousel">
+                            <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <div class="carousel-track">
+                                <!-- Ítem Principal -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%204.jpg', false, 1301)">
+                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%204.jpg" alt="Vista 1">
+                                </div>
+                                <!-- Ítem 4 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%206.jpg', false, 1301)">
+                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%206.jpg" alt="Vista 3">
+                                </div>
+                                <!-- Ítem 5 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2014.jpg', false, 1301)">
+                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2014.jpg" alt="Vista 4">
+                                </div>
+                                <!-- Ítem 6 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-25.jpg', false, 1301)">
+                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-25.jpg" alt="Vista 5">
+                                </div>
+                                <!-- Ítem 8 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%202.jpg', false, 1301)">
+                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%202.jpg" alt="Vista 7">
+                                </div>
+                                <!-- Ítem 10 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2013.jpg', false, 1301)">
+                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2013.jpg" alt="Vista 8">
+                                </div>
+                                <!-- Ítem 10 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2021.jpg', false, 1301)">
+                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2021.jpg"alt="Vista 9">
+                                </div>
+                                <!-- Ítem 10 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2019.jpg', false, 1301)">
+                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2019.jpg"alt="Vista 9">
+                                </div>
+                                <!-- Ítem 10 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%20%201301%20-%2029.jpg', false, 1301)">
+                                    <img src="../Resource/PLIN/DEPA%201301/departamento%20%201301%20-%2029.jpg"alt="Vista 9">
+                                </div>
+                                <!-- Ítem 10 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2030.jpg', false, 1301)">
+                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2030.jpg"alt="Vista 9">
+                                </div>
+                            </div>
+                            <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                  <!-- Departamento 4 -->
+                  <div class="departamento-card">
+                    <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%209.jpg" alt="Departamento 1302" class="departamento-img">
+                    <div class="card-details">
+                        <h3 data-translate="Departamento 1302 - Dúplex con terraza y área Libre">Departamento 1302 - Dúplex con terraza y área Libre</h3>
+                        <p><span data-translate="3 Dormitorios">3 Dormitorios</span>, 148.46 m²</p>
+                        <a href="#" class="btn-details" data-department="1302" data-translate="Ver detalles">Ver detalles</a>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                </div>
+                
+                <!-- Layout emergente para detalles -->
+                <div id="detail-modal-1302" class="modal hidden dark-mode">
+                    <div class="modal-content dark-mode">
+                        <!-- Botón para cerrar el modal -->
+                        <span class="close-btn" onclick="closeModal(1302)">&times;</span>
+                        <!-- Contenedor principal del contenido (video o imagen) -->
+                        <div id="main-content-container" class="video-container dark-mode">
+                            <video id="main-content" controls autoplay muted>
+                                <source src="../Resource/PLIN/DEPA%201302/video%20depa%201302%201.mp4" type="video/mp4">
+                                <source src="../Resource/PLIN/DEPA%201302/video%20depa%201302%202.mp4" type="video/mp4">
+                                <source src="../Resource/PLIN/DEPA%201302/video%20depa%201302%203.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        
+                        <!-- Carrusel de imágenes -->
+                        <div class="image-carousel">
+                            <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>    
+                            <div class="carousel-track">
+                                <!-- Ítem Principal -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1302/video depa 1302 1.mp4', true, 1302)">
+                                    <img src="../Resource/PLIN/DEPA%201302/1.jpg" alt="Vista 0">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1302/video depa 1302 2.mp4', true, 1302)">
+                                    <img src="../Resource/PLIN/DEPA%201302/2.jpg" alt="Vista 0">
+                                </div>
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1302/video depa 1302 3.mp4', true, 1302)">
+                                    <img src="../Resource/PLIN/DEPA%201302/3.jpg" alt="Vista 0">
+                                </div>
+                                <!-- Ítem 2 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%204.jpg', false, 1302)">
+                                    <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%204.jpg" alt="Vista 2">
+                                </div>
+                                <!-- Ítem 3 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%208.jpg', false, 1302)">
+                                    <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%208.jpg" alt="Vista 3">
+                                </div>                                
+                                <!-- Ítem 4 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2010.jpg', false, 1302)">
+                                    <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%2010.jpg" alt="Vista 4">
+                                </div>
+                                <!-- Ítem 5 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%203.jpg', false, 1302)">
+                                    <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%203.jpg" alt="Vista 5">
+                                </div>
+                                <!-- Ítem 6 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2014.jpg', false, 1302)">
+                                    <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%2014.jpg" alt="Vista 6">
+                                </div>
+                                <!-- Ítem 7 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2015.jpg', false, 1302)">
+                                    <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%2015.jpg" alt="Vista 7">
+                                </div>
+                                <!-- Ítem 8 -->
+                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2027.jpg', false, 1302)">
+                                    <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%2027.jpg" alt="Vista 8">
+                                </div>
+                            </div>
+                            <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+
+        </section>
+
+        
+        <!-- Sección de Tipologías en horizontal -->
+        <section id="departamentos" class="departamentos-section">
+            <div class="animated-title">
+                <div class="main-title" >
+                    <span class="letter">T</span>
+                    <span class="letter">I</span>
+                    <span class="letter">P</span>
+                    <span class="letter">O</span>
+                    <span class="letter">L</span>
+                    <span class="letter">O</span>
+                    <span class="letter">G</span>
+                    <span class="letter">Í</span>
+                    <span class="letter">A</span>
+                </div>
+        
+        </section>
+        <section class="tipologias-grid">
+            <!-- Tipología 1 -->
+        <div class="tipologia-container" style="margin-top: 50%;">
+            <img src="../Resource/PLIN/TIPOLOG%c3%8dA/1.png" alt="Tipología 1" class="tipologia-img">
+            <div class="tipologia-info">
+                <h3 data-translate="TIPOLOGÍA 1">TIPOLOGÍA 1</h3>
+                <p><span data-translate="ÁREA TOTAL">ÁREA TOTAL</span>: 77.36 m²</p>
+            </div>
+        </div>
+
+        <!-- Tipología 2 -->
+        <div class="tipologia-container " style="margin-top: -10%;">
+            <img src="../Resource/PLIN/TIPOLOG%c3%8dA/2.png" alt="Tipología 2" class="tipologia-img">
+            <div class="tipologia-info">
+                <h3 data-translate="TIPOLOGÍA 2">TIPOLOGÍA 2</h3>
+                <p><span data-translate="ÁREA TOTAL">ÁREA TOTAL</span>: 77.49 m²</p>
+            </div>
+        </div>
+
+        <!-- Tipología 3 -->
+        <div class="tipologia-container" >
+            <img src="../Resource/PLIN/TIPOLOG%c3%8dA/3.png" alt="Tipología 3" class="tipologia-img">
+            <div class="tipologia-info">
+                <h3 data-translate="TIPOLOGÍA 3">TIPOLOGÍA 3</h3>
+                <p><span data-translate="ÁREA TOTAL">ÁREA TOTAL</span>: 87.36 m²</p>
+            </div>
+        </div>
+</section>
+       
+<section id="nosotros">
+    <div class="content">
+        <h2 data-translate="Proyecto Varsovia">Proyecto Varsovia</h2>
+        <p style="text-align: justify;">
+           <span data-translate="Es un edificio ubicado en el distrito de Lince, en la ciudad de Lima.">Es un edificio ubicado en el distrito de Lince, en la ciudad de Lima.</span>
+            <span data-translate="Tiene una ubicación estratégica, cerca de avenidas principales, centros comerciales, restaurantes, parques y más.">Tiene una ubicación estratégica, cerca de avenidas principales, centros comerciales, restaurantes, parques y más.</span>
+        </p>
+        <p style="text-align: justify;">
+            <span data-translate="El edificio cuenta con departamentos de 1, 2 y 3 dormitorios, con áreas desde 77.36 m² hasta 87.36 m².">El edificio cuenta con departamentos de 1, 2 y 3 dormitorios, con áreas desde 77.36 m² hasta 87.36 m².</span>
+            <span data-translate="Además, cuenta con áreas comunes como piscina, gimnasio, zona de parrillas, sala de juegos y más.">Además, cuenta con áreas comunes como piscina, gimnasio, zona de parrillas, sala de juegos y más.</span>
+        </p>
+        <p style="text-align: justify; color: red">
+            <span data-translate="¡No pierdas la oportunidad de vivir en un lugar exclusivo y con todas las comodidades que necesitas!">¡No pierdas la oportunidad de vivir en un lugar exclusivo y con todas las comodidades que necesitas!</span>   
+        </p>
+        <p style="text-align: justify; ">
+            <span data-translate="Podrías ver la distribución de los departamentos en el siguiente plano.">Podrías ver la distribución de los departamentos en el siguiente plano.</span>
+        </p>
+        
+        <ul style="text-align: center; list-style: none; padding: 0;">
+            <a href="../Resource/PLIN/Varsovia%20Lince.pdf" class="download-btn" style="display: inline-block; margin: 20px 0;" data-translate="Descargar Plano">Descargar Plano<i class="fa fa-download"></i></a></a>
+        </ul>
+    </div>
+    <div class="image-container">
+        <img src="../Resource/PLIN/WARSAW%20ELEVATION.jpg" 
+     style="width: 95%; max-width: 450px; height: auto; border-radius: 25px; box-shadow: 0 25px 20px rgba(155, 61, 30, 0.2);" 
+     alt="Tipología del Departamento" class="tipologia-imagen" loading="lazy">
+
+    </div>
+</section>
+          
+    <!-- Botón de modo oscuro mejorado -->
+    <button id="dark-mode-toggle" class="dark-mode-button" style="position: fixed; bottom: 20px; right: 30px;"></button>
+
+    <script src="../scripts.js"></script>
+
+    <script>
+        // Add this before the existing scripts
+        document.addEventListener('DOMContentLoaded', () => {
+            // Enhanced animation timeline
+            anime.timeline({loop: false})
+            .add({
+                targets: '.letter',
+                scale: [0, 1],
+                duration: 1500,
+                elasticity: 600,
+                delay: (el, i) => 70 * (i+1),
+                opacity: {
+                    value: 1,
+                    duration: 1,
+                    delay: (el, i) => 70 * (i+1)
+                },
+                rotate: {
+                    value: [-360, 0],
+                    duration: 1500,
+                    easing: 'easeOutElastic'
+                }
+            }).add({
+                targets: '.subtitle',
+                opacity: [0, 1],
+                duration: 1000,
+                translateY: [20, 0],
+                easing: 'easeOutExpo',
+                offset: '-=1000'
+            });
+
+            // Enhanced hover effects
+            const letters = document.querySelectorAll('.letter');
+            letters.forEach(letter => {
+                letter.addEventListener('mouseenter', () => {
+                    anime({
+                        targets: letter,
+                        scale: 1.2,
+                        rotate: '15deg',
+                        duration: 300,
+                        color: '#007bff',
+                        textShadow: '0 0 10px rgba(0,123,255,0.5)'
+                    });
+                });
+                
+                letter.addEventListener('mouseleave', () => {
+                    anime({
+                        targets: letter,
+                        scale: 1,
+                        rotate: '0deg',
+                        duration: 300,
+                        color: '#333',
+                        textShadow: '2px 2px 4px rgba(0,0,0,0.2)'
+                    });
+                });
+            });
+        });
+
+        
+    </script>
+
+    <script>
+        window.addEventListener('load', function () {
+            document.body.classList.add('loaded');
+        });
+    </script>
+
+    <script>
+        // Función para crear efecto de partículas
+        function createParticles(e) {
+            const particles = 10;
+            const button = e.target;
+            const rect = button.getBoundingClientRect();
+            const btnColor = window.getComputedStyle(button).backgroundColor;
+
+            for (let i = 0; i < particles; i++) {
+                const particle = document.createElement('span');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 3 + 2;
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 50 + 50;
+                
+                particle.style.cssText = `
+                    position: fixed;
+                    pointer-events: none;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: ${btnColor};
+                    border-radius: 50%;
+                    left: ${e.clientX}px;
+                    top: ${e.clientY}px;
+                    transform: translate(-50%, -50%);
+                    animation: particle-fade 1s ease-out forwards;
+                `;
+
+                documewnt.body.appendChild(particle);
+
+                const animation = particle.animate([
+                    {
+                        transform: `translate(-50%, -50%)`,
+                        opacity: 1
+                    },
+                    {
+                        transform: `translate(${Math.cos(angle) * velocity}px, ${Math.sin(angle) * velocity}px)`,
+                        opacity: 0
+                    }
+                ], {
+                    duration: 1000,
+                    easing: 'cubic-bezier(0, .9, .57, 1)'
+                });
+
+                animation.onfinish = () => particle.remove();
+            }
+        }
+
+        // Función para actualizar el contador
+        function updateCountdown() {
+            const targetDate = new Date('2025-01-30T00:00:00').getTime();
+            const now = new Date().getTime();
+            const timeLeft = targetDate - now;
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            document.querySelector('.days').textContent = days.toString().padStart(3, '');
+            document.querySelector('.hours').textContent = hours.toString().padStart(2, '0');
+            document.querySelector('.minutes').textContent = minutes.toString().padStart(2, '0');
+            document.querySelector('.seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+
+        // Inicializar el contador
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Agregar efecto de partículas a los botones
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.btn-details, .btn-separate');
+            buttons.forEach(button => {
+                button.addEventListener('click', createParticles);
+            });
+        });
+    </script>
+
+    <style>
+        @keyframes particle-fade {
+            to {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty));
+            }
+        }
+    </style>
+
+    <footer class="seccion-footer">
+        <div class="contenedor-footer">
+            <div class="bloque-logo">
+                <img src="../Resource/Logo/logo.png" alt="Polyline">
+                <div class="texto-copyright" style="color: black;">
+                    <p>&copy; 2025 POLYLINE. Todos los derechos reservados.</p>
+                </div>
+            </div>
+            <div class="bloque-contacto" style="color: black;">
+                <h3>CONTACTOS:</h3>
+                <p>WhatsApp: <a href="https://wa.link/lkvfnb">+51 943 812 536</a></p>
+                <p>Email: <a href="mailto:contacto@polyline.com">contacto@polyline.com</a></p>
+                <p>Dirección: Av. Óscar R. Benavides</p>
+            </div>
+        </div>
+    </footer>
+
+      <div class="social-buttons" style="position: fixed; bottom: 20px; right: 85px;">
+        <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
+            <i class="fab fa-facebook-f"></i>
+        </button>
+        <button class="social-btn whatsapp" onclick="window.open('https://wa.link/lkvfnb')">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+        <button class="social-btn instagram" onclick="window.open('https://www.instagram.com/arquitectosalasperu/')">
+            <i class="fab fa-instagram"></i>
+        </button>
+        <button class="social-btn linkedin" onclick="window.open('https://www.linkedin.com/in/arquitectosalas')">
+            <i class="fab fa-linkedin-in"></i>
+        </button>
+        <button class="social-btn youtube" onclick="window.open('https://www.youtube.com/channel/UC9wMT7_zsq7yE0MMCSxiVMw')">
+            <i class="fab fa-youtube"></i>
+        </button>
+    </div>
+    
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
+    const navMenu = document.querySelector('.nav-menu');
+    const menuOverlay = document.querySelector('.menu-overlay');
+    const dropdowns = document.querySelectorAll('.dropdown');
+
+    // Toggle menú móvil
+    mobileMenuButton.addEventListener('click', function() {
+        this.classList.toggle('active');
+        navMenu.classList.toggle('active');
+        menuOverlay.classList.toggle('active');
+        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+    });
+
+    // Cerrar menú al hacer click en el overlay
+    menuOverlay.addEventListener('click', function() {
+        mobileMenuButton.classList.remove('active');
+        navMenu.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    // Manejar dropdowns en móvil
+    dropdowns.forEach(dropdown => {
+        const link = dropdown.querySelector('a');
+        link.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                dropdown.classList.toggle('active');
+            }
+        });
+    });
+
+    // Cerrar menú al cambiar el tamaño de la ventana
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            mobileMenuButton.classList.remove('active');
+            navMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Agregar después de la inicialización de Firebase
+    document.getElementById('logoutButton').addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+            await signOut(auth);
+            console.log('Usuario cerró sesión');
+            window.location.href = '../index.html';
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+        }
+    });
+
+    // Toggle del menú desplegable
+    document.getElementById('userProfile').addEventListener('click', function(e) {
+        const dropdown = this.querySelector('.user-dropdown');
+        dropdown.classList.toggle('show');
+        e.stopPropagation();
+    });
+
+    // Cerrar el menú al hacer clic fuera
+    document.addEventListener('click', function() {
+        const dropdowns = document.getElementsByClassName('user-dropdown');
+        for (const dropdown of dropdowns) {
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        }
+    });
+});
+</script>
+
+<script type="module">
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    // Función para manejar el cierre de sesión
+    document.getElementById('logoutButton').addEventListener('click', async (e) => {
+        e.preventDefault();
+        const auth = getAuth();
+        try {
+            await signOut(auth);
+            console.log('Sesión cerrada exitosamente');
+            window.location.href = '../index.html'; // Redirige al inicio después de cerrar sesión
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+        }
+    });
+</script>
+<script type="module" src="js/nav.html"></script>
+</body>
+
+</html>
+    <script>
+        // Funciones para el selector de idiomas
+        function toggleLanguageOptions() {
+            const selector = document.querySelector('.language-selector');
+            const options = document.getElementById('languageOptions');
+            selector.classList.toggle('active');
+            options.classList.toggle('show');
+        }
+
+        function changeLanguage(lang) {
+            const currentFlag = document.getElementById('currentFlag');
+            const currentLanguage = document.getElementById('currentLanguage');
+            const options = document.getElementById('languageOptions');
+            
+            // Actualizar el botón con el idioma seleccionado
+            currentFlag.src = `../Resource/flags/${lang}.png`;
+            currentLanguage.textContent = {
+                'es': 'Español',
+                'en': 'English',
+                'pt': 'Português',
+                'zh': '中文',
+                'ja': '日本語',
+                'it': 'Italiano'
+            }[lang];
+            
+            // Ocultar las opciones
+            options.classList.remove('show');
+            
+            // Traducir el contenido
+            translatePage(lang);
+        }
+
+        // Objeto con las traducciones
+        const translations = {
+            'en': {
+                'Inicio': 'Home',
+                'Para Tí': 'For You',
+                'Proyectos': 'Projects', 
+                'Casas de Playa en Venta / Alquiler': 'Beach Houses for Sale / Rent',
+                'Proyecto Benavides 1': 'Benavides Project 1',
+                'Proyecto Benavides 2': 'Benavides Project 2',
+                'Proyecto Sienna': 'Sienna Project',
+                'Proyecto Varsovia': 'Varsovia Project',
+                'Contacto': 'Contact',
+                'Información': 'Information',
+                'Agenda Una Reunión': 'Schedule a Meeting',
+                'Cotizar Proyecto': 'Quote Project',
+                'BIENVENIDO A POLYLINE': 'WELCOME TO POLYLINE', 
+                'Proyectos inmobiliarios creados para ti.': 'Real estate projects created for you.',
+                'Login': 'Login',
+                'Perfil': 'Profile',
+                'Cerrar Sesión': 'Logout',
+                'EXCLUSIVOS DEPARTAMENTOS': 'EXCLUSIVE APARTMENTS',
+                'Departamento 1201': 'Apartment 1201',
+                'Departamento 1202': 'Apartment 1202', 
+                'Departamento 1301 - Dúplex con Patio': 'Apartment 1301 - Duplex with Patio',
+                'Departamento 1302 - Dúplex con terraza y área Libre': 'Apartment 1302 - Duplex with terrace and Free area',
+                '2 Dormitorios': '2 Bedrooms',
+                '3 Dormitorios': '3 Bedrooms',
+                'ÁREA TOTAL': 'TOTAL AREA', 
+                'Ver detalles': 'View details',
+                'Separar': 'Reserve',
+                'TIPOLOGÍA': 'TYPOLOGY',
+                'TIPOLOGÍA 1': 'TYPOLOGY 1',
+                'TIPOLOGÍA 2': 'TYPOLOGY 2', 
+                'TIPOLOGÍA 3': 'TYPOLOGY 3',
+                'Proyecto Varsovia': 'Warsaw Project',
+                'Es un edificio ubicado en el distrito de Lince, en la ciudad de Lima.': 'This building is located in the Lince district of Lima.',
+                'Tiene una ubicación estratégica, cerca de avenidas principales, centros comerciales, restaurantes, parques y más.': 'It has a strategic location, close to main avenues, shopping centers, restaurants, parks and more.',
+                'El edificio cuenta con departamentos de 1, 2 y 3 dormitorios, con áreas desde 77.36 m² hasta 87.36 m².': 'The building has 1, 2 and 3 bedroom apartments, with areas from 77.36 m² up to 87.36 m².',
+                'Además, cuenta con áreas comunes como piscina, gimnasio, zona de parrillas, sala de juegos y más.': 'It also has common areas such as swimming pool, gym, grill area, game room and more.',
+                '¡No pierdas la oportunidad de vivir en un lugar exclusivo y con todas las comodidades que necesitas!': 'Don\'t miss the opportunity to live in an exclusive place with all the amenities you need!',
+                'Podrías ver la distribución de los departamentos en el siguiente plano.': 'You can see the apartment layouts in the following floor plan.',
+                'Descargar Plano': 'Download Floor Plan',
+                'ENTREGA INMEDIATA': 'IMMEDIATE DELIVERY',
+                'Mas Proyectos': 'More Projects'
+            },
+            'pt': {
+                'Inicio': 'Início',
+                'Para Tí': 'Para Você',
+                'Proyectos': 'Projetos',
+                'Casas de Playa en Venta / Alquiler': 'Casas de Praia à Venda / Aluguel',
+                'Proyecto Benavides 1': 'Benavides Projeto 1',
+                'Proyecto Benavides 2': 'Benavides Projeto 2',
+                'Proyecto Sienna': 'Sienna Projeto',
+                'Proyecto Varsovia': 'Varsovia Projeto',
+                'Contacto': 'Contato',
+                'Información': 'Informações',
+                'Agenda Una Reunión': 'Agendar uma Reunião',
+                'Cotizar Proyecto': 'Orçar Projeto',
+                'BIENVENIDO A POLYLINE': 'BEM-VINDO À POLYLINE',
+                'Proyectos inmobiliarios creados para ti.': 'Projetos imobiliários criados para você.',
+                'Login': 'Entrar',
+                'Perfil': 'Perfil',
+                'Cerrar Sesión': 'Sair',
+                'EXCLUSIVOS DEPARTAMENTOS': 'APARTAMENTOS EXCLUSIVOS',
+                'Departamento 1201': 'Apartamento 1201',
+                'Departamento 1202': 'Apartamento 1202',
+                'Departamento 1301 - Dúplex con Patio': 'Apartamento 1301 - Duplex com Pátio',
+                'Departamento 1302 - Dúplex con terraza y área Libre': 'Apartamento 1302 - Duplex com terraço e área livre',
+                '2 Dormitorios': '2 Dormitórios',
+                '3 Dormitorios': '3 Dormitórios',
+                'ÁREA TOTAL': 'ÁREA TOTAL',
+                'Ver detalles': 'Ver detalhes',
+                'Separar': 'Reservar',
+                'TIPOLOGÍA': 'TIPOLOGIA',
+                'TIPOLOGÍA 1': 'TIPOLOGIA 1',
+                'TIPOLOGÍA 2': 'TIPOLOGIA 2',
+                'TIPOLOGÍA 3': 'TIPOLOGIA 3',
+                'Proyecto Varsovia': 'Projeto Varsóvia',
+                'Es un edificio ubicado en el distrito de Lince, en la ciudad de Lima.': 'É um edifício localizado no distrito de Lince, na cidade de Lima.',
+                'Tiene una ubicación estratégica, cerca de avenidas principales, centros comerciales, restaurantes, parques y más.': 'Tem localização estratégica, próximo a avenidas principais, centros comerciais, restaurantes, parques e mais.',
+                'El edificio cuenta con departamentos de 1, 2 y 3 dormitorios, con áreas desde 77.36 m² hasta 87.36 m².': 'O edifício possui apartamentos de 1, 2 e 3 dormitórios, com áreas de 77.36 m² até 87.36 m².',
+                'Además, cuenta con áreas comunes como piscina, gimnasio, zona de parrillas, sala de juegos y más.': 'Além disso, conta com áreas comuns como piscina, academia, área de churrasco, sala de jogos e mais.',
+                '¡No pierdas la oportunidad de vivir en un lugar exclusivo y con todas las comodidades que necesitas!': 'Não perca a oportunidade de morar em um lugar exclusivo com todas as comodidades que você precisa!',
+                'Podrías ver la distribución de los departamentos en el siguiente plano.': 'Você pode ver a distribuição dos apartamentos na planta a seguir.',
+                'Descargar Plano': 'Baixar Planta',
+                'ENTREGA INMEDIATA': 'ENTREGA IMEDIATA'
+
+            },
+            'zh': {
+                'Inicio': '首页',
+                'Para Tí': '为您服务',
+                'Proyectos': '项目',
+                'Casas de Playa en Venta / Alquiler': '出售/出租房屋',
+                'Proyecto Benavides 1': '贝纳维德斯项目 1',
+                'Proyecto Benavides 2': '贝纳维德斯项目 2',
+                'Proyecto Sienna': '锡耶纳项目',
+                'Proyecto Varsovia': '华沙项目',
+                'Mas Proyectos': '更多项目',
+                'Contacto': '联系我们',
+                'Información': '信息',
+                'Agenda Una Reunión': '预约会议',
+                'Cotizar Proyecto': '项目报价',
+                'Login': '登录',
+                'Perfil': '个人中心', 
+                'Cerrar Sesión': '退出登录',
+                'BIENVENIDO A POLYLINE': '欢迎来到POLYLINE',
+                'EXCLUSIVOS DEPARTAMENTOS': '精品公寓',
+                'Departamento 1201': '1201号公寓',
+                'Departamento 1202': '1202号公寓',
+                'Departamento 1301 - Dúplex con Patio': '1301号复式公寓带庭院',
+                'Departamento 1302 - Dúplex con terraza y área Libre': '1302号复式公寓带露台和自由区域',
+                '2 Dormitorios': '2间卧室',
+                '3 Dormitorios': '3间卧室',
+                'ÁREA TOTAL': '总面积',
+                'Ver detalles': '查看详情',
+                'Separar': '预定',
+                'TIPOLOGÍA': '户型',
+                'TIPOLOGÍA 1': '户型1', 
+                'TIPOLOGÍA 2': '户型2',
+                'TIPOLOGÍA 3': '户型3',
+                'Proyecto Varsovia': '华沙项目',
+                'Es un edificio ubicado en el distrito de Lince, en la ciudad de Lima.': '该建筑位于利马市林塞区。',
+                'Tiene una ubicación estratégica, cerca de avenidas principales, centros comerciales, restaurantes, parques y más.': '地理位置优越，毗邻主要道路、购物中心、餐厅、公园等。',
+                'El edificio cuenta con departamentos de 1, 2 y 3 dormitorios, con áreas desde 77.36 m² hasta 87.36 m².': '该建筑提供1、2和3间卧室的公寓，面积从77.36平方米到87.36平方米不等。',
+                'Además, cuenta con áreas comunes como piscina, gimnasio, zona de parrillas, sala de juegos y más.': '此外，还配备游泳池、健身房、烧烤区、游戏室等公共设施。',
+                '¡No pierdas la oportunidad de vivir en un lugar exclusivo y con todas las comodidades que necesitas!': '不要错过在这个配备齐全的高级住所生活的机会！',
+                'Podrías ver la distribución de los departamentos en el siguiente plano.': '您可以在以下平面图中查看公寓的布局。',
+                'Descargar Plano': '下载平面图',
+                'ENTREGA INMEDIATA': '立即交付'
+            
+            },
+            'ja': {
+                'Inicio': 'ホーム',
+                'Para Tí': 'あなたのために',
+                'Proyectos': 'プロジェクト',
+                'Casas de Playa en Venta / Alquiler': ' 販売/賃貸ビーチハウス',
+                'Proyecto Benavides 1': 'ベナビデス・プロジェクト1',
+                'Proyecto Benavides 2': 'ベナビデス・プロジェクト2',
+                'Proyecto Sienna': 'シエナ・プロジェクト',
+                'Proyecto Varsovia': 'ワルシャワ・プロジェクト',
+                'Mas Proyectos': 'もっとプロジェクト',
+                'Contacto': 'お問い合わせ',
+                'Información': '情報',
+                'Agenda Una Reunión': '面談予約',
+                'Cotizar Proyecto': '見積もり依頼',
+                'BIENVENIDO A POLYLINE': 'POLYLINEへようこそ',
+                'Login': 'ログイン',
+                'Perfil': 'プロフィール',
+                'Cerrar Sesión': 'ログアウト',
+                'EXCLUSIVOS DEPARTAMENTOS': '高級マンション',
+                'Departamento 1201': '1201号室',
+                'Departamento 1202': '1202号室', 
+                'Departamento 1301 - Dúplex con Patio': '1301号室 - 庭付きメゾネット',
+                'Departamento 1302 - Dúplex con terraza y área Libre': '1302号室 - テラス付きメゾネット',
+                '2 Dormitorios': '2ベッドルーム',
+                '3 Dormitorios': '3ベッドルーム',
+                'ÁREA TOTAL': '総面積',
+                'Ver detalles': '詳細を見る',
+                'Separar': '予約する',
+                'TIPOLOGÍA': '間取り',
+                'TIPOLOGÍA 1': '間取りタイプ1',
+                'TIPOLOGÍA 2': '間取りタイプ2',
+                'TIPOLOGÍA 3': '間取りタイプ3',
+                'Proyecto Varsovia': 'ワルシャワプロジェクト',
+                'Es un edificio ubicado en el distrito de Lince, en la ciudad de Lima.': 'リマ市リンセ地区に位置する建物です。',
+                'Tiene una ubicación estratégica, cerca de avenidas principales, centros comerciales, restaurantes, parques y más.': '主要道路、ショッピングセンター、レストラン、公園などに近い戦略的な立地です。',
+                'El edificio cuenta con departamentos de 1, 2 y 3 dormitorios, con áreas desde 77.36 m² hasta 87.36 m².': '建物には1、2、3ベッドルームの部屋があり、面積は77.36㎡から87.36㎡まであります。',
+                'Además, cuenta con áreas comunes como piscina, gimnasio, zona de parrillas, sala de juegos y más.': 'さらに、プール、ジム、バーベキューエリア、ゲームルームなどの共有施設も完備しています。',
+                '¡No pierdas la oportunidad de vivir en un lugar exclusivo y con todas las comodidades que necesitas!': '必要な設備が整った高級住宅での暮らしをお見逃しなく！',
+                'Podrías ver la distribución de los departamentos en el siguiente plano.': '以下の間取り図で部屋の配置をご確認いただけます。',
+                'Descargar Plano': '間取り図をダウンロード',
+                'ENTREGA INMEDIATA': '即時納品'
+            },
+            'it': {
+                'Inicio': 'Home',
+                'Para Tí': 'Per Te', 
+                'Proyectos': 'Progetti',
+                'Casas de Playa en Venta / Alquiler': 'Case in Spiaggia in Vendita / Affitto',
+                'Proyecto Benavides 1': 'Progetto Benavides 1',
+                'Proyecto Benavides 2': 'Progetto Benavides 2',
+                'Proyecto Sienna': 'Progetto Sienna',
+                'Proyecto Varsovia': 'Progetto Varsovia',
+                'Mas Proyectos': 'Altri Progetti',
+                'Contacto': 'Contatti',
+                'Información': 'Informazioni',
+                'Agenda Una Reunión': 'Prenota un Appuntamento',
+                'Cotizar Proyecto': 'Richiedi un Preventivo', 
+                'BIENVENIDO A POLYLINE': 'BENVENUTO A POLYLINE',
+                'Login': 'Accedi',
+                'Perfil': 'Profilo',
+                'Cerrar Sesión': 'Disconnetti',
+                'EXCLUSIVOS DEPARTAMENTOS': 'APPARTAMENTI ESCLUSIVI',
+                'Departamento 1201': 'Appartamento 1201',
+                'Departamento 1202': 'Appartamento 1202',
+                'Departamento 1301 - Dúplex con Patio': 'Appartamento 1301 - Duplex con Cortile',
+                'Departamento 1302 - Dúplex con terraza y área Libre': 'Appartamento 1302 - Duplex con terrazza e area libera',
+                '2 Dormitorios': '2 Camere da letto',
+                '3 Dormitorios': '3 Camere da letto', 
+                'ÁREA TOTAL': 'AREA TOTALE',
+                'Ver detalles': 'Vedi dettagli',
+                'Separar': 'Prenota',
+                'TIPOLOGÍA': 'TIPOLOGIA',
+                'TIPOLOGÍA 1': 'TIPOLOGIA 1',
+                'TIPOLOGÍA 2': 'TIPOLOGIA 2',
+                'TIPOLOGÍA 3': 'TIPOLOGIA 3',
+                'Proyecto Varsovia': 'Progetto Varsavia',
+                'Es un edificio ubicado en el distrito de Lince, en la ciudad de Lima.': 'È un edificio situato nel distretto di Lince, nella città di Lima.',
+                'Tiene una ubicación estratégica, cerca de avenidas principales, centros comerciales, restaurantes, parques y más.': 'Ha una posizione strategica, vicino alle principali strade, centri commerciali, ristoranti, parchi e altro.',
+                'El edificio cuenta con departamentos de 1, 2 y 3 dormitorios, con áreas desde 77.36 m² hasta 87.36 m².': 'L\'edificio dispone di appartamenti da 1, 2 e 3 camere da letto, con superfici da 77,36 m² a 87,36 m².',
+                'Además, cuenta con áreas comunes como piscina, gimnasio, zona de parrillas, sala de juegos y más.': 'Inoltre, dispone di aree comuni come piscina, palestra, area barbecue, sala giochi e altro.',
+                '¡No pierdas la oportunidad de vivir en un lugar exclusivo y con todas las comodidades que necesitas!': 'Non perdere l\'opportunità di vivere in un luogo esclusivo con tutti i comfort di cui hai bisogno!',
+                'Podrías ver la distribución de los departamentos en el siguiente plano.': 'Puoi vedere la disposizione degli appartamenti nella seguente planimetria.',
+                'Descargar Plano': 'Scarica Planimetria',
+                'ENTREGA INMEDIATA': 'CONSEGNA IMMEDIATA'
+            }
+        };
+
+        function translatePage(lang) {
+            if (lang === 'es') {
+                location.reload();
+                return;
+            }
+
+            // Usar un fragmento de documento para optimizar las manipulaciones del DOM
+            const fragment = document.createDocumentFragment();
+            const elements = document.querySelectorAll('[data-translate]');
+            
+            // Procesar elementos en lotes para evitar bloqueo del navegador
+            const batchSize = 10;
+            let currentBatch = 0;
+
+            function processBatch() {
+                const start = currentBatch * batchSize;
+                const end = Math.min(start + batchSize, elements.length);
+                
+                for (let i = start; i < end; i++) {
+                    const element = elements[i];
+                    const key = element.getAttribute('data-translate');
+                    
+                    if (translations[lang]?.[key]) {
+                        if (element.tagName.toLowerCase() === 'input' || 
+                            element.tagName.toLowerCase() === 'textarea') {
+                            element.placeholder = translations[lang][key];
+                        } else {
+                            const isTextOnly = element.innerHTML.trim() === element.textContent.trim();
+                            element[isTextOnly ? 'textContent' : 'innerHTML'] = translations[lang][key];
+                        }
+                    }
+                }
+
+                currentBatch++;
+                
+                if (currentBatch * batchSize < elements.length) {
+                    requestAnimationFrame(processBatch);
+                } else {
+                    // Actualizar título después de procesar todas las traducciones
+                    document.title = {
+                        'en': 'POLYLINE - Construction Company',
+                        'pt': 'POLYLINE - Construtora',
+                        'zh': 'POLYLINE - 建筑公司',
+                        'ja': 'POLYLINE - 建設会社',
+                        'it': 'POLYLINE - Società di costruzioni'
+                    }[lang] || 'POLYLINE - Constructora';
+
+                    // Reinicializar animaciones solo si es necesario
+                    if (typeof anime !== 'undefined' && typeof wrapLetters === 'function') {
+                        requestAnimationFrame(() => {
+                            const mainText = document.querySelector('.letters-main');
+                            const subText = document.querySelector('.letters-sub');
+                            
+                            if (mainText) mainText.style.opacity = '1';
+                            if (subText) subText.style.opacity = '1';
+                            
+                            wrapLetters('.letters-main');
+                            wrapLetters('.letters-sub');
+                            
+                            // Usar requestAnimationFrame para las animaciones
+                            requestAnimationFrame(() => {
+                                anime.timeline({
+                                    loop: false,
+                                    easing: 'easeOutExpo'
+                                })
+                                .add({
+                                    targets: '.hero-title .letter',
+                                    translateY: ["1.1em", 0],
+                                    translateX: ["0.55em", 0],
+                                    rotateZ: [180, 0],
+                                    duration: 600,
+                                    delay: anime.stagger(40)
+                                })
+                                .add({
+                                    targets: '.hero-subtitle .letter',
+                                    opacity: [0, 1],
+                                    duration: 800,
+                                    delay: anime.stagger(20),
+                                    offset: '-=400'
+                                });
+                            });
+                        });
+                    }
+                }
+            }
+
+            // Iniciar el procesamiento por lotes
+            requestAnimationFrame(processBatch);
+        }
+
+        // Cerrar el menú de idiomas cuando se hace clic fuera
+        document.addEventListener('click', function(event) {
+            const languageSelector = document.querySelector('.language-selector');
+            const languageOptions = document.getElementById('languageOptions');
+            
+            if (!languageSelector.contains(event.target)) {
+                languageOptions.classList.remove('show');
+            }
+        });
+    </script>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script type="module" src="../js/property-viewer.js"></script>
