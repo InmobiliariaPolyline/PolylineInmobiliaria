@@ -251,6 +251,25 @@
             element.style.color = isError ? '#ff4444' : '#4CAF50';
         }
 
+        // Mensajes de error y éxito
+        const errorMessages = {
+            invalidEmail: 'Por favor, ingresa un correo electrónico válido.',
+            weakPassword: 'La contraseña debe tener al menos 6 caracteres.',
+            emailInUse: 'Este correo electrónico ya está registrado.',
+            userNotFound: 'No existe una cuenta con este correo electrónico.',
+            wrongPassword: 'La contraseña ingresada es incorrecta.',
+            tooManyRequests: 'Demasiados intentos fallidos. Por favor, intenta más tarde.',
+            networkError: 'Error de conexión. Por favor, verifica tu conexión a internet.',
+            popupClosed: 'Has cerrado la ventana de inicio de sesión. Por favor, intenta nuevamente.',
+            defaultError: 'Ha ocurrido un error. Por favor, intenta nuevamente.'
+        };
+
+        const successMessages = {
+            registrationSuccess: '¡Registro exitoso! Por favor, verifica tu correo electrónico.',
+            loginSuccess: '¡Inicio de sesión exitoso! Redirigiendo...',
+            emailVerificationSent: 'Se ha enviado un correo de verificación a tu dirección de email.'
+        };
+
         // Registro de usuarios
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -262,9 +281,11 @@
             const result = await registerUser(name, email, password);
             
             if (result.success) {
+                showMessage('reg-error-message', successMessages.registrationSuccess, false);
                 showVerificationModal();
             } else {
-                showMessage('reg-error-message', result.error, true);
+                const errorMessage = errorMessages[result.error] || errorMessages.defaultError;
+                showMessage('reg-error-message', errorMessage, true);
             }
         });
 
@@ -278,12 +299,15 @@
             const result = await loginUser(email, password);
             
             if (result.success) {
+                showMessage('login-error-message', successMessages.loginSuccess, false);
                 window.location.href = '../index.html';
             } else {
                 if (result.requiresVerification) {
+                    showMessage('login-error-message', successMessages.emailVerificationSent, false);
                     showVerificationModal();
                 } else {
-                    showMessage('login-error-message', result.error, true);
+                    const errorMessage = errorMessages[result.error] || errorMessages.defaultError;
+                    showMessage('login-error-message', errorMessage, true);
                 }
             }
         });
@@ -314,7 +338,10 @@
                 }
             } catch (error) {
                 console.log('Error en el inicio de sesión con Google:', error);
-                showMessage('login-error-message', 'Error al iniciar sesión con Google: ' + (error.message || error.code), true);
+                const errorMessage = error.code === 'auth/popup-closed-by-user' 
+                    ? errorMessages.popupClosed 
+                    : errorMessages.defaultError;
+                showMessage('login-error-message', errorMessage, true);
             }
         };
 
