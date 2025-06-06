@@ -8,7 +8,7 @@ class VirtualAssistant {
                 "proyecto": "Tenemos varios proyectos en desarrollo. ¿Te gustaría conocer nuestros proyectos en Benavides o Pueblo Libre?",
                 "precio": "Los precios varían según el proyecto y el tipo de unidad. ¿Te gustaría que un asesor te contacte con información detallada?",
                 "ubicación": "Nuestros proyectos están ubicados en zonas estratégicas de Lima. ¿Qué zona te interesa?",
-                "contacto": "Puedes contactarnos al 907341122 o enviarnos un correo a contacto@polyline.com",
+                "contacto": "Puedes contactarnos al 907341122 o enviarnos un correo a polylinesac@yahoo.com",
                 "horario": "Nuestro horario de atención es de Lunes a Viernes de 9am a 6pm y Sábados de 9am a 1pm"
             }
         };
@@ -26,7 +26,7 @@ class VirtualAssistant {
             {
                 type: 'email',
                 text: '📧 Enviar un correo',
-                url: 'mailto:contacto@polyline.com'
+                url: 'mailto:polylinesac@yahoo.com'
             }
         ];
         this.isMuted = false;
