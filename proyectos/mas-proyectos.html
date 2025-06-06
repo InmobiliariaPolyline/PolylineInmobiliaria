@@ -123,7 +123,7 @@
                 <h3>CONTACTOS:</h3>
                 <p>WhatsApp: <a href="https://wa.link/lkvfnb">+51 943 812 536</a></p>
                 <p>Email: <a href="mailto:polylinesac@yahoo.com">polylinesac@yahoo.com</a></p>
-                <p>Dirección: Av. Benavides 3008. Lima</p>
+                <p>Dirección: Av. Benavides 3008. Lima</p>
             </div>
         </div>
     </footer>
@@ -166,7 +166,7 @@
         .mas-proyectos-lista {
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: 100px;
         }
         .mas-proyecto-bloque {
             display: flex;
@@ -333,6 +333,9 @@
             border-radius: 10px;
             margin: 18px 0;
             box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            cursor: pointer; /* Indicar que es clickeable */
+            width: 100%; /* Asegurar que todas las imágenes tengan el mismo ancho */
+            object-fit: cover; /* Mantener la proporción de la imagen */
         }
         .close-modal {
             background: none;
@@ -352,6 +355,36 @@
             .proyecto-modal-header h2 {
                 font-size: 1.2em;
             }
+            .proyecto-modal-section img {
+                margin: 10px 0; /* Añadir margen entre imágenes en el responsive */
+            }
+        }
+
+        /* Estilos para el lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 5px;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2em;
+            cursor: pointer;
         }
 
         /* Estilos para modo oscuro */
@@ -505,13 +538,15 @@
             object-fit: cover;
         }
         @media (max-width: 600px) {
-            .proyecto-modal-gallery.cols-1 { grid-template-columns: 1fr; }
-            .proyecto-modal-gallery.cols-2,
-            .proyecto-modal-gallery.cols-3 {
-                grid-template-columns: 1fr 1fr;
+            .proyecto-modal-gallery {
+                grid-template-columns: 1fr !important;
             }
             .proyecto-modal-gallery img {
-                max-width: 100px;
+                max-width: 100vw;
+                width: 100%;
+                min-width: 0;
+                border-radius: 10px;
+                margin: 10px 0;
             }
         }
         /* --- FIN GALERÍA DE IMÁGENES EN EL MODAL --- */
@@ -530,6 +565,12 @@
         </div>
     </div>
 
+    <!-- Lightbox para imágenes -->
+    <div class="lightbox" id="lightbox" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.9); z-index:2000; justify-content:center; align-items:center;">
+        <img id="lightbox-img" src="" alt="Imagen ampliada" style="max-width:90vw; max-height:90vh; border-radius:10px;">
+        <span class="lightbox-close" onclick="closeLightbox()" style="position:absolute; top:20px; right:30px; color:white; font-size:2em; cursor:pointer;">&times;</span>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="../js/Login_Perfil.js" type="module"></script>
     <script src="../js/firebase-config.js" type="module"></script>
@@ -541,237 +582,24 @@
             if (loadingScreen) loadingScreen.style.display = 'none';
         });
 
-        
-    </script>
-    <!-- Scripts y recursos adicionales como en index.html -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script type="module" src="../js/property-viewer.js"></script>
-    <script type="module" src="../js/auth-check.js"></script>
-    <script>
-        // Función para cambiar de idioma
-        function changeLanguage(lang) {
-            const elements = document.querySelectorAll('[data-translate]');
-            elements.forEach(element => {
-                const key = element.getAttribute('data-translate');
-                if (translations[lang] && translations[lang][key]) {
-                    element.textContent = translations[lang][key];
-                }
-            });
+        // Función para abrir el lightbox
+        function openLightbox(imgSrc) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightboxImg.src = imgSrc;
+            lightbox.style.display = 'flex';
         }
 
-        // Objeto con las traducciones
-        const translations = {
-            'es': {
-                'Inicio': 'Inicio',
-                'Para Tí': 'Para Tí',
-                'Proyectos': 'Proyectos',
-                'Casas de Playa en Venta / Alquiler': 'Casas de Playa en Venta / Alquiler',
-                'Proyecto Benavides 1': 'Proyecto Benavides 1',
-                'Proyecto Benavides 2': 'Proyecto Benavides 2',
-                'Proyecto Sienna': 'Proyecto Sienna',
-                'Proyecto Varsovia ': 'Proyecto Varsovia',
-                'Mas Proyectos': 'Más Proyectos',
-                'Contacto': 'Contacto',
-                'Información': 'Información',
-                'Agenda Una Reunión': 'Agenda Una Reunión',
-                'Cotizar Proyecto': 'Cotizar Proyecto',
-                'Login': 'Login',
-                'Perfil': 'Perfil',
-                'Casas': 'Casas',
-                'Edificios': 'Edificios',
-                'Comercial': 'Comercial',
-                'Industrial': 'Industrial',
-                'Publicado': 'Publicado',
-                'Borrador': 'Borrador',
-                'Anuncios': 'Anuncios'
-            },
-            'en': {
-                'Inicio': 'Home',
-                'Para Tí': 'For You',
-                'Proyectos': 'Projects',
-                'Casas de Playa en Venta / Alquiler': 'Beach Houses for Sale / Rent',
-                'Proyecto Benavides 1': 'Benavides Project 1',
-                'Proyecto Benavides 2': 'Benavides Project 2',
-                'Proyecto Sienna': 'Sienna Project',
-                'Proyecto Varsovia ': 'Varsovia Project',
-                'Mas Proyectos': 'More Projects',
-                'Contacto': 'Contact',
-                'Información': 'Information',
-                'Agenda Una Reunión': 'Schedule a Meeting',
-                'Cotizar Proyecto': 'Quote Project',
-                'Login': 'Login',
-                'Perfil': 'Profile',
-                'Casas': 'Houses',
-                'Edificios': 'Buildings',
-                'Comercial': 'Commercial',
-                'Industrial': 'Industrial',
-                'Publicado': 'Published',
-                'Borrador': 'Draft',
-                'Anuncios': 'Ads'
-            },
-            'pt': {
-                'Inicio': 'Início',
-                'Para Tí': 'Para Você',
-                'Proyectos': 'Projetos',
-                'Casas de Playa en Venta / Alquiler': 'Casas de Praia à Venda / Aluguel',
-                'Proyecto Benavides 1': 'Benavides Projeto 1',
-                'Proyecto Benavides 2': 'Benavides Projeto 2',
-                'Proyecto Sienna': 'Sienna Projeto',
-                'Proyecto Varsovia ': 'Varsovia Projeto',
-                'Mas Proyectos': 'Mais Projetos',
-                'Contacto': 'Contato',
-                'Información': 'Informações',
-                'Agenda Una Reunión': 'Agendar uma Reunião',
-                'Cotizar Proyecto': 'Orçar Projeto',
-                'Login': 'Entrar',
-                'Perfil': 'Perfil',
-                'Casas': 'Casas',
-                'Edificios': 'Edifícios',
-                'Comercial': 'Comercial',
-                'Industrial': 'Industrial',
-                'Publicado': 'Publicado',
-                'Borrador': 'Rascunho',
-                'Anuncios': 'Anúncios'
-            },
-            'zh': {
-                'Inicio': '首页',
-                'Para Tí': '为您',
-                'Proyectos': '项目',
-                'Casas de Playa en Venta / Alquiler': '海滨别墅出售/出租',
-                'Proyecto Benavides 1': '贝纳维德斯项目 1',
-                'Proyecto Benavides 2': '贝纳维德斯项目 2',
-                'Proyecto Sienna': '锡耶纳项目',
-                'Proyecto Varsovia ': '华沙项目',
-                'Mas Proyectos': '更多项目',
-                'Contacto': '联系方式',
-                'Información': '信息',
-                'Agenda Una Reunión': '安排会议',
-                'Cotizar Proyecto': '项目报价',
-                'Login': '登录',
-                'Perfil': '个人资料',
-                'Casas': '房屋',
-                'Edificios': '楼宇',
-                'Comercial': '商业',
-                'Industrial': '工业',
-                'Publicado': '已发布',
-                'Borrador': '草稿',
-                'Anuncios': '公告'
-            },
-            'ja': {
-                'Inicio': 'ホーム',
-                'Para Tí': 'あなたへ',
-                'Proyectos': 'プロジェクト',
-                'Casas de Playa en Venta / Alquiler': 'ビーチハウス売買／賃貸',
-                'Proyecto Benavides 1': 'ベナビデスプロジェクト 1',
-                'Proyecto Benavides 2': 'ベナビデスプロジェクト 2',
-                'Proyecto Sienna': 'シエナプロジェクト',
-                'Proyecto Varsovia ': 'ワルシャワプロジェクト',
-                'Mas Proyectos': 'その他のプロジェクト',
-                'Contacto': 'お問い合わせ',
-                'Información': '情報',
-                'Agenda Una Reunión': '会議を予約',
-                'Cotizar Proyecto': 'プロジェクト見積もり',
-                'Login': 'ログイン',
-                'Perfil': 'プロフィール',
-                'Casas': '家',
-                'Edificios': '建物',
-                'Comercial': '商業',
-                'Industrial': '工業',
-                'Publicado': '公開済み',
-                'Borrador': 'ドラフト',
-                'Anuncios': 'お知らせ'
-            },
-            'it': {
-                'Inicio': 'Inizio',
-                'Para Tí': 'Per Te',
-                'Proyectos': 'Progetti',
-                'Casas de Playa en Venta / Alquiler': 'Case al mare in vendita/affitto',
-                'Proyecto Benavides 1': 'Progetto Benavides 1',
-                'Proyecto Benavides 2': 'Progetto Benavides 2',
-                'Proyecto Sienna': 'Progetto Sienna',
-                'Proyecto Varsovia ': 'Progetto Varsovia',
-                'Mas Proyectos': 'Altri Progetti',
-                'Contacto': 'Contatti',
-                'Información': 'Informazioni',
-                'Agenda Una Reunión': 'Prenota una riunione',
-                'Cotizar Proyecto': 'Preventivo Progetto',
-                'Login': 'Accedi',
-                'Perfil': 'Profilo',
-                'Casas': 'Case',
-                'Edificios': 'Edifici',
-                'Comercial': 'Commerciale',
-                'Industrial': 'Industriale',
-                'Publicado': 'Pubblicato',
-                'Borrador': 'Bozza',
-                'Anuncios': 'Annunci'
-            }
-        };
-
-        // Traducción y animaciones (adaptado de index.html)
-        function translatePage(lang) {
-            if (lang === 'es') {
-                location.reload();
-                return;
-            }
-            const elements = document.querySelectorAll('[data-translate]');
-            elements.forEach(element => {
-                const key = element.getAttribute('data-translate');
-                if (translations[lang]?.[key]) {
-                    if (element.tagName.toLowerCase() === 'input' || element.tagName.toLowerCase() === 'textarea') {
-                        element.placeholder = translations[lang][key];
-                    } else {
-                        const isTextOnly = element.innerHTML.trim() === element.textContent.trim();
-                        element[isTextOnly ? 'textContent' : 'innerHTML'] = translations[lang][key];
-                    }
-                }
-            });
-            document.title = translations[lang]?.['Más Proyectos'] || 'POLYLINE - Constructora';
+        // Función para cerrar el lightbox
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.style.display = 'none';
         }
-        document.addEventListener('click', function(event) {
-            const languageSelector = document.querySelector('.language-selector');
-            const languageOptions = document.getElementById('languageOptions');
-            if (languageSelector && languageOptions && !languageSelector.contains(event.target)) {
-                languageOptions.classList.remove('show');
-            }
-        });
-        // VanillaTilt para tarjetas (si las hay)
-        document.addEventListener('DOMContentLoaded', function() {
-            if (window.VanillaTilt) {
-                VanillaTilt.init(document.querySelectorAll(".service-card"), {
-                    max: 8,
-                    speed: 400,
-                    glare: true,
-                    "max-glare": 0.1,
-                    scale: 1.03,
-                    perspective: 1000,
-                    transition: true,
-                    gyroscope: true,
-                    easing: "cubic-bezier(.03,.98,.52,.99)"
-                });
-            }
-        });
-        // Login/Perfil dinámico
-        document.addEventListener('DOMContentLoaded', () => {
-            const userSession = JSON.parse(localStorage.getItem('userSession'));
-            const loginLink = document.getElementById('loginLink');
-            const userProfile = document.getElementById('userProfile');
-            const profileLink = document.getElementById('profileLink');
-            const profileText = document.getElementById('profileText');
-            if (userSession && userSession.emailVerified) {
-                if (loginLink) loginLink.style.display = 'none';
-                if (userProfile) userProfile.style.display = 'flex';
-                if (profileLink && profileText) {
-                    if (userSession.isAdmin) {
-                        profileLink.href = '../pages/perfilAdmin.html';
-                        profileText.textContent = 'Administrador';
-                        profileText.setAttribute('data-translate', 'Administrador');
-                    } else {
-                        profileLink.href = '../pages/perfil.html';
-                        profileText.textContent = 'Perfil';
-                        profileText.setAttribute('data-translate', 'Perfil');
-                    }
-                }
+
+        // Cerrar lightbox al hacer clic fuera de la imagen
+        document.getElementById('lightbox').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeLightbox();
             }
         });
     </script>
@@ -892,6 +720,7 @@
                                 let img = document.createElement('img');
                                 img.src = block.value;
                                 img.alt = 'Imagen bloque';
+                                img.onclick = function() { openLightbox(block.value); }; // Agregar evento para abrir lightbox
                                 gallery.appendChild(img);
                                 galleryCount++;
                                 // Si la siguiente no es imagen o es la última, cerrar galería
