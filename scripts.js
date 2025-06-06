@@ -270,4 +270,45 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Función para manejar los dropdowns
+function setupDropdown() {
+    const dropdowns = document.querySelectorAll('.dropdown');
+    
+    dropdowns.forEach(dropdown => {
+        const link = dropdown.querySelector('a');
+        const menu = dropdown.querySelector('.dropdown-menu');
+        
+        if (window.innerWidth <= 768) {
+            menu.style.display = 'none';
+        }
+        
+        link.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                
+                // Cerrar todos los otros menús primero
+                dropdowns.forEach(otherDropdown => {
+                    if (otherDropdown !== dropdown) {
+                        const otherMenu = otherDropdown.querySelector('.dropdown-menu');
+                        otherMenu.style.display = 'none';
+                    }
+                });
+                
+                // Toggle del menú actual
+                if (menu.style.display === 'none' || menu.style.display === '') {
+                    menu.style.display = 'block';
+                } else {
+                    menu.style.display = 'none';
+                }
+            }
+        });
+    });
+}
+
+// Inicializar los dropdowns cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    setupDropdown();
+    window.addEventListener('resize', setupDropdown);
+});
+
 
