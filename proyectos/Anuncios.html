@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="../css/idiomas.css">
+    <link rel="stylesheet" href="../css/assistant.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
@@ -124,6 +125,43 @@
     </footer>
 
     <script src="../scripts.js"></script>
+    <script src="../js/assistant.js"></script>
+
+    <!-- Chatbot -->
+    <div id="chatbot-container" style="position: fixed; bottom: 20px; right: 85px; z-index: 999;">
+        <button id="chatbot-toggle" class="chatbot-button">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div id="chatbot-window" class="chatbot-window" style="display: none;">
+            <div class="chatbot-header">
+                <h3>Asistente Virtual</h3>
+                <button id="chatbot-close" class="chatbot-close">&times;</button>
+            </div>
+            <div id="chatbot-messages" class="chatbot-messages"></div>
+            <div class="chatbot-input">
+                <input type="text" id="chatbot-input" placeholder="Escribe tu mensaje...">
+                <button id="chatbot-send">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px; z-index: 999;">
+        <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
+            <i class="fab fa-facebook-f"></i>
+        </button>
+        <button class="social-btn whatsapp" onclick="window.open('https://wa.link/lkvfnb')">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+        <button class="social-btn instagram" onclick="window.open('https://www.instagram.com/arquitectosalasperu/')">
+            <i class="fab fa-instagram"></i>
+        </button>
+        <button class="social-btn linkedin" onclick="window.open('https://www.linkedin.com/in/arquitectosalas')">
+            <i class="fab fa-linkedin-in"></i>
+        </button>
+        <button class="social-btn youtube" onclick="window.open('https://www.youtube.com/channel/UC9wMT7_zsq7yE0MMCSxiVMw')">
+            <i class="fab fa-youtube"></i>
+        </button>
+    </div>
 
     <!-- Firebase -->
     <script type="module">

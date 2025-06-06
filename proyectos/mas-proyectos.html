@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="../css/idiomas.css">
+    <link rel="stylesheet" href="../css/assistant.css">
 </head>
 <body>
     <header>
@@ -971,5 +972,24 @@
         // Cargar proyectos cuando se carga la página
         window.addEventListener('DOMContentLoaded', cargarProyectos);
     </script>
+    <script src="../js/assistant.js"></script>
+    
+    <!-- Chatbot -->
+    <div id="chatbot-container" style="position: fixed; bottom: 20px; right: 85px; z-index: 999;">
+        <button id="chatbot-toggle" class="chatbot-button">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div id="chatbot-window" class="chatbot-window" style="display: none;">
+            <div class="chatbot-header">
+                <h3>Asistente Virtual</h3>
+                <button id="chatbot-close" class="chatbot-close">&times;</button>
+            </div>
+            <div id="chatbot-messages" class="chatbot-messages"></div>
+            <div class="chatbot-input">
+                <input type="text" id="chatbot-input" placeholder="Escribe tu mensaje...">
+                <button id="chatbot-send">Enviar</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html> 

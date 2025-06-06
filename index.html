@@ -82,6 +82,14 @@
             color: white;
         }
     }
+
+    @media screen and (max-width: 768px) {
+        .dropdown-menu {
+            display: none;
+            padding-left: 20px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+    }
 </style>
 </head>
 
@@ -142,7 +150,7 @@
                 <li><a class='active' data-translate='Inicio' href='index.html'>Inicio</a></li>
                 <li><a href="#para-ti" data-translate="Para Tí">Para Tí</a></li>
                 <li class="dropdown">
-                    <a data-translate='Proyectos' href='proyectos/proyectos.html' id='proyectos-link'>Proyectos</a>
+                    <a data-translate='Proyectos' href='#' id='proyectos-link' onclick="return false;">Proyectos</a>
                     <ul class="dropdown-menu">
                         <li><a data-translate='Casas de Playa en Venta / Alquiler' href='proyectos/proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
                         <li><a data-translate='Proyecto Benavides 1' href='proyectos/pben1.html'>Proyecto Benavides 1</a></li>
@@ -153,7 +161,7 @@
                     </ul>
                 </li>
                 <li class="dropdown">
-                    <a href="contact/informaci%c3%b3n.html" id="proyectos-link" data-translate="Contacto">Contacto</a>
+                    <a href="#" id="contacto-link" data-translate="Contacto" onclick="return false;">Contacto</a>
                     <ul class="dropdown-menu">
                         <li><a href="contact/informaci%c3%b3n.html" data-translate="Información">Información</a></li>
                         <li><a href="contact/agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
@@ -961,4 +969,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Manejo del submenú de Proyectos
+        const proyectosLink = document.getElementById('proyectos-link');
+        const proyectosMenu = proyectosLink.nextElementSibling;
+
+        proyectosLink.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                if (proyectosMenu.style.display === 'block') {
+                    proyectosMenu.style.display = 'none';
+                } else {
+                    proyectosMenu.style.display = 'block';
+                }
+            }
+        });
+
+        // Manejo del submenú de Contacto
+        const contactoLink = document.getElementById('contacto-link');
+        const contactoMenu = contactoLink.nextElementSibling;
+
+        contactoLink.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                if (contactoMenu.style.display === 'block') {
+                    contactoMenu.style.display = 'none';
+                } else {
+                    contactoMenu.style.display = 'block';
+                }
+            }
+        });
+    });
 </script>
