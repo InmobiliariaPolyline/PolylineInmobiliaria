@@ -84,10 +84,82 @@
     }
 
     @media screen and (max-width: 768px) {
+        .nav-menu {
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+
         .dropdown-menu {
             display: none;
             padding-left: 20px;
             background: rgba(0, 0, 0, 0.1);
+            width: 150px;
+        }
+
+        .dropdown-menu li {
+            margin-bottom: 30px;
+        }
+
+        .dropdown-menu li a {
+            padding: 8px 10px;
+        }
+
+        .nav-menu::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .nav-menu::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-menu::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+        }
+
+        .nav-menu::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    }
+
+    /* Estilos para pantallas grandes */
+    @media screen and (min-width: 769px) {
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 150px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            list-style: none;
+            padding: 15px 0;
+            margin: 0;
+            display: none;
+            z-index: 1000;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-menu li {
+            margin-bottom: 25px;
+        }
+
+        .dropdown-menu li:last-child {
+            margin-bottom: 0;
+        }
+
+        .dropdown-menu li a {
+            display: block;
+            padding: 8px 10px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .dropdown-menu li a:hover {
+            background-color: rgba(51, 51, 51, 0.1);
         }
     }
 </style>
