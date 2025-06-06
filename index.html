@@ -1065,20 +1065,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (otherDropdown !== dropdown) {
                                 const otherMenu = otherDropdown.querySelector('.dropdown-menu');
                                 otherMenu.style.display = 'none';
-                                otherMenu.style.height = '0';
-                                otherMenu.style.opacity = '0';
                             }
                         });
                         
                         // Toggle del menú actual
                         if (menu.style.display === 'none' || menu.style.display === '') {
                             menu.style.display = 'block';
-                            menu.style.height = 'auto';
-                            menu.style.opacity = '1';
                         } else {
                             menu.style.display = 'none';
-                            menu.style.height = '0';
-                            menu.style.opacity = '0';
                         }
                     }
                 });
