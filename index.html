@@ -1045,34 +1045,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Manejo del submenú de Proyectos
-        const proyectosLink = document.getElementById('proyectos-link');
-        const proyectosMenu = proyectosLink.nextElementSibling;
-
-        proyectosLink.addEventListener('click', function(e) {
-            if (window.innerWidth <= 768) {
-                e.preventDefault();
-                if (proyectosMenu.style.display === 'block') {
-                    proyectosMenu.style.display = 'none';
-                } else {
-                    proyectosMenu.style.display = 'block';
+        function setupDropdown() {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            dropdowns.forEach(dropdown => {
+                const link = dropdown.querySelector('a');
+                const menu = dropdown.querySelector('.dropdown-menu');
+                
+                if (window.innerWidth <= 768) {
+                    menu.style.display = 'none';
                 }
-            }
-        });
+                
+                link.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        
+                        // Cerrar todos los otros menús primero
+                        dropdowns.forEach(otherDropdown => {
+                            if (otherDropdown !== dropdown) {
+                                const otherMenu = otherDropdown.querySelector('.dropdown-menu');
+                                otherMenu.style.display = 'none';
+                                otherMenu.style.height = '0';
+                                otherMenu.style.opacity = '0';
+                            }
+                        });
+                        
+                        // Toggle del menú actual
+                        if (menu.style.display === 'none' || menu.style.display === '') {
+                            menu.style.display = 'block';
+                            menu.style.height = 'auto';
+                            menu.style.opacity = '1';
+                        } else {
+                            menu.style.display = 'none';
+                            menu.style.height = '0';
+                            menu.style.opacity = '0';
+                        }
+                    }
+                });
+            });
+        }
 
-        // Manejo del submenú de Contacto
-        const contactoLink = document.getElementById('contacto-link');
-        const contactoMenu = contactoLink.nextElementSibling;
-
-        contactoLink.addEventListener('click', function(e) {
-            if (window.innerWidth <= 768) {
-                e.preventDefault();
-                if (contactoMenu.style.display === 'block') {
-                    contactoMenu.style.display = 'none';
-                } else {
-                    contactoMenu.style.display = 'block';
-                }
-            }
-        });
+        setupDropdown();
+        window.addEventListener('resize', setupDropdown);
     });
 </script>
