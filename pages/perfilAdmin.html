@@ -79,22 +79,22 @@
             /* Ajustar el ancho de las columnas */
             .user-table th:nth-child(1),
             .user-table td:nth-child(1) {
-                width: 15%; /* Usuario */
+                width: 12%; /* Usuario - reducido */
             }
 
             .user-table th:nth-child(2),
             .user-table td:nth-child(2) {
-                width: 25%; /* Email */
+                width: 23%; /* Email - reducido */
             }
 
             .user-table th:nth-child(3),
             .user-table td:nth-child(3) {
-                width: 10%; /* Rol */
+                width: 10%; /* Rol - igual */
             }
 
             .user-table th:nth-child(4),
             .user-table td:nth-child(4) {
-                width: 50%; /* Acciones */
+                width: 55%; /* Acciones - aumentado */
             }
 
             /* Ajustar los botones de acción */
@@ -102,7 +102,7 @@
                 padding: 6px 8px;
                 font-size: 0.85em;
                 white-space: nowrap;
-                min-width: 70px;
+                min-width: 80px; /* Aumentado */
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
@@ -127,17 +127,7 @@
                 display: flex;
                 gap: 4px;
                 flex-wrap: wrap;
-            }
-
-            /* Ajustes para el contenido */
-            .dashboard-grid,
-            .image-management-section,
-            .section-title,
-            .drag-drop-area,
-            .uploaded-images-grid {
-                width: 100%;
-                max-width: 100vw;
-                box-sizing: border-box;
+                justify-content: flex-start;
             }
         }
 
@@ -151,28 +141,28 @@
 
             .user-table th:nth-child(1),
             .user-table td:nth-child(1) {
-                width: 15%; /* Usuario */
+                width: 12%; /* Usuario - reducido */
             }
 
             .user-table th:nth-child(2),
             .user-table td:nth-child(2) {
-                width: 25%; /* Email */
+                width: 23%; /* Email - reducido */
             }
 
             .user-table th:nth-child(3),
             .user-table td:nth-child(3) {
-                width: 10%; /* Rol */
+                width: 10%; /* Rol - igual */
             }
 
             .user-table th:nth-child(4),
             .user-table td:nth-child(4) {
-                width: 50%; /* Acciones */
+                width: 55%; /* Acciones - aumentado */
             }
 
             .user-table .btn {
                 padding: 5px 6px;
                 font-size: 0.8em;
-                min-width: 65px;
+                min-width: 75px; /* Aumentado */
                 height: 28px;
             }
 
@@ -270,9 +260,23 @@
             flex: 1;
         }
 
+        .activity-content p {
+            margin: 0;
+            color: var(--text-color);
+        }
+
         .activity-time {
             font-size: 0.8rem;
             color: var(--text-secondary);
+        }
+
+        /* Estilos para modo nocturno */
+        [data-theme="dark"] .activity-content p {
+            color: #ffffff;
+        }
+
+        [data-theme="dark"] .activity-time {
+            color: #cccccc;
         }
 
         @media (max-width: 768px) {
@@ -1037,6 +1041,138 @@
                 gap: 1rem;
                 align-items: center;
             }
+        }
+
+        /* Estilos específicos para el gestor de páginas */
+        .page-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .page-item:last-child {
+            border-bottom: none;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 8px;
+            min-width: 120px; /* Ancho mínimo para los botones */
+        }
+
+        .page-actions .btn {
+            padding: 6px 12px;
+            font-size: 0.9em;
+            white-space: nowrap;
+            min-width: 60px;
+        }
+
+        /* Ajustes para móvil */
+        @media (max-width: 768px) {
+            .page-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .page-info {
+                width: 100%;
+            }
+
+            .page-actions {
+                width: 100%;
+                justify-content: flex-start;
+                gap: 10px;
+            }
+
+            .page-actions .btn {
+                flex: 1;
+                max-width: 120px;
+                padding: 8px 12px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Ajustes para pantallas muy pequeñas */
+        @media (max-width: 480px) {
+            .page-actions {
+                gap: 8px;
+            }
+
+            .page-actions .btn {
+                padding: 6px 10px;
+                font-size: 0.8em;
+            }
+        }
+
+        .page-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-info h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-color);
+        }
+
+        .page-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            text-transform: capitalize;
+        }
+
+        .status-badge.published {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .status-badge.draft {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .trend-indicator {
+            margin-top: 0.5rem;
+            color: var(--accent-color);
+        }
+
+        .view-more-btn {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .view-more-btn:hover {
+            background-color: var(--accent-color-dark);
+        }
+
+        .loading, .error, .no-data {
+            padding: 1rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .error {
+            color: #f44336;
         }
     </style>
 </head>
@@ -1851,6 +1987,7 @@
                 // Obtener datos de visitas de los últimos 7 días
                 const sevenDaysAgo = new Date();
                 sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                sevenDaysAgo.setHours(0, 0, 0, 0); // Establecer a inicio del día
 
                 const visitsQuery = query(
                     collection(db, 'visits'),
@@ -1863,7 +2000,10 @@
                 const dates = Array.from({length: 7}, (_, i) => {
                     const date = new Date();
                     date.setDate(date.getDate() - i);
-                    return date.toLocaleDateString();
+                    return date.toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit'
+                    });
                 }).reverse();
 
                 // Inicializar contador de visitas por día
@@ -1871,17 +2011,37 @@
                 dates.forEach(date => visitsByDay[date] = 0);
 
                 // Contar visitas por día
+                let totalVisits = 0;
                 visitsSnapshot.forEach(doc => {
                     const visit = doc.data();
-                    const date = new Date(visit.timestamp.toDate()).toLocaleDateString();
-                    if (visitsByDay[date] !== undefined) {
-                        visitsByDay[date]++;
+                    if (visit.timestamp) {
+                        const date = new Date(visit.timestamp.toDate()).toLocaleDateString('es-ES', {
+                            day: '2-digit',
+                            month: '2-digit'
+                        });
+                        if (visitsByDay[date] !== undefined) {
+                            visitsByDay[date]++;
+                            totalVisits++;
+                        }
                     }
                 });
 
                 // Actualizar gráfico de visitas
                 visitsChart.data.labels = dates;
                 visitsChart.data.datasets[0].data = dates.map(date => visitsByDay[date] || 0);
+                
+                // Actualizar configuración del gráfico
+                visitsChart.options.scales.y.max = Math.max(...Object.values(visitsByDay)) * 1.2; // Añadir 20% de espacio
+                visitsChart.options.plugins.tooltip = {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            const percentage = totalVisits > 0 ? ((value / totalVisits) * 100).toFixed(1) : 0;
+                            return `${value} visitas (${percentage}%)`;
+                        }
+                    }
+                };
+                
                 visitsChart.update();
 
                 // Obtener datos de usuarios activos
@@ -1897,37 +2057,75 @@
                 dates.forEach(date => usersByDay[date] = 0);
 
                 // Contar usuarios activos por día
+                let totalUsers = 0;
                 usersSnapshot.forEach(doc => {
                     const user = doc.data();
-                    const date = new Date(user.lastActive.toDate()).toLocaleDateString();
-                    if (usersByDay[date] !== undefined) {
-                        usersByDay[date]++;
+                    if (user.lastActive) {
+                        const date = new Date(user.lastActive.toDate()).toLocaleDateString('es-ES', {
+                            day: '2-digit',
+                            month: '2-digit'
+                        });
+                        if (usersByDay[date] !== undefined) {
+                            usersByDay[date]++;
+                            totalUsers++;
+                        }
                     }
                 });
 
                 // Actualizar gráfico de usuarios
                 usersChart.data.labels = dates;
                 usersChart.data.datasets[0].data = dates.map(date => usersByDay[date] || 0);
+                
+                // Actualizar configuración del gráfico de usuarios
+                usersChart.options.scales.y.max = Math.max(...Object.values(usersByDay)) * 1.2;
+                usersChart.options.plugins.tooltip = {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            const percentage = totalUsers > 0 ? ((value / totalUsers) * 100).toFixed(1) : 0;
+                            return `${value} usuarios (${percentage}%)`;
+                        }
+                    }
+                };
+                
                 usersChart.update();
 
             } catch (error) {
                 console.error('Error al actualizar gráficos:', error);
+                // Mostrar mensaje de error en los gráficos
+                const errorMessage = 'Error al cargar datos';
+                visitsChart.data.labels = [errorMessage];
+                visitsChart.data.datasets[0].data = [0];
+                visitsChart.update();
+                
+                usersChart.data.labels = [errorMessage];
+                usersChart.data.datasets[0].data = [0];
+                usersChart.update();
             }
         }
 
         // Función para cargar páginas populares
         async function loadPopularPages() {
             try {
+                const popularPagesContainer = document.querySelector('.popular-pages');
+                popularPagesContainer.innerHTML = '<div class="loading">Cargando páginas populares...</div>';
+
+                // Obtener páginas ordenadas por vistas
                 const pagesQuery = query(
-                    collection(db, 'pages'),
-                    orderBy('views', 'desc'),
-                    limit(5)
+                    collection(db, 'paginas'),
+                    orderBy('views', 'asc')
                 );
                 const pagesSnapshot = await getDocs(pagesQuery);
 
-                const popularPagesContainer = document.querySelector('.popular-pages');
+                // Limpiar el contenedor
                 popularPagesContainer.innerHTML = '';
 
+                if (pagesSnapshot.empty) {
+                    popularPagesContainer.innerHTML = '<div class="no-data">No hay páginas disponibles</div>';
+                    return;
+                }
+
+                // Crear elementos para cada página
                 pagesSnapshot.forEach(doc => {
                     const page = doc.data();
                     const pageItem = document.createElement('div');
@@ -1935,14 +2133,21 @@
                     pageItem.innerHTML = `
                         <div class="page-info">
                             <h4>${page.title}</h4>
-                            <p>${page.views || 0} visitas</p>
+                            <div class="page-stats">
+                                <span class="visits">${page.views || 0} visitas</span>
+                            </div>
                         </div>
-                        <span class="page-status ${page.status}">${page.status}</span>
+                        <div class="page-status">
+                            <span class="status-badge ${page.status}">${page.status}</span>
+                        </div>
                     `;
                     popularPagesContainer.appendChild(pageItem);
                 });
+
             } catch (error) {
                 console.error('Error al cargar páginas populares:', error);
+                const popularPagesContainer = document.querySelector('.popular-pages');
+                popularPagesContainer.innerHTML = '<div class="error">Error al cargar las páginas populares</div>';
             }
         }
 
