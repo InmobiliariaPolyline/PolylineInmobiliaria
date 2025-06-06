@@ -531,7 +531,6 @@
         }
         .proyecto-modal-gallery img {
             width: 100%;
-            
             height: auto;
             border-radius: 10px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.07);
@@ -604,13 +603,257 @@
         });
     </script>
     <script>
-    // Script para mostrar/ocultar el menú de idiomas
+        // Funciones para el selector de idiomas
     function toggleLanguageOptions() {
-        var options = document.getElementById('languageOptions');
-        if (options) {
+            const selector = document.querySelector('.language-selector');
+            const options = document.getElementById('languageOptions');
+            selector.classList.toggle('active');
             options.classList.toggle('show');
         }
-    }
+
+        function changeLanguage(lang) {
+            const currentFlag = document.getElementById('currentFlag');
+            const currentLanguage = document.getElementById('currentLanguage');
+            const options = document.getElementById('languageOptions');
+            
+            // Actualizar el botón con el idioma seleccionado
+            currentFlag.src = `../Resource/flags/${lang}.png`;
+            currentLanguage.textContent = {
+                'es': 'Español',
+                'en': 'English',
+                'pt': 'Português',
+                'zh': '中文',
+                'ja': '日本語',
+                'it': 'Italiano'
+            }[lang];
+            
+            // Ocultar las opciones
+            options.classList.remove('show');
+            
+            // Traducir el contenido
+            translatePage(lang);
+        }
+
+        // Objeto con las traducciones
+        const translations = {
+            'es': {
+                'Inicio': 'Inicio',
+                'Para Tí': 'Para Tí',
+                'Proyectos': 'Proyectos',
+                'Casas de Playa en Venta / Alquiler': 'Casas de Playa en Venta / Alquiler',
+                'Proyecto Benavides 1': 'Proyecto Benavides 1',
+                'Proyecto Benavides 2': 'Proyecto Benavides 2',
+                'Proyecto Sienna': 'Proyecto Sienna',
+                'Proyecto Varsovia ': 'Proyecto Varsovia',
+                'Mas Proyectos': 'Más Proyectos',
+                'Contacto': 'Contacto',
+                'Información': 'Información',
+                'Agenda Una Reunión': 'Agenda Una Reunión',
+                'Cotizar Proyecto': 'Cotizar Proyecto',
+                'Login': 'Login',
+                'Perfil': 'Perfil',
+                'Casas': 'Casas',
+                'Edificios': 'Edificios',
+                'Comercial': 'Comercial',
+                'Industrial': 'Industrial',
+                'Publicado': 'Publicado',
+                'Borrador': 'Borrador',
+                'Anuncios': 'Anuncios',
+                'Más Proyectos': 'Más Proyectos',
+                'Cargando proyectos...': 'Cargando proyectos...',
+                'No hay proyectos disponibles': 'No hay proyectos disponibles',
+                'Error al cargar los proyectos': 'Error al cargar los proyectos'
+            },
+            'en': {
+                'Inicio': 'Home',
+                'Para Tí': 'For You',
+                'Proyectos': 'Projects',
+                'Casas de Playa en Venta / Alquiler': 'Beach Houses for Sale / Rent',
+                'Proyecto Benavides 1': 'Benavides Project 1',
+                'Proyecto Benavides 2': 'Benavides Project 2',
+                'Proyecto Sienna': 'Sienna Project',
+                'Proyecto Varsovia ': 'Varsovia Project',
+                'Mas Proyectos': 'More Projects',
+                'Contacto': 'Contact',
+                'Información': 'Information',
+                'Agenda Una Reunión': 'Schedule a Meeting',
+                'Cotizar Proyecto': 'Quote Project',
+                'Login': 'Login',
+                'Perfil': 'Profile',
+                'Casas': 'Houses',
+                'Edificios': 'Buildings',
+                'Comercial': 'Commercial',
+                'Industrial': 'Industrial',
+                'Publicado': 'Published',
+                'Borrador': 'Draft',
+                'Anuncios': 'Ads',
+                'Más Proyectos': 'More Projects',
+                'Cargando proyectos...': 'Loading projects...',
+                'No hay proyectos disponibles': 'No projects available',
+                'Error al cargar los proyectos': 'Error loading projects'
+            },
+            'pt': {
+                'Inicio': 'Início',
+                'Para Tí': 'Para Você',
+                'Proyectos': 'Projetos',
+                'Casas de Playa en Venta / Alquiler': 'Casas de Praia à Venda / Aluguel',
+                'Proyecto Benavides 1': 'Benavides Projeto 1',
+                'Proyecto Benavides 2': 'Benavides Projeto 2',
+                'Proyecto Sienna': 'Sienna Projeto',
+                'Proyecto Varsovia ': 'Varsovia Projeto',
+                'Mas Proyectos': 'Mais Projetos',
+                'Contacto': 'Contato',
+                'Información': 'Informações',
+                'Agenda Una Reunión': 'Agendar uma Reunião',
+                'Cotizar Proyecto': 'Orçar Projeto',
+                'Login': 'Entrar',
+                'Perfil': 'Perfil',
+                'Casas': 'Casas',
+                'Edificios': 'Edifícios',
+                'Comercial': 'Comercial',
+                'Industrial': 'Industrial',
+                'Publicado': 'Publicado',
+                'Borrador': 'Rascunho',
+                'Anuncios': 'Anúncios',
+                'Más Proyectos': 'Mais Projetos',
+                'Cargando proyectos...': 'Carregando projetos...',
+                'No hay proyectos disponibles': 'Não há projetos disponíveis',
+                'Error al cargar los proyectos': 'Erro ao carregar projetos'
+            },
+            'zh': {
+                'Inicio': '首页',
+                'Para Tí': '为您',
+                'Proyectos': '项目',
+                'Casas de Playa en Venta / Alquiler': '海滨别墅出售/出租',
+                'Proyecto Benavides 1': '贝纳维德斯项目 1',
+                'Proyecto Benavides 2': '贝纳维德斯项目 2',
+                'Proyecto Sienna': '锡耶纳项目',
+                'Proyecto Varsovia ': '华沙项目',
+                'Mas Proyectos': '更多项目',
+                'Contacto': '联系方式',
+                'Información': '信息',
+                'Agenda Una Reunión': '安排会议',
+                'Cotizar Proyecto': '项目报价',
+                'Login': '登录',
+                'Perfil': '个人资料',
+                'Casas': '房屋',
+                'Edificios': '楼宇',
+                'Comercial': '商业',
+                'Industrial': '工业',
+                'Publicado': '已发布',
+                'Borrador': '草稿',
+                'Anuncios': '公告',
+                'Más Proyectos': '更多项目',
+                'Cargando proyectos...': '正在加载项目...',
+                'No hay proyectos disponibles': '没有可用项目',
+                'Error al cargar los proyectos': '加载项目时出错'
+            },
+            'ja': {
+                'Inicio': 'ホーム',
+                'Para Tí': 'あなたへ',
+                'Proyectos': 'プロジェクト',
+                'Casas de Playa en Venta / Alquiler': 'ビーチハウス売買／賃貸',
+                'Proyecto Benavides 1': 'ベナビデスプロジェクト 1',
+                'Proyecto Benavides 2': 'ベナビデスプロジェクト 2',
+                'Proyecto Sienna': 'シエナプロジェクト',
+                'Proyecto Varsovia ': 'ワルシャワプロジェクト',
+                'Mas Proyectos': 'その他のプロジェクト',
+                'Contacto': 'お問い合わせ',
+                'Información': '情報',
+                'Agenda Una Reunión': '会議を予約',
+                'Cotizar Proyecto': 'プロジェクト見積もり',
+                'Login': 'ログイン',
+                'Perfil': 'プロフィール',
+                'Casas': '家',
+                'Edificios': '建物',
+                'Comercial': '商業',
+                'Industrial': '工業',
+                'Publicado': '公開済み',
+                'Borrador': 'ドラフト',
+                'Anuncios': 'お知らせ',
+                'Más Proyectos': 'その他のプロジェクト',
+                'Cargando proyectos...': 'プロジェクトを読み込み中...',
+                'No hay proyectos disponibles': '利用可能なプロジェクトはありません',
+                'Error al cargar los proyectos': 'プロジェクトの読み込み中にエラーが発生しました'
+            },
+            'it': {
+                'Inicio': 'Inizio',
+                'Para Tí': 'Per Te',
+                'Proyectos': 'Progetti',
+                'Casas de Playa en Venta / Alquiler': 'Case al mare in vendita/affitto',
+                'Proyecto Benavides 1': 'Progetto Benavides 1',
+                'Proyecto Benavides 2': 'Progetto Benavides 2',
+                'Proyecto Sienna': 'Progetto Sienna',
+                'Proyecto Varsovia ': 'Progetto Varsovia',
+                'Mas Proyectos': 'Altri Progetti',
+                'Contacto': 'Contatti',
+                'Información': 'Informazioni',
+                'Agenda Una Reunión': 'Prenota una riunione',
+                'Cotizar Proyecto': 'Preventivo Progetto',
+                'Login': 'Accedi',
+                'Perfil': 'Profilo',
+                'Casas': 'Case',
+                'Edificios': 'Edifici',
+                'Comercial': 'Commerciale',
+                'Industrial': 'Industriale',
+                'Publicado': 'Pubblicato',
+                'Borrador': 'Bozza',
+                'Anuncios': 'Annunci',
+                'Más Proyectos': 'Altri Progetti',
+                'Cargando proyectos...': 'Caricamento progetti...',
+                'No hay proyectos disponibles': 'Nessun progetto disponibile',
+                'Error al cargar los proyectos': 'Errore durante il caricamento dei progetti'
+            }
+        };
+
+        function translatePage(lang) {
+            if (lang === 'es') {
+                location.reload();
+                return;
+            }
+
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang]?.[key]) {
+                    if (element.tagName.toLowerCase() === 'input' || element.tagName.toLowerCase() === 'textarea') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        const isTextOnly = element.innerHTML.trim() === element.textContent.trim();
+                        element[isTextOnly ? 'textContent' : 'innerHTML'] = translations[lang][key];
+                    }
+                }
+            });
+
+            // Actualizar título de la página
+            document.title = translations[lang]?.['Más Proyectos'] || 'POLYLINE - Constructora';
+
+            // Actualizar textos dinámicos
+            const loadingText = document.querySelector('.loading');
+            if (loadingText) {
+                loadingText.textContent = translations[lang]?.['Cargando proyectos...'] || 'Cargando proyectos...';
+            }
+
+            const noProjectsText = document.querySelector('.no-projects');
+            if (noProjectsText) {
+                noProjectsText.textContent = translations[lang]?.['No hay proyectos disponibles'] || 'No hay proyectos disponibles';
+            }
+
+            const errorText = document.querySelector('.error');
+            if (errorText) {
+                errorText.textContent = translations[lang]?.['Error al cargar los proyectos'] || 'Error al cargar los proyectos';
+            }
+        }
+
+        // Cerrar el menú de idiomas cuando se hace clic fuera
+        document.addEventListener('click', function(event) {
+            const languageSelector = document.querySelector('.language-selector');
+            const languageOptions = document.getElementById('languageOptions');
+            
+            if (languageSelector && languageOptions && !languageSelector.contains(event.target)) {
+                languageOptions.classList.remove('show');
+            }
+        });
     </script>
     <!-- Botón de modo oscuro -->
     <button id="dark-mode-toggle" class="dark-mode-button" style="position: fixed; bottom: 20px; right: 30px; z-index: 1000;">🌙</button>
@@ -798,22 +1041,52 @@
     <script src="../js/assistant.js"></script>
     <script src="../scripts.js"></script>
     
-    <!-- Chatbot -->
-    <div id="chatbot-container" style="position: fixed; bottom: 20px; right: 85px; z-index: 999;">
-        <button id="chatbot-toggle" class="chatbot-button">
-            <i class="fas fa-robot"></i>
-        </button>
-        <div id="chatbot-window" class="chatbot-window" style="display: none;">
-            <div class="chatbot-header">
-                <h3>Asistente Virtual</h3>
-                <button id="chatbot-close" class="chatbot-close">&times;</button>
-            </div>
-            <div id="chatbot-messages" class="chatbot-messages"></div>
-            <div class="chatbot-input">
-                <input type="text" id="chatbot-input" placeholder="Escribe tu mensaje...">
-                <button id="chatbot-send">Enviar</button>
-            </div>
-        </div>
-    </div>
+</script>
+<!-- Scripts y recursos adicionales como en index.html -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script type="module" src="../js/property-viewer.js"></script>
+<script type="module" src="../js/auth-check.js"></script>
+<script>
+    // VanillaTilt para tarjetas (si las hay)
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.VanillaTilt) {
+            VanillaTilt.init(document.querySelectorAll(".service-card"), {
+                max: 8,
+                speed: 400,
+                glare: true,
+                "max-glare": 0.1,
+                scale: 1.03,
+                perspective: 1000,
+                transition: true,
+                gyroscope: true,
+                easing: "cubic-bezier(.03,.98,.52,.99)"
+            });
+        }
+    });
+    // Login/Perfil dinámico
+    document.addEventListener('DOMContentLoaded', () => {
+        const userSession = JSON.parse(localStorage.getItem('userSession'));
+        const loginLink = document.getElementById('loginLink');
+        const userProfile = document.getElementById('userProfile');
+        const profileLink = document.getElementById('profileLink');
+        const profileText = document.getElementById('profileText');
+        if (userSession && userSession.emailVerified) {
+            if (loginLink) loginLink.style.display = 'none';
+            if (userProfile) userProfile.style.display = 'flex';
+            if (profileLink && profileText) {
+                if (userSession.isAdmin) {
+                    profileLink.href = '../pages/perfilAdmin.html';
+                    profileText.textContent = 'Administrador';
+                    profileText.setAttribute('data-translate', 'Administrador');
+                } else {
+                    profileLink.href = '../pages/perfil.html';
+                    profileText.textContent = 'Perfil';
+                    profileText.setAttribute('data-translate', 'Perfil');
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html> 
