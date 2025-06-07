@@ -1030,6 +1030,13 @@
                                     blockEl.innerHTML = `<h3 style='color:#1976d2; font-size:1.2em; margin-bottom:0.3em;'>${block.value}</h3>`;
                                 } else if (block.type === 'description') {
                                     blockEl.innerHTML = `<p style='color:#444; margin-bottom:0.7em;'>${block.value}</p>`;
+                                } else if (block.type === 'link') {
+                                    blockEl.innerHTML = `<div style='margin-bottom:0.7em;'>
+                                        <a href="${block.value}" target="_blank" style='color:#1976d2; text-decoration:underline;'>
+                                            ${block.value}
+                                        </a>
+                                    </div>`;
+
                                 }
                                 modalInfo.appendChild(blockEl);
                             }

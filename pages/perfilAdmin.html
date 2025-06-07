@@ -1348,6 +1348,7 @@
                             <button type="button" class="action-btn" data-type="title">Título</button>
                             <button type="button" class="action-btn" data-type="description">Descripción</button>
                             <button type="button" class="action-btn" data-type="image">Imagen</button>
+                            <button type="button" class="action-btn" data-type="link">Enlace</button>
                         </div>
 
                         <!-- Contenedor de bloques dinámicos -->
@@ -2734,7 +2735,7 @@
                             }
                         } else if (block.type === 'image' && block.value && typeof block.value === 'string') {
                             blocksToSave.push(block);
-                        } else if (block.type !== 'image') {
+                        } else if (block.type === 'link' || block.type === 'title' || block.type === 'description') {
                             blocksToSave.push(block);
                         }
                     }
@@ -3145,10 +3146,23 @@
                         <button type="button" class="remove-image" title="Eliminar" onclick="this.dispatchEvent(new CustomEvent('blockremove', {detail: {idx: ${idx}}}))"><i class='fas fa-times'></i></button>
                     </div>`;
                 }
+                else if (block.type === 'link') {
+                    html = `<div class="block-item form-group">
+                        <div class="block-content">
+                            <label>Enlace:</label>
+                            <input type="url" class="form-control" placeholder="https://ejemplo.com" value="${block.value || ''}" oninput="this.dispatchEvent(new CustomEvent('blockinput', {detail: {idx: ${idx}, value: this.value}}))">
+                            <div class="link-preview" style="margin-top: 10px;">
+                                ${block.value ? `<a href="${block.value}" target="_blank" style="color: #1976d2;">${block.value}</a>` : ''}
+                            </div>
+                        </div>
+                        <button type="button" class="remove-image" title="Eliminar" onclick="this.dispatchEvent(new CustomEvent('blockremove', {detail: {idx: ${idx}}}))"><i class='fas fa-times'></i></button>
+                    </div>`;
+                }
+
                 const wrapper = document.createElement('div');
                 wrapper.innerHTML = html;
                 // Eventos personalizados para inputs
-                wrapper.querySelectorAll('input[type="text"],textarea').forEach(el => {
+                wrapper.querySelectorAll('input[type="text"],textarea,input[type="url"]').forEach(el => {
                     el.addEventListener('blockinput', e => {
                         contentBlocks[e.detail.idx].value = e.detail.value;
                     });
