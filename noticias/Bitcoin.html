@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noticias Bitcoin | Polyline</title>
+  <link rel="stylesheet" href="../css/noticias.css" />
+</head>
+<body>
+<main class="ia-section">
+  <header class="ia-header">
+    <h1>Noticias sobre Bitcoin</h1>
+    <p class="ia-subtitle">Lo más reciente en criptomonedas, blockchain y tendencias de Bitcoin.</p>
+  </header>
+
+  <!-- Deja vacío, JS lo llenará -->
+  <section class="ia-grid"></section>
+</main>
+
+<script>
+  async function loadNews() {
+    const grid = document.querySelector(".ia-grid");
+    grid.innerHTML = "<p>Cargando noticias...</p>";
+
+    try {
+      const res = await fetch("/.netlify/functions/bitcoinNews");
+      const data = await res.json();
+
+      grid.innerHTML = "";
+
+      data.forEach(news => {
+        const card = document.createElement("article");
+        card.className = "ia-card";
+        card.innerHTML = `
+          <a class="ia-card-image" href="${news.url}" target="_blank" rel="noopener">
+            <img src="${news.image || 'https://via.placeholder.com/400x200'}" alt="${news.title}">
+          </a>
+          <div class="ia-card-body">
+            <div class="ia-card-meta">
+              <span class="chip">${news.source}</span>
+              <time datetime="${news.publishedAt}">
+                ${news.publishedAt ? new Date(news.publishedAt).toLocaleDateString() : ""}
+              </time>
+            </div>
+            <h3 class="ia-card-title"><a href="${news.url}" target="_blank">${news.title}</a></h3>
+            <p class="ia-card-excerpt">${news.summary}</p>
+            <a class="ia-card-link" href="${news.url}" target="_blank">Leer más</a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    } catch (err) {
+      grid.innerHTML = "<p>Error cargando noticias 😢</p>";
+      console.error(err);
+    }
+  }
+
+  loadNews();
+</script>
+</body>
+</html>
