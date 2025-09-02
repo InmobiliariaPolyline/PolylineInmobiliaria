@@ -1,4 +1,60 @@
-/* Pantalla de carga */
+.nav-menu {
+    margin-left: -100px;
+    list-style: none;
+    margin: auto;
+    padding: auto;
+    display: flex;
+    
+}.nav-menu {
+    margin-left: -100px;
+    list-style: none;
+    margin: auto;
+    padding: auto;
+    display: flex;
+    
+}.nav-menu {
+    margin-left: -100px;
+    list-style: none;
+    margin: auto;
+    padding: auto;
+    display: flex;
+    
+}.nav-menu {
+    margin-left: -100px;
+    list-style: none;
+    margin: auto;
+    padding: auto;
+    display: flex;
+    
+}.nav-menu {
+    margin-left: -100px;
+    list-style: none;
+    margin: auto;
+    padding: auto;
+    display: flex;
+    
+}.nav-menu {
+    margin-left: -100px;
+    list-style: none;
+    margin: auto;
+    padding: auto;
+    display: flex;
+    
+}.nav-menu {
+    margin-left: -100px;
+    list-style: none;
+    margin: auto;
+    padding: auto;
+    display: flex;
+    
+}.nav-menu {
+    margin-left: -100px;
+    list-style: none;
+    margin: auto;
+    padding: auto;
+    display: flex;
+    
+}/* Pantalla de carga */
 
 
 .loading-screen {
@@ -108,7 +164,7 @@ header {
     position: relative; /* Para poder usar pseudo-elementos si es necesario */
 }
 
-.slogan::before {
+.sogan::before {
     content: '|';
     position: absolute;
     left: -10px;
@@ -174,14 +230,19 @@ header {
     transition: transform 0.3s ease;
 }
 
-
+.nav-menu .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;   /* alinear con el botón Noticias */
+    right: auto;
+}
 
 /* Mostrar la línea cuando el mouse pasa por encima */
 .nav-menu a:hover::after {
     transform: scaleX(1);
     transform-origin: bottom left;
 }
-
+l
 
 .hero-title {
     font-size: 3em;
