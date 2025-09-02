@@ -1,0 +1,23 @@
+{
+  "name": "polylineinmobiliaria",
+  "version": "1.0.0",
+  "main": "scripts.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/InmobiliariaPolyline/PolylineInmobiliaria.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/InmobiliariaPolyline/PolylineInmobiliaria/issues"
+  },
+  "homepage": "https://github.com/InmobiliariaPolyline/PolylineInmobiliaria#readme",
+  "description": "",
+  "dependencies": {
+    "fast-xml-parser": "^5.2.5"
+  }
+}
