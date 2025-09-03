@@ -45,32 +45,32 @@
         <nav>
             <ul class="nav-menu">
                 <li class="language-selector">
-                    <button class="language-btn" onclick="toggleLanguageOptions()">
+                    <button class="language-btn" onclick="document.getElementById('languageOptions').classList.toggle('show')">
                         <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
                         <span id="currentLanguage">Español</span>
                     </button>
                     <div class="language-options" id="languageOptions">
-                        <div class="language-option" onclick="changeLanguage('es')">
+                        <div class="language-option" onclick="changeLanguageConstruction('es')">
                             <img src="../Resource/flags/es.png" alt="Español">
                             <span>Español</span>
                         </div>
-                        <div class="language-option" onclick="changeLanguage('en')">
+                        <div class="language-option" onclick="changeLanguageConstruction('en')">
                             <img src="../Resource/flags/en.png" alt="English">
                             <span>English</span>
                         </div>
-                        <div class="language-option" onclick="changeLanguage('pt')">
+                        <div class="language-option" onclick="changeLanguageConstruction('pt')">
                             <img src="../Resource/flags/pt.png" alt="Português">
                             <span>Português</span>
                         </div>
-                        <div class="language-option" onclick="changeLanguage('zh')">
+                        <div class="language-option" onclick="changeLanguageConstruction('zh')">
                             <img src="../Resource/flags/zh.png" alt="中文">
                             <span>中文</span>
                         </div>
-                        <div class="language-option" onclick="changeLanguage('ja')">
+                        <div class="language-option" onclick="changeLanguageConstruction('ja')">
                             <img src="../Resource/flags/ja.png" alt="日本語">
                             <span>日本語</span>
                         </div>
-                        <div class="language-option" onclick="changeLanguage('it')">
+                        <div class="language-option" onclick="changeLanguageConstruction('it')">
                             <img src="../Resource/flags/it.png" alt="Italiano">
                             <span>Italiano</span>
                         </div>
@@ -147,7 +147,7 @@
             <div class="services-grid">
                 <!-- Servicio de Excavación -->
                 <div class="service-card">
-                    <img src="../Resource/excavacion.jpg" alt="Servicio de Excavación" class="service-image">
+                    <img src="../Resource/excavacion.jpg" alt="Servicio de Excavación" class="service-image" onerror="this.src='https://placehold.co/600x400/2c3e50/ffffff?text=Excavación'">
                     <div class="service-content">
                         <div class="service-icon">
                             <i class="fas fa-digging"></i>
@@ -159,7 +159,7 @@
 
                 <!-- Servicio de Construcción -->
                 <div class="service-card">
-                    <img src="../Resource/construccion.jpg" alt="Servicio de Construcción" class="service-image">
+                    <img src="../Resource/construccion.jpg" alt="Servicio de Construcción" class="service-image" onerror="this.src='https://placehold.co/600x400/3498db/ffffff?text=Construcción'">
                     <div class="service-content">
                         <div class="service-icon">
                             <i class="fas fa-hard-hat"></i>
@@ -171,7 +171,7 @@
 
                 <!-- Servicio de Remodelación -->
                 <div class="service-card">
-                    <img src="../Resource/remodelacion.jpg" alt="Servicio de Remodelación" class="service-image">
+                    <img src="../Resource/remodelacion.jpg" alt="Servicio de Remodelación" class="service-image" onerror="this.src='https://placehold.co/600x400/e74c3c/ffffff?text=Remodelación'">
                     <div class="service-content">
                         <div class="service-icon">
                             <i class="fas fa-paint-roller"></i>
@@ -183,7 +183,7 @@
 
                 <!-- Servicio de Demolición -->
                 <div class="service-card">
-                    <img src="../Resource/demolicion.jpg" alt="Servicio de Demolición" class="service-image">
+                    <img src="../Resource/demolicion.jpg" alt="Servicio de Demolición" class="service-image" onerror="this.src='https://placehold.co/600x400/34495e/ffffff?text=Demolición'">
                     <div class="service-content">
                         <div class="service-icon">
                             <i class="fas fa-wrecking-ball"></i>
@@ -195,13 +195,8 @@
             </div>
         </div>
 
-        <!-- Proyectos recientes -->
-        <div class="projects-section">
-            <h2 class="section-title" data-translate="Proyectos Destacados">Proyectos Destacados</h2>
-            <div class="projects-grid" id="projectsGrid">
-                <div class="loading" data-translate="Cargando proyectos...">Cargando proyectos...</div>
-            </div>
-        </div>
+       <!-- Proyectos recientes -->
+     
 
         <!-- Proceso de construcción -->
         <div class="process-section">
@@ -240,7 +235,7 @@
             <div class="cta-content">
                 <h2 data-translate="¿Listo para comenzar tu proyecto?">¿Listo para comenzar tu proyecto?</h2>
                 <p data-translate="Contáctanos hoy mismo para una consulta gratuita y cotización">Contáctanos hoy mismo para una consulta gratuita y cotización</p>
-                <a href="../contact/agenda%20una%20reuni%c3%b3n.html" class="cta-button" data-translate="Solicitar Cotización">Solicitar Cotización</a>
+                <a href="../contact/agenda%20una%20reuni%c3%b3n.html" class="cta-button" data-translate="Contáctanos">Contáctanos</a>
             </div>
         </div>
     </div>
@@ -265,12 +260,12 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
+    <!-- Scripts - ORDEN CORREGIDO -->
+    <script src="../js/construccion.js"></script> <!-- PRIMERO -->
     <script src="../scripts.js"></script>
     <script src="../js/assistant.js"></script>
-    
-    <!-- Importante: Llamar a construcción.js después de los scripts anteriores -->
-    <script src="../js/construccion.js"></script>
+    <script type="module" src="../js/nav.js"></script>
+    <script type="module" src="../js/auth-check.js"></script> <!-- ÚLTIMO -->
     
     <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px;">
         <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
@@ -289,9 +284,6 @@
             <i class="fab fa-youtube"></i>
         </button>
     </div>
-
-    <script type="module" src="../js/nav.js"></script>
-    <script type="module" src="../js/auth-check.js"></script>
 </body>
 
 </html>
