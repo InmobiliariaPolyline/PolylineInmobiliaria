@@ -134,3 +134,8 @@ body.dark-mode .skeleton{ background: linear-gradient(90deg,#0000 0%, #ffffff12 
 body.dark-mode .loading-screen{ background:#111; }
 body.dark-mode .loading-screen .company-name{ color:#eee; }
 body.dark-mode .loading-screen .slogan{ color:#bbb; }
+/* Fuerza oculto por defecto */
+.language-options { display: none; }
+
+/* Se abre solo cuando el botón activa la clase */
+.language-selector.active .language-options { display: block; }
