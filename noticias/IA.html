@@ -66,8 +66,10 @@
         console.error(err);
         grid.innerHTML = '<p style="color:#c00">No se pudieron cargar las noticias.</p>';
       }
-    }
-
+      finally {
+    // cierre seguro del preloader
+          if (window.__hidePreloader) window.__hidePreloader();}
+      }
     // Ejecuta cuando el DOM esté listo
     document.addEventListener('DOMContentLoaded', loadNews);
   </script>

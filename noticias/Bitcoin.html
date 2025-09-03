@@ -95,6 +95,42 @@
   }
 
     });
+
+    function showPreloader(){
+    const scr = document.getElementById('loading-screen');
+    if(!scr) return;
+    scr.style.display = 'flex';
+    // reset anim por si venías de otra página
+    requestAnimationFrame(()=>{ 
+      scr.style.opacity = '1';
+      scr.style.transform = 'translateY(0)'; 
+    });
+  }
+  function hidePreloader(){
+    const scr = document.getElementById('loading-screen');
+    if(!scr || scr.style.display === 'none') return;
+    scr.style.transform = 'translateY(-100%)';
+    scr.style.opacity = '0';
+    scr.addEventListener('transitionend', ()=>{ scr.style.display = 'none'; }, { once:true });
+  }
+
+  // cierra al tener DOM listo (rápido)
+  document.addEventListener('DOMContentLoaded', ()=> {
+    requestAnimationFrame(hidePreloader);
+  });
+
+  // por si imágenes/todo tardan
+  window.addEventListener('load', hidePreloader);
+
+  // Fallback duro (si fetch se cuelga, etc.)
+  setTimeout(hidePreloader, 6000);
+
+  // expón por si lo quieres usar desde otros scripts
+  window.__hidePreloader = hidePreloader;
+  window.__showPreloader = showPreloader;
+
+
+
   </script>
 </body>
 </html>

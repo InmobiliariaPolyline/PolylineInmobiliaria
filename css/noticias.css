@@ -112,3 +112,25 @@ body.dark-mode .skeleton{ background: linear-gradient(90deg,#0000 0%, #ffffff12 
 .skel-media{ aspect-ratio:16/9; }
 .skel-line{ height:12px; margin:10px 16px; border-radius:8px; }
 .skel-line.w60{ width:60%; } .skel-line.w80{ width:80%; } .skel-line.w40{ width:40%; }
+
+
+/* estilos para el preloader *//* Preloader */
+.loading-screen{
+  position: fixed;
+  inset: 0;
+  display: flex;            /* importante para que sea visible */
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  z-index: 9999;
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform .5s ease, opacity .3s ease;
+}
+.loading-screen .logo{ max-width: 120px; margin-bottom: 12px; }
+.loading-screen .company-name{ font: 700 28px/1.1 Roboto, sans-serif; color:#333; margin:0; text-align:center;}
+.loading-screen .slogan{ color:#888; margin:.25rem 0 0; text-align:center;}
+/* (opcional) modo oscuro */
+body.dark-mode .loading-screen{ background:#111; }
+body.dark-mode .loading-screen .company-name{ color:#eee; }
+body.dark-mode .loading-screen .slogan{ color:#bbb; }
