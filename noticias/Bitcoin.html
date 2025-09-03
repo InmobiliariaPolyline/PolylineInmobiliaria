@@ -18,44 +18,41 @@
 </main>
 
 <script>
-  async function loadNews() {
-    const grid = document.querySelector(".ia-grid");
-    grid.innerHTML = "<p>Cargando noticias...</p>";
+(async () => {
+  const GRID = document.getElementById('btc-grid');
+  GRID.innerHTML = "<p>Cargando noticias...</p>";
 
-    try {
-      const res = await fetch("https://delicate-pastelito-2ef0f7.netlify.app/.netlify/functions/bitcoinNews");
-      const data = await res.json();
+  const ENDPOINT = "/.netlify/functions/bitcoinNews"; // en producción Netlify
+  // O pega tu URL absoluta si estás probando desde localhost sin proxy:
+  // const ENDPOINT = "https://<tu-sitio>.netlify.app/.netlify/functions/bitcoinNews";
 
-      grid.innerHTML = "";
-
-      data.forEach(news => {
-        const card = document.createElement("article");
-        card.className = "ia-card";
-        card.innerHTML = `
-          <a class="ia-card-image" href="${news.url}" target="_blank" rel="noopener">
-            <img src="${news.image || 'https://via.placeholder.com/400x200'}" alt="${news.title}">
-          </a>
-          <div class="ia-card-body">
-            <div class="ia-card-meta">
-              <span class="chip">${news.source}</span>
-              <time datetime="${news.publishedAt}">
-                ${news.publishedAt ? new Date(news.publishedAt).toLocaleDateString() : ""}
-              </time>
-            </div>
-            <h3 class="ia-card-title"><a href="${news.url}" target="_blank">${news.title}</a></h3>
-            <p class="ia-card-excerpt">${news.summary}</p>
-            <a class="ia-card-link" href="${news.url}" target="_blank">Leer más</a>
+  try {
+    const res = await fetch(ENDPOINT);
+    const items = await res.json();
+    GRID.innerHTML = items.map(n => `
+      <article class="ia-card">
+        <a class="ia-card-image" href="${n.url}" target="_blank" rel="noopener noreferrer">
+          <img src="${n.image || 'https://via.placeholder.com/900x500?text=Bitcoin'}" alt="${n.title}">
+        </a>
+        <div class="ia-card-body">
+          <div class="ia-card-meta">
+            <span class="chip">${n.source || 'Fuente'}</span>
+            <time datetime="${n.publishedAt || ''}">
+              ${n.publishedAt ? new Date(n.publishedAt).toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'}) : ''}
+            </time>
           </div>
-        `;
-        grid.appendChild(card);
-      });
-    } catch (err) {
-      grid.innerHTML = "<p>Error cargando noticias 😢</p>";
-      console.error(err);
-    }
+          <h3 class="ia-card-title">
+            <a href="${n.url}" target="_blank" rel="noopener noreferrer">${n.title}</a>
+          </h3>
+          <p class="ia-card-excerpt">${n.summary || ''}</p>
+          <a class="ia-card-link" href="${n.url}" target="_blank" rel="noopener noreferrer">Leer más</a>
+        </div>
+      </article>
+    `).join('');
+  } catch (err) {
+    GRID.innerHTML = `<p style="color:#c00">No se pudieron cargar las noticias. ${err}</p>`;
   }
-
-  loadNews();
+})();
 </script>
 </body>
 </html>
