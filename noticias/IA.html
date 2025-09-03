@@ -1,69 +1,69 @@
-    <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Noticias IA | Polyline</title>
-  <link rel="stylesheet" href="../css/noticias.css" />
-</head>
-<body>
-<main class="ia-section">
-  <header class="ia-header">
-    <h1>Noticias sobre Inteligencia Artificial</h1>
-    <p class="ia-subtitle">Lo más reciente en IA, investigación, herramientas y tendencias.</p>
-  </header>
+      <!DOCTYPE html>
+  <html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Noticias IA | Polyline</title>
+    <link rel="stylesheet" href="../css/noticias.css" />
+  </head>
+  <body>
+  <main class="ia-section">
+    <header class="ia-header">
+      <h1>Noticias sobre Inteligencia Artificial</h1>
+      <p class="ia-subtitle">Lo más reciente en IA, investigación, herramientas y tendencias.</p>
+    </header>
 
-  <!-- Deja vacío: lo llenamos con JS -->
-  <section class="ia-grid"></section>
-</main>
+    <!-- Deja vacío: lo llenamos con JS -->
+    <section class="ia-grid"></section>
+  </main>
 
-<script>
-  async function loadNews() {
-    const grid = document.querySelector('.ia-grid');
-    grid.innerHTML = '<p>Cargando noticias…</p>';
+  <script>
+    async function loadNews() {
+      const grid = document.querySelector('.ia-grid');
+      grid.innerHTML = '<p>Cargando noticias…</p>';
 
-    try {
-      const res = await fetch('https://delicate-pastelito-2ef0f7.netlify.app/.netlify/functions/aiNews'); // misma origin
-      if (!res.ok) throw new Error('Error HTTP ' + res.status);
-      const data = await res.json();
+      try {
+        const res = await fetch('https://delicate-pastelito-2ef0f7.netlify.app/.netlify/functions/aiNews'); // misma origin
+        if (!res.ok) throw new Error('Error HTTP ' + res.status);
+        const data = await res.json();
 
-      grid.innerHTML = ''; // limpia
+        grid.innerHTML = ''; // limpia
 
-      data.forEach(n => {
-        const card = document.createElement('article');
-        card.className = 'ia-card';
-        card.innerHTML = `
-          <a class="ia-card-image" href="${n.url}" target="_blank" rel="noopener noreferrer">
-            <img src="${n.image || 'https://via.placeholder.com/900x500?text=IA'}" alt="${n.title}">
-          </a>
-          <div class="ia-card-body">
-            <div class="ia-card-meta">
-              <span class="chip">${n.source || 'Fuente'}</span>
-              <time datetime="${n.publishedAt || ''}">
-                ${n.publishedAt ? new Date(n.publishedAt).toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' }) : ''}
-              </time>
+        data.forEach(n => {
+          const card = document.createElement('article');
+          card.className = 'ia-card';
+          card.innerHTML = `  
+            <a class="ia-card-image" href="${n.url}" target="_blank" rel="noopener noreferrer">
+              <img src="${n.image || 'https://via.placeholder.com/900x500?text=IA'}" alt="${n.title}">
+            </a>
+            <div class="ia-card-body">
+              <div class="ia-card-meta">
+                <span class="chip">${n.source || 'Fuente'}</span>
+                <time datetime="${n.publishedAt || ''}">
+                  ${n.publishedAt ? new Date(n.publishedAt).toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' }) : ''}
+                </time>
+              </div>
+              <h3 class="ia-card-title">
+                <a href="${n.url}" target="_blank" rel="noopener noreferrer">${n.title}</a>
+              </h3>
+              <p class="ia-card-excerpt">${n.summary || ''}</p>
+              <a class="ia-card-link" href="${n.url}" target="_blank" rel="noopener noreferrer">Leer más</a>
             </div>
-            <h3 class="ia-card-title">
-              <a href="${n.url}" target="_blank" rel="noopener noreferrer">${n.title}</a>
-            </h3>
-            <p class="ia-card-excerpt">${n.summary || ''}</p>
-            <a class="ia-card-link" href="${n.url}" target="_blank" rel="noopener noreferrer">Leer más</a>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
+          `;
+          grid.appendChild(card);
+        });
 
-      if (!data.length) {
-        grid.innerHTML = '<p>No hay noticias por ahora.</p>';
+        if (!data.length) {
+          grid.innerHTML = '<p>No hay noticias por ahora.</p>';
+        }
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = '<p style="color:#c00">No se pudieron cargar las noticias.</p>';
       }
-    } catch (err) {
-      console.error(err);
-      grid.innerHTML = '<p style="color:#c00">No se pudieron cargar las noticias.</p>';
     }
-  }
 
-  // Ejecuta cuando el DOM esté listo
-  document.addEventListener('DOMContentLoaded', loadNews);
-</script>
-</body>
-</html>
+    // Ejecuta cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', loadNews);
+  </script>
+  </body>
+  </html>
