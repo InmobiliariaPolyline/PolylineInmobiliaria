@@ -4,17 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Noticias IA | Polyline</title>
-    <link rel="stylesheet" href="../css/noticias.css" />
+      <link rel="stylesheet" href="../css/style.css" />
+  <!-- estilos de noticias, debe ir DESPUÉS -->
+  <link rel="stylesheet" href="../css/noticias.css" />  
   </head>
   <body>
-  <main class="ia-section">
+<main class="ia-section">
     <header class="ia-header">
       <h1>Noticias sobre Inteligencia Artificial</h1>
       <p class="ia-subtitle">Lo más reciente en IA, investigación, herramientas y tendencias.</p>
     </header>
 
-    <!-- Deja vacío: lo llenamos con JS -->
-    <section class="ia-grid"></section>
+    <section id="ia-grid" class="ia-grid" aria-live="polite">
+      <!-- Skeletons iniciales -->
+      <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
+      <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
+      <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
+    </section>
   </main>
 
   <script>
