@@ -311,4 +311,50 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', setupDropdown);
 });
 
+// Cargar botones de noticias
+// --- Preloader helpers ---
+function showPreloader() {
+  const scr = document.getElementById('loading-screen');
+  if (!scr) return;
+  // reset (por si venimos de otra página)
+  scr.style.display = 'flex';
+  scr.style.opacity = '1';
+  scr.style.transform = 'translateY(0)';
+}
+
+function hidePreloader() {
+  const scr = document.getElementById('loading-screen');
+  if (!scr) return;
+  // animación de salida
+  scr.style.transform = 'translateY(-100%)';
+  scr.addEventListener('transitionend', () => {
+    scr.style.display = 'none';
+  }, { once: true });
+}
+
+// Muestra preloader al navegar a otra página interna
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('a');
+  if (!a) return;
+
+  // Ignora si abre en nueva pestaña, si es hash puro o si no es misma origin
+  const sameOrigin = a.origin === location.origin;
+  const opensNewTab = a.target === '_blank';
+  const onlyHash = a.getAttribute('href') && a.getAttribute('href').startsWith('#');
+
+  if (sameOrigin && !opensNewTab && !onlyHash) {
+    showPreloader();
+    // Deja que el navegador navegue normalmente
+  }
+});
+
+// Oculta preloader cuando la página termina de cargar
+window.addEventListener('load', () => {
+  // dale un frame para que la transición corra suave
+  requestAnimationFrame(hidePreloader);
+});
+
+
+
+
 
