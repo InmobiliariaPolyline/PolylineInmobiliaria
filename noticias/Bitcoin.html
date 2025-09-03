@@ -96,23 +96,39 @@
 
     });
 
-    function showPreloader(){
-    const scr = document.getElementById('loading-screen');
-    if(!scr) return;
-    scr.style.display = 'flex';
-    // reset anim por si venías de otra página
-    requestAnimationFrame(()=>{ 
-      scr.style.opacity = '1';
-      scr.style.transform = 'translateY(0)'; 
-    });
-  }
-  function hidePreloader(){
-    const scr = document.getElementById('loading-screen');
-    if(!scr || scr.style.display === 'none') return;
+
+
+
+ let preloadStart = 0;
+
+function showPreloader() {
+  const scr = document.getElementById('loading-screen');
+  if (!scr) return;
+  scr.style.display = 'flex';
+  // fuerza reflow para que la transición se aplique
+  void scr.offsetHeight;
+  scr.style.opacity = '1';
+  scr.style.transform = 'translateY(0)';
+  preloadStart = performance.now();
+}
+
+function hidePreloader() {
+  const scr = document.getElementById('loading-screen');
+  if (!scr || scr.style.display === 'none') return;
+
+  const MIN_VISIBLE = 900; // <-- ajusta a tu gusto (ms)
+  const elapsed = performance.now() - preloadStart;
+  const wait = Math.max(0, MIN_VISIBLE - elapsed);
+
+  setTimeout(() => {
     scr.style.transform = 'translateY(-100%)';
     scr.style.opacity = '0';
-    scr.addEventListener('transitionend', ()=>{ scr.style.display = 'none'; }, { once:true });
-  }
+    scr.addEventListener('transitionend', () => {
+      scr.style.display = 'none';
+    }, { once: true });
+  }, wait);
+}
+
 
   // cierra al tener DOM listo (rápido)
   document.addEventListener('DOMContentLoaded', ()=> {
