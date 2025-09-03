@@ -90,6 +90,10 @@
         console.error(err);
         GRID.innerHTML = `<p style="color:#c00">No se pudieron cargar las noticias. ${err.message || err}</p>`;
       }
+      finally {
+    if (window.__hidePreloader) window.__hidePreloader();
+  }
+
     });
   </script>
 </body>

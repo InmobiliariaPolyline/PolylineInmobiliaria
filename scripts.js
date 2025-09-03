@@ -312,11 +312,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Cargar botones de noticias
-// --- Preloader helpers ---
+// ---------- PRELOADER ----------
 function showPreloader() {
   const scr = document.getElementById('loading-screen');
   if (!scr) return;
-  // reset (por si venimos de otra página)
   scr.style.display = 'flex';
   scr.style.opacity = '1';
   scr.style.transform = 'translateY(0)';
@@ -325,36 +324,46 @@ function showPreloader() {
 function hidePreloader() {
   const scr = document.getElementById('loading-screen');
   if (!scr) return;
-  // animación de salida
+  // si ya está oculto, nada
+  if (scr.style.display === 'none') return;
+
   scr.style.transform = 'translateY(-100%)';
+  scr.style.opacity = '0';
   scr.addEventListener('transitionend', () => {
     scr.style.display = 'none';
   }, { once: true });
 }
 
-// Muestra preloader al navegar a otra página interna
+// Muestra preloader al navegar a otra página interna (mismo dominio)
 document.addEventListener('click', (e) => {
   const a = e.target.closest('a');
   if (!a) return;
 
-  // Ignora si abre en nueva pestaña, si es hash puro o si no es misma origin
   const sameOrigin = a.origin === location.origin;
   const opensNewTab = a.target === '_blank';
-  const onlyHash = a.getAttribute('href') && a.getAttribute('href').startsWith('#');
+  const href = a.getAttribute('href') || '';
+  const onlyHash = href.startsWith('#');
 
   if (sameOrigin && !opensNewTab && !onlyHash) {
     showPreloader();
-    // Deja que el navegador navegue normalmente
   }
 });
 
-// Oculta preloader cuando la página termina de cargar
-window.addEventListener('load', () => {
-  // dale un frame para que la transición corra suave
+// Cerrar en DOMContentLoaded (no espera imágenes)
+document.addEventListener('DOMContentLoaded', () => {
+  // si la página llegó “rápido”, no dejes el loader
   requestAnimationFrame(hidePreloader);
 });
 
+// Cerrar también en load (por si DOMContentLoaded fue antes de pintar todo)
+window.addEventListener('load', () => {
+  hidePreloader();
+});
 
+// Fallback duro: si algo se colgó, cierra sí o sí
+setTimeout(hidePreloader, 6000);
 
-
+// Exponer por si otras páginas quieren cerrar manualmente
+window.__hidePreloader = hidePreloader;
+window.__showPreloader = showPreloader;
 
