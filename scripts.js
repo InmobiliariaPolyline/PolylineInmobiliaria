@@ -223,16 +223,16 @@ function closeModal(departmentId) {
 }
 
 // Función para manejar la pantalla de carga
-document.addEventListener('DOMContentLoaded', function() {
-    const loadingScreen = document.getElementById('loading-screen');
+//document.addEventListener('DOMContentLoaded', function() {
+ //   const loadingScreen = document.getElementById('loading-screen');
     
     // Ocultar la pantalla de carga después de 2 segundos
-    setTimeout(() => {
-        loadingScreen.style.opacity = '0';
-        loadingScreen.style.visibility = 'hidden';
-        document.body.classList.add('loaded');
-    }, 2000);
-});
+ //   setTimeout(() => {
+   //     loadingScreen.style.opacity = '0';
+    //    loadingScreen.style.visibility = 'hidden';
+    //    document.body.classList.add('loaded');
+   // }, 2000);
+//});
 
 // Función para el menú móvil
 document.addEventListener('DOMContentLoaded', function() {
