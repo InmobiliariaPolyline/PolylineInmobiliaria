@@ -6,31 +6,35 @@
     <title>Noticias IA | Polyline</title>
 
     <link rel="stylesheet" href="../css/style.css" />
-    <!-- estilos de noticias, debe ir DESPUÉS -->
     <link rel="stylesheet" href="../css/noticias.css" />
-  
+    <script type="module" src="../js/nav.js"></script>
+    <script defer src="../js/ia.js"></script>
+<link rel="stylesheet" href="../css/nav.css" />
+
+    
+    
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
       <meta name="theme-color" content="#ffffff">
       <meta name="apple-mobile-web-app-capable" content="yes">
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
       <title>POLYLINE - Constructora</title>
-      <link rel="icon" href="Resource/Logo/logo.png" type="image/x-icon">
+      <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon">
       <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
       
       <link rel="preload" as="video" href="Resource/background1.mp4">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-      <link rel="stylesheet" href="css/assistant.css">
-      <link rel="stylesheet" href="css/idiomas.css">
+      <link rel="stylesheet" href="../css/assistant.css">
+      <link rel="stylesheet" href="../css/idiomas.css">
       <link rel="stylesheet" href="css/gallery.html">
-      <link rel="stylesheet" href="css/footer.css">
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+      <link rel="stylesheet" href="../css/footer.css">
+     
       <link rel="stylesheet" href="css/property-viewer.html">
       <!-- Firebase SDK -->
-      <link rel="preload" as="video" href="Resource/background1.mp4" type="video/mp4">
-      <script type="module" src="js/Login_Perfil.js"></script>
 
+      <script type="module" src="../js/Login_Perfil.js"></script>
+  
   <style>
       /* Animación para el menú desplegable en móvil */
       @media screen and (max-width: 768px) {
@@ -250,9 +254,9 @@
                 <li class="dropdown">
                     <a href="#" id="noticias-link" data-translate="Noticias" onclick="return false;">Noticias</a>
                     <ul class="dropdown-menu">
-                        <li><a href="noticias/ia.html" data-translate="IA">IA</a></li>
-                        <li><a href="noticias/bitcoin.html" data-translate="Bitcoin">Bitcoin</a></li>
-                        <li><a href="noticias/otros.html" data-translate="Otros">Otros</a></li>
+                        <li><a href="ia.html" data-translate="IA">IA</a></li>
+                        <li><a href="bitcoin.html" data-translate="Bitcoin">Bitcoin</a></li>
+                        <li><a href="otros.html" data-translate="Otros">Otros</a></li>
                     </ul>
                 </li>
                 <li>
@@ -262,8 +266,6 @@
                   <li id="translateContainer" class="translate-container">
                       <div id="google_translate_element" title="Seleccionar idioma"></div>
                   </li>
-
-
 
 
                   <li id="loginContainer" class="mobile-login">
@@ -391,5 +393,16 @@
 
       document.addEventListener('DOMContentLoaded', loadNews);
     </script>
+
+    <div class="social-buttons">
+  <button class="social-btn facebook"  onclick="window.open('https://www.facebook.com/PolylineSalas')"><i class="fab fa-facebook-f"></i></button>
+  <button class="social-btn whatsapp"  onclick="window.open('https://wa.link/lkvfnb')"><i class="fab fa-whatsapp"></i></button>
+  <button class="social-btn instagram" onclick="window.open('https://www.instagram.com/arquitectosalasperu/')"><i class="fab fa-instagram"></i></button>
+  <button class="social-btn linkedin"  onclick="window.open('https://www.linkedin.com/in/arquitectosalas')"><i class="fab fa-linkedin-in"></i></button>
+  <button class="social-btn youtube"   onclick="window.open('https://www.youtube.com/channel/UC9wMT7_zsq7yE0MMCSxiVMw')"><i class="fab fa-youtube"></i></button>
+  </div>
+
+
+
   </body>
   </html>

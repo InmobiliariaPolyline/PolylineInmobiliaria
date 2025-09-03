@@ -1,4 +1,8 @@
-/* /css/noticias.css  (cárgalo DESPUÉS de style.css) */
+/* ================================
+   Noticias (IA + Bitcoin)
+   ================================ */
+
+/* ---------- Vars ---------- */
 :root{
   --brand:#FF6B00;
   --text:#222;
@@ -17,39 +21,19 @@ body.dark-mode{
   --shadow:0 8px 24px rgba(0,0,0,.35);
 }
 
-/* contenedor principal */
-.ia-section{
-  max-width:1100px;
-  margin:40px auto;
-  padding:0 16px;
-}
-.ia-header h1{
-  font-family: 'Roboto', sans-serif;
-  font-weight:700;
-  margin:0 0 8px;
-  color:var(--text);
-}
-.ia-subtitle{
-  margin:0 0 20px;
-  color:var(--muted);
-}
+/* ---------- Contenido ---------- */
+.ia-section{ max-width:1100px; margin:40px auto; padding:0 16px; }
+.ia-header h1{ font-family:Roboto, sans-serif; font-weight:700; margin:0 0 8px; color:var(--text); }
+.ia-subtitle{ margin:0 0 20px; color:var(--muted); }
 
 /* GRID */
-.ia-grid{
-  display:grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap:20px;
-}
-@media (max-width:1024px){
-  .ia-grid{ grid-template-columns: repeat(8, 1fr); }
-}
-@media (max-width:680px){
-  .ia-grid{ grid-template-columns: repeat(4, 1fr); }
-}
+.ia-grid{ display:grid; grid-template-columns:repeat(12,1fr); gap:20px; }
+@media (max-width:1024px){ .ia-grid{ grid-template-columns:repeat(8,1fr); } }
+@media (max-width:680px){ .ia-grid{ grid-template-columns:repeat(4,1fr); } }
 
 /* CARD */
 .ia-card{
-  grid-column: span 4;          /* 3 cards por fila en desktop */
+  grid-column: span 4;
   background:var(--card);
   border:1px solid var(--cardBorder);
   border-radius:16px;
@@ -57,40 +41,21 @@ body.dark-mode{
   box-shadow:var(--shadow);
   transition: transform .2s ease, box-shadow .2s ease;
 }
-.ia-card:hover{
-  transform: translateY(-3px);
-  box-shadow:0 12px 28px rgba(0,0,0,.12);
-}
-@media (max-width:1024px){ .ia-card{ grid-column: span 4; } } /* 2 por fila */
-@media (max-width:680px){ .ia-card{ grid-column: span 4; } }  /* 1 por fila */
+.ia-card:hover{ transform:translateY(-3px); box-shadow:0 12px 28px rgba(0,0,0,.12); }
+@media (max-width:1024px){ .ia-card{ grid-column: span 4; } }
+@media (max-width:680px){ .ia-card{ grid-column: span 4; } }
 
-/* imagen */
-.ia-card-image{
-  display:block; aspect-ratio:16/9; background:#00000010; position:relative;
-}
-.ia-card-image img{
-  width:100%; height:100%; object-fit:cover; display:block;
-}
+.ia-card-image{ display:block; aspect-ratio:16/9; background:#00000010; position:relative; }
+.ia-card-image img{ width:100%; height:100%; object-fit:cover; display:block; }
 
-/* cuerpo */
 .ia-card-body{ padding:14px 16px 16px; }
-.ia-card-meta{
-  display:flex; align-items:center; gap:10px; margin-bottom:8px;
-  color:var(--muted); font-size:.9rem;
-}
-.chip{
-  background:var(--chip);
-  border:1px solid var(--cardBorder);
-  padding:4px 8px; border-radius:999px; font-size:.75rem;
-}
-.ia-card-title{
-  margin:6px 0 8px; line-height:1.25;
-  font-size:1.05rem;
-}
+.ia-card-meta{ display:flex; align-items:center; gap:10px; margin-bottom:8px; color:var(--muted); font-size:.9rem; }
+.chip{ background:var(--chip); border:1px solid var(--cardBorder); padding:4px 8px; border-radius:999px; font-size:.75rem; }
+.ia-card-title{ margin:6px 0 8px; line-height:1.25; font-size:1.05rem; }
 .ia-card-title a{
   color:var(--text); text-decoration:none;
-  background: linear-gradient(currentColor,currentColor) 0 100%/0 2px no-repeat;
-  transition: background-size .25s ease;
+  background:linear-gradient(currentColor,currentColor) 0 100%/0 2px no-repeat;
+  transition:background-size .25s ease;
 }
 .ia-card-title a:hover{ background-size:100% 2px; }
 .ia-card-excerpt{ color:var(--muted); font-size:.95rem; margin:0 0 10px; }
@@ -99,43 +64,206 @@ body.dark-mode{
   padding:8px 12px; border-radius:10px; display:inline-block; font-weight:600;
   transition: filter .2s ease, transform .2s ease;
 }
-.ia-card-link:hover{ filter:brightness(1.05); transform: translateY(-1px); }
+.ia-card-link:hover{ filter:brightness(1.05); transform:translateY(-1px); }
 
-/* skeleton mientras carga */
+/* ---------- Skeleton ---------- */
 .skeleton{
-  background: linear-gradient(90deg,#0000 0%, #00000012 50%, #0000 100%), #e9e9e9;
+  background:linear-gradient(90deg,#0000 0%,#00000012 50%,#0000 100%), #e9e9e9;
   background-size:200% 100%; animation:shimmer 1.2s infinite;
 }
-body.dark-mode .skeleton{ background: linear-gradient(90deg,#0000 0%, #ffffff12 50%, #0000 100%), #2a2a2a; }
+body.dark-mode .skeleton{
+  background:linear-gradient(90deg,#0000 0%,#ffffff12 50%,#0000 100%), #2a2a2a;
+}
 @keyframes shimmer{ to{ background-position:-200% 0; } }
+
 .skel-card{ border-radius:16px; overflow:hidden; border:1px solid var(--cardBorder); box-shadow:var(--shadow); }
 .skel-media{ aspect-ratio:16/9; }
 .skel-line{ height:12px; margin:10px 16px; border-radius:8px; }
 .skel-line.w60{ width:60%; } .skel-line.w80{ width:80%; } .skel-line.w40{ width:40%; }
 
-
-/* estilos para el preloader *//* Preloader */
+/* ---------- Preloader ---------- */
 .loading-screen{
-  position: fixed;
-  inset: 0;
-  display: flex;            /* importante para que sea visible */
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  z-index: 9999;
-  transform: translateY(0);
-  opacity: 1;
-  transition: transform .9s ease, opacity .6s ease;
+  position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+  background:#fff; z-index:9999; transform:translateY(0); opacity:1;
+  transition:transform .9s ease, opacity .6s ease;
 }
-.loading-screen .logo{ max-width: 120px; margin-bottom: 12px; }
-.loading-screen .company-name{ font: 700 28px/1.1 Roboto, sans-serif; color:#333; margin:0; text-align:center;}
-.loading-screen .slogan{ color:#888; margin:.25rem 0 0; text-align:center;}
-/* (opcional) modo oscuro */
+.loading-screen .logo{ max-width:120px; margin-bottom:12px; }
+.loading-screen .company-name{ font:700 28px/1.1 Roboto, sans-serif; color:#333; margin:0; text-align:center; }
+.loading-screen .slogan{ color:#888; margin:.25rem 0 0; text-align:center; }
 body.dark-mode .loading-screen{ background:#111; }
 body.dark-mode .loading-screen .company-name{ color:#eee; }
 body.dark-mode .loading-screen .slogan{ color:#bbb; }
-/* Fuerza oculto por defecto */
-.language-options { display: none; }
 
-/* Se abre solo cuando el botón activa la clase */
-.language-selector.active .language-options { display: block; }
+/* ---------- Botones sociales ---------- */
+.social-buttons{
+  position:fixed; right:20px; bottom:20px; display:flex; gap:10px; z-index:1200;
+}
+.social-btn{
+  width:44px; height:44px; border:none; border-radius:50%;
+  display:grid; place-items:center; color:#fff; cursor:pointer;
+  box-shadow:0 6px 16px rgba(0,0,0,.2);
+  transition: transform .15s ease, filter .2s ease;
+}
+.social-btn:hover{ transform:translateY(-2px); filter:brightness(1.05); }
+.social-btn i{ font-size:16px; }
+.social-btn.facebook{ background:#1877F2; }
+.social-btn.whatsapp{ background:#25D366; }
+.social-btn.instagram{ background:#E1306C; }
+.social-btn.linkedin{ background:#0A66C2; }
+.social-btn.youtube{ background:#FF0000; }
+body.dark-mode .social-btn{ box-shadow:0 6px 16px rgba(0,0,0,.4); }
+
+/* ================================
+   Navegación responsive
+   ================================ */
+
+/* Botón hamburguesa (derecha) */
+header{ position:relative; }
+.mobile-menu-button{
+  position: fixed !important;
+  right: 12px; top: 12px;
+  left: auto !important;
+  width: 44px; height: 44px;
+  display: none;                          /* visible solo en móvil */
+  align-items:center; justify-content:center;
+  background: transparent; border: 0;
+  z-index: 2000; cursor: pointer; pointer-events:auto;
+}
+.mobile-menu-button .hamburger,
+.mobile-menu-button .hamburger::before,
+.mobile-menu-button .hamburger::after{
+  content:""; display:block;
+  width:26px; height:2px; background:#111;
+  position:relative; border-radius:2px;
+}
+.mobile-menu-button .hamburger::before{ position:absolute; top:-7px; left:0; }
+.mobile-menu-button .hamburger::after { position:absolute; top: 7px; left:0; }
+body.dark-mode .mobile-menu-button .hamburger,
+body.dark-mode .mobile-menu-button .hamburger::before,
+body.dark-mode .mobile-menu-button .hamburger::after{ background:#fff; }
+
+/* Overlay del menú */
+.menu-overlay{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.35);
+  opacity: 0; visibility: hidden;
+  transition: opacity .2s ease, visibility .2s ease;
+  z-index: 1500;
+}
+.menu-overlay.show{ opacity:1; visibility:visible; }
+
+/* Panel lateral (móvil) */
+@media (max-width:768px){
+  .mobile-menu-button{ display:flex !important; }
+
+  nav .nav-menu{
+    position: fixed !important;
+    top:0 !important; right:-100% !important;       /* oculto */
+    width:80% !important; max-width:360px !important;
+    height:100vh !important;
+    background:rgba(255,255,255,.96) !important;
+    backdrop-filter:blur(10px) !important;
+    padding:80px 16px 16px !important;
+    overflow-y:auto !important;
+    transition:right .3s ease-in-out !important;
+    z-index:1600 !important;
+    display:block !important;
+  }
+  nav .nav-menu.active{ right:0 !important; }
+
+  /* Submenús móviles */
+  .dropdown .dropdown-menu{
+    position:static !important;
+    display:none !important;
+    width:100% !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    padding-left:16px !important;
+  }
+  .dropdown .dropdown-menu.open{ display:block !important; }
+}
+
+/* Submenús desktop */
+@media (min-width:769px){
+  .dropdown-menu{
+    position:absolute; top:100%; right:0; min-width:150px;
+    background:#f0f0f0; border:1px solid #ddd; border-radius:4px;
+    list-style:none; padding:15px 0; margin:0; display:none; z-index:1000;
+  }
+  .dropdown:hover .dropdown-menu{ display:block; }
+  .dropdown-menu li{ margin-bottom:25px; }
+  .dropdown-menu li:last-child{ margin-bottom:0; }
+  .dropdown-menu li a{ display:block; padding:8px 10px; color:#333; text-decoration:none; }
+  .dropdown-menu li a:hover{ background:rgba(51,51,51,.1); }
+}
+
+/* ================================
+   Idiomas (dropdown)
+   ================================ */
+
+/* base */
+.language-selector{ position:relative; }
+.language-selector .language-options{
+  display:none !important;              /* base oculto; lo abre .active/.show */
+  position:absolute;
+  top:100%; right:0;
+  min-width:180px;
+  background:#fff;
+  border:1px solid #e5e5e5;
+  border-radius:10px;
+  padding:6px 0;
+  box-shadow:0 12px 30px rgba(0,0,0,.12);
+  z-index:1700;                         /* por encima del panel */
+}
+/* abrir */
+.language-selector.active .language-options,
+.language-options.show{ display:block !important; }
+
+/* versión móvil (dentro del panel) */
+@media (max-width:768px){
+  .language-selector .language-options{
+    position:static;
+    width:100%;
+    border:0;
+    border-radius:0;
+    box-shadow:none;
+    background:transparent;
+  }
+}
+
+/* ================================
+   (Opcional) estilos “news-*”
+   ================================ */
+.news-container{ max-width:1200px; margin:0 auto; padding:40px 20px; background:#f8f9fa; min-height:100vh; }
+body.dark-mode .news-container{ background:#1a1a1a; }
+
+.news-header{
+  text-align:center; margin-bottom:50px; padding:40px 0;
+  background:linear-gradient(135deg, rgba(211,122,45,.1), rgba(255,159,74,.1));
+  border-radius:15px; position:relative; overflow:hidden;
+}
+.news-header::before{
+  content:""; position:absolute; inset:0;
+  background:url('../Resource/Logo/logo.png') center/contain no-repeat;
+  opacity:.05; z-index:0;
+}
+.news-header h1{
+  font-size:3.5rem; color:#d37a2d; margin-bottom:20px;
+  position:relative; z-index:1; text-shadow:2px 2px 4px rgba(0,0,0,.1);
+}
+body.dark-mode .news-header h1{ color:#ff9f4a; }
+.news-header p{
+  font-size:1.3rem; color:#666; position:relative; z-index:1;
+  max-width:600px; margin:0 auto; line-height:1.6;
+}
+body.dark-mode .news-header p{ color:#e0e0e0; }
+
+@media (max-width:768px){
+  .news-container{ padding:20px 15px; }
+  .news-header h1{ font-size:2.5rem; }
+  .news-header p{ font-size:1.1rem; }
+}
+@media (max-width:480px){
+  .news-header h1{ font-size:2rem; }
+  .news-header p{ font-size:1rem; }
+}
