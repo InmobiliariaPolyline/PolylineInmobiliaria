@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Servicios de Construcción - POLYLINE</title>
+    <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../css/assistant.css">
+    <link rel="stylesheet" href="../css/idiomas.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <link rel="stylesheet" href="../css/construccion.css">
+    <!-- Firebase SDK -->
+    <script type="module" src="../js/Login_Perfil.js"></script>
+</head>
+
+<body>
+    
+    <header>
+        <!-- Botón de menú móvil -->
+        <button class="mobile-menu-button" aria-label="Menú">
+            <div class="hamburger"></div>
+        </button>
+        <div id="loading-screen" class="loading-screen">
+            <div class="logo-container">
+                <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+                <h1 class="company-name">POLYLINE</h1>
+                <p class="slogan">CONSTRUCTORA</p>
+            </div>
+        </div>
+        <div class="logo-container">
+            <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+            <h1 class="company-name">POLYLINE</h1>
+            <p class="slogan"> CONSTRUCTORA</p>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="language-selector">
+                    <button class="language-btn" onclick="toggleLanguageOptions()">
+                        <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
+                        <span id="currentLanguage">Español</span>
+                    </button>
+                    <div class="language-options" id="languageOptions">
+                        <div class="language-option" onclick="changeLanguage('es')">
+                            <img src="../Resource/flags/es.png" alt="Español">
+                            <span>Español</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('en')">
+                            <img src="../Resource/flags/en.png" alt="English">
+                            <span>English</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('pt')">
+                            <img src="../Resource/flags/pt.png" alt="Português">
+                            <span>Português</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('zh')">
+                            <img src="../Resource/flags/zh.png" alt="中文">
+                            <span>中文</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('ja')">
+                            <img src="../Resource/flags/ja.png" alt="日本語">
+                            <span>日本語</span>
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('it')">
+                            <img src="../Resource/flags/it.png" alt="Italiano">
+                            <span>Italiano</span>
+                        </div>
+                    </div>
+                </li>
+                <li><a data-translate='Inicio' href='../index.html'>Inicio</a></li>
+                <li><a href="../index.html#para-ti" data-translate="Para Tí">Para Tí</a></li>
+                <li class="dropdown">
+                    <a data-translate='Proyectos' href='#' id='proyectos-link' onclick="return false;">Proyectos</a>
+                    <ul class="dropdown-menu">
+                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='../proyectos/proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
+                        <li><a data-translate='Proyecto Benavides 1' href='../proyectos/pben1.html'>Proyecto Benavides 1</a></li>
+                        <li><a data-translate='Proyecto Benavides 2' href='../proyectos/pben2.html'>Proyecto Benavides 2</a></li>
+                        <li><a data-translate='Proyecto Sienna' href='../proyectos/ppl1.html'>Proyecto Sienna</a></li>
+                        <li><a data-translate='Proyecto Varsovia' href='../proyectos/plin.html'>Proyecto Varsovia </a></li>
+                        <li><a data-translate='Mas Proyectos' href='../proyectos/mas-proyectos.html'>Mas Proyectos</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" id="contacto-link" data-translate="Contacto" onclick="return false;">Contacto</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../contact/informaci%c3%b3n.html" data-translate="Información">Información</a></li>
+                        <li><a href="../contact/agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
+                    </ul>
+                </li>
+                <li><a data-translate='Cotizar Proyecto' href='../proyectos/cotizar.html'>Cotizar Proyecto</a></li>
+                <li><a data-translate='Anuncios' href='../proyectos/Anuncios.html'>Anuncios</a></li>
+
+                <li class="dropdown">
+                    <a href="#" id="noticias-link" data-translate="Noticias" onclick="return false;">Noticias</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="ia.html" data-translate="IA">IA</a></li>
+                        <li><a href="bitcoin.html" data-translate="Bitcoin">Bitcoin</a></li>
+                        <li><a href="otros.html" data-translate="Otros">Otros</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="../construccion.html" data-translate="Construcción" class="active">Construcción</a>
+                </li>
+
+                <li id="translateContainer" class="translate-container">
+                    <div id="google_translate_element" title="Seleccionar idioma"></div>
+                </li>
+                <li id="loginContainer" class="mobile-login">
+                    <a class='login-link' href='../pages/login.html' id='loginLink'>
+                        <i class="fas fa-sign-in-alt"></i> 
+                        <span data-translate="Login">Login</span>
+                    </a>
+                    <div id="userProfile" style="display: none;">
+                        <div class="profile-header">
+                            <a id="profileLink" href='../pages/perfil.html' style='text-decoration: none; color: inherit;'>
+                                <i class="fas fa-user"></i>
+                                <span id="profileText" data-translate="Perfil">Perfil</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Overlay para el menú móvil -->
+    <div class="menu-overlay"></div>
+
+    <div class="construction-container">
+        <div class="construction-header">
+            <h1 data-translate="Servicios de Construcción">Servicios de Construcción</h1>
+            <p data-translate="Ofrecemos soluciones integrales de construcción para proyectos residenciales, comerciales e industriales">Ofrecemos soluciones integrales de construcción para proyectos residenciales, comerciales e industriales</p>
+        </div>
+
+        <!-- Servicios destacados -->
+        <div class="services-section">
+            <h2 class="section-title" data-translate="Nuestros Servicios">Nuestros Servicios</h2>
+            <div class="services-grid">
+                <!-- Servicio de Excavación -->
+                <div class="service-card">
+                    <img src="../Resource/excavacion.jpg" alt="Servicio de Excavación" class="service-image">
+                    <div class="service-content">
+                        <div class="service-icon">
+                            <i class="fas fa-digging"></i>
+                        </div>
+                        <h3 data-translate="Excavación">Excavación</h3>
+                        <p data-translate="Realizamos trabajos de excavación con maquinaria especializada para cimentaciones, zanjas y nivelación de terrenos, garantizando precisión y seguridad en cada proyecto.">Realizamos trabajos de excavación con maquinaria especializada para cimentaciones, zanjas y nivelación de terrenos, garantizando precisión y seguridad en cada proyecto.</p>
+                    </div>
+                </div>
+
+                <!-- Servicio de Construcción -->
+                <div class="service-card">
+                    <img src="../Resource/construccion.jpg" alt="Servicio de Construcción" class="service-image">
+                    <div class="service-content">
+                        <div class="service-icon">
+                            <i class="fas fa-hard-hat"></i>
+                        </div>
+                        <h3 data-translate="Construcción">Construcción</h3>
+                        <p data-translate="Desarrollamos proyectos de construcción desde cero, con materiales de primera calidad y cumpliendo con todos los estándares de seguridad y normativas vigentes.">Desarrollamos proyectos de construcción desde cero, con materiales de primera calidad y cumpliendo con todos los estándares de seguridad y normativas vigentes.</p>
+                    </div>
+                </div>
+
+                <!-- Servicio de Remodelación -->
+                <div class="service-card">
+                    <img src="../Resource/remodelacion.jpg" alt="Servicio de Remodelación" class="service-image">
+                    <div class="service-content">
+                        <div class="service-icon">
+                            <i class="fas fa-paint-roller"></i>
+                        </div>
+                        <h3 data-translate="Remodelación">Remodelación</h3>
+                        <p data-translate="Transformamos espacios existentes para modernizarlos, mejorar su funcionalidad y estética, ya sea para viviendas, oficinas o locales comerciales.">Transformamos espacios existentes para modernizarlos, mejorar su funcionalidad y estética, ya sea para viviendas, oficinas o locales comerciales.</p>
+                    </div>
+                </div>
+
+                <!-- Servicio de Demolición -->
+                <div class="service-card">
+                    <img src="../Resource/demolicion.jpg" alt="Servicio de Demolición" class="service-image">
+                    <div class="service-content">
+                        <div class="service-icon">
+                            <i class="fas fa-wrecking-ball"></i>
+                        </div>
+                        <h3 data-translate="Demolición">Demolición</h3>
+                        <p data-translate="Ejecutamos trabajos de demolición controlada y segura, con manejo adecuado de escombros y cumpliendo con todas las medidas de protección ambiental.">Ejecutamos trabajos de demolición controlada y segura, con manejo adecuado de escombros y cumpliendo con todas las medidas de protección ambiental.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proyectos recientes -->
+        <div class="projects-section">
+            <h2 class="section-title" data-translate="Proyectos Destacados">Proyectos Destacados</h2>
+            <div class="projects-grid" id="projectsGrid">
+                <div class="loading" data-translate="Cargando proyectos...">Cargando proyectos...</div>
+            </div>
+        </div>
+
+        <!-- Proceso de construcción -->
+        <div class="process-section">
+            <h2 class="section-title" data-translate="Nuestro Proceso">Nuestro Proceso</h2>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h3 data-translate="Consulta Inicial">Consulta Inicial</h3>
+                    <p data-translate="Evaluamos tus necesidades y objetivos para el proyecto">Evaluamos tus necesidades y objetivos para el proyecto</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h3 data-translate="Diseño y Planificación">Diseño y Planificación</h3>
+                    <p data-translate="Desarrollamos planos y especificaciones técnicas detalladas">Desarrollamos planos y especificaciones técnicas detalladas</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h3 data-translate="Aprobaciones y Permisos">Aprobaciones y Permisos</h3>
+                    <p data-translate="Gestionamos todos los trámites municipales y licencias necesarias">Gestionamos todos los trámites municipales y licencias necesarias</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h3 data-translate="Ejecución">Ejecución</h3>
+                    <p data-translate="Realizamos la construcción con los más altos estándares de calidad">Realizamos la construcción con los más altos estándares de calidad</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">5</div>
+                    <h3 data-translate="Entrega">Entrega</h3>
+                    <p data-translate="Hacemos entrega del proyecto terminado con todas las garantías">Hacemos entrega del proyecto terminado con todas las garantías</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <div class="cta-content">
+                <h2 data-translate="¿Listo para comenzar tu proyecto?">¿Listo para comenzar tu proyecto?</h2>
+                <p data-translate="Contáctanos hoy mismo para una consulta gratuita y cotización">Contáctanos hoy mismo para una consulta gratuita y cotización</p>
+                <a href="../contact/agenda%20una%20reuni%c3%b3n.html" class="cta-button" data-translate="Solicitar Cotización">Solicitar Cotización</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón de modo oscuro -->
+    <button id="dark-mode-toggle" class="dark-mode-button" style="position: fixed; bottom: 20px; right: 30px;"></button>
+
+    <footer class="seccion-footer">
+        <div class="contenedor-footer">
+            <div class="bloque-logo">
+                <img src="../Resource/Logo/logo.png" alt="Polyline">
+                <div class="texto-copyright" style="color: black;">
+                    <p>&copy; 2025 POLYLINE. Todos los derechos reservados.</p>
+                </div>
+            </div>
+            <div class="bloque-contacto" style="color: black;">
+                <h3>CONTACTOS:</h3>
+                <p>WhatsApp: <a href="https://wa.link/lkvfnb">+51 943 812 536</a></p>
+                <p>Email: <a href="mailto:polylinesac@yahoo.com">polylinesac@yahoo.com</a></p>
+                <p>Dirección: Av. Benavides 3008. Lima</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../scripts.js"></script>
+    <script src="../js/assistant.js"></script>
+    
+    <!-- Importante: Llamar a construcción.js después de los scripts anteriores -->
+    <script src="../js/construccion.js"></script>
+    
+    <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px;">
+        <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
+            <i class="fab fa-facebook-f"></i>
+        </button>
+        <button class="social-btn whatsapp" onclick="window.open('https://wa.link/lkvfnb')">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+        <button class="social-btn instagram" onclick="window.open('https://www.instagram.com/arquitectosalasperu/')">
+            <i class="fab fa-instagram"></i>
+        </button>
+        <button class="social-btn linkedin" onclick="window.open('https://www.linkedin.com/in/arquitectosalas')">
+            <i class="fab fa-linkedin-in"></i>
+        </button>
+        <button class="social-btn youtube" onclick="window.open('https://www.youtube.com/channel/UC9wMT7_zsq7yE0MMCSxiVMw')">
+            <i class="fab fa-youtube"></i>
+        </button>
+    </div>
+
+    <script type="module" src="../js/nav.js"></script>
+    <script type="module" src="../js/auth-check.js"></script>
+</body>
+
+</html>
