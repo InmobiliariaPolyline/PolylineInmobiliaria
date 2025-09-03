@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noticias Bitcoin | POLYLINE</title>
+
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/noticias.css" />
+</head> 
+<body>
+  <main class="ia-section">
+    <header class="ia-header">
+      <h1>Noticias sobre Bitcoin</h1>
+      <p class="ia-subtitle">Lo más reciente en criptomonedas, blockchain y tendencias.</p>
+    </header>
+
+    <section id="btc-grid" class="ia-grid" aria-live="polite">
+      <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
+      <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
+      <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const GRID = document.getElementById("btc-grid");
+      GRID.innerHTML = "<p>Cargando noticias...</p>";
+
+      // Usa ruta relativa para que funcione con cualquier dominio en Netlify
+      const ENDPOINT = "/.netlify/functions/bitcoinNews";
+
+      try {
+        const res = await fetch(ENDPOINT, { headers: { "cache-control": "no-cache" } });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+
+        const items = await res.json();
+
+        if (!Array.isArray(items) || items.length === 0) {
+          GRID.innerHTML = "<p>No hay noticias disponibles en este momento.</p>";
+          return;
+        }
+
+        GRID.innerHTML = items.map(n => `
+          <article class="ia-card">
+            <a class="ia-card-image" href="${n.url}" target="_blank" rel="noopener noreferrer" aria-label="Abrir noticia: ${n.title || "Noticia"}">
+              <img
+                src="${n.image || 'https://via.placeholder.com/900x500?text=Bitcoin'}"
+                alt="${n.title ? n.title.replace(/"/g, '&quot;') : 'Noticia de Bitcoin'}" />
+            </a>
+
+            <div class="ia-card-body">
+              <div class="ia-card-meta">
+                <span class="chip">${n.source || "Fuente"}</span>
+                <time datetime="${n.publishedAt || ""}">
+                  ${n.publishedAt
+                    ? new Date(n.publishedAt).toLocaleDateString("es-PE", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })
+                    : ""}
+                </time>
+              </div>
+
+              <h3 class="ia-card-title">
+                <a href="${n.url}" target="_blank" rel="noopener noreferrer">
+                  ${n.title || "Ver noticia"}
+                </a>
+              </h3>
+
+              <p class="ia-card-excerpt">${n.summary || ""}</p>
+
+              <a class="ia-card-link" href="${n.url}" target="_blank" rel="noopener noreferrer">
+                Leer más
+              </a>
+            </div>
+          </article>
+        `).join("");
+      } catch (err) {
+        console.error(err);
+        GRID.innerHTML = `<p style="color:#c00">No se pudieron cargar las noticias. ${err.message || err}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
