@@ -135,41 +135,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const QUERY = '(construcción OR infraestructura OR obra OR vivienda OR inmobiliario OR arquitectura OR carretera OR puente)';
 
-  const makeURL = page => {
-    const url = new URL('https://gnews.io/api/v4/search');
-    url.searchParams.set('q', QUERY);
-    url.searchParams.set('lang', 'es');
-    url.searchParams.set('country', 'pe');
-    url.searchParams.set('max', '10');
-    url.searchParams.set('page', String(page));
-    url.searchParams.set('apikey', GNEWS_KEY);
-    return url.toString();
-  };
+  // Ya no se necesita makeURL, la función serverless lo maneja
 
+  // Ahora fetchGNews consulta la función serverless
   const fetchGNews = async () => {
-    if (!GNEWS_KEY) throw new Error('API key faltante');
-    const collected = [];
-    let page = 1;
-    while (collected.length < MAX && page <= 3) {
-      const resp = await fetch(makeURL(page), { cache: 'no-store' });
-      if (!resp.ok) break;
-      const json = await resp.json();
-      const arts = Array.isArray(json.articles) ? json.articles : [];
-      if (!arts.length) break;
-      for (const a of arts) {
-        if (collected.length >= MAX) break;
-        collected.push({
-          title: a.title,
-          link: a.url,
-          description: plain(a.description || a.content || ''),
-          image: a.image || '',
-          pubDate: a.publishedAt,
-          category: getCategory(a.title, a.description || a.content)
-        });
-      }
-      page++;
-    }
-    return collected;
+    const resp = await fetch('/.netlify/functions/gnews', { cache: 'no-store' });
+    if (!resp.ok) throw new Error('No se pudo obtener noticias');
+    const items = await resp.json();
+    return Array.isArray(items) ? items : [];
   };
 
   (async () => {
