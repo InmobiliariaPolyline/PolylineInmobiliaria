@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 
-<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +8,7 @@
     <meta name="theme-color" content="#ffffff">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Noticias de Construcción - POLYLINE</title>
+    <title>Servicios de Construcción - POLYLINE</title>
     <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
@@ -19,11 +18,9 @@
     <link rel="stylesheet" href="../css/idiomas.css">
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="../css/themes.css">
+    <link rel="stylesheet" href="../css/construccion.css">
     <!-- Firebase SDK -->
     <script type="module" src="../js/Login_Perfil.js"></script>
-
-
-  <link rel="stylesheet" href="../css/otros.css">
 </head>
 
 <body>
@@ -48,32 +45,32 @@
         <nav>
             <ul class="nav-menu">
                 <li class="language-selector">
-                    <button class="language-btn" onclick="toggleLanguageOptions()">
+                    <button class="language-btn" onclick="document.getElementById('languageOptions').classList.toggle('show')">
                         <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
                         <span id="currentLanguage">Español</span>
                     </button>
                     <div class="language-options" id="languageOptions">
-                        <div class="language-option" onclick="changeLanguage('es')">
+                        <div class="language-option" onclick="changeLanguageConstruction('es')">
                             <img src="../Resource/flags/es.png" alt="Español">
                             <span>Español</span>
                         </div>
-                        <div class="language-option" onclick="changeLanguage('en')">
+                        <div class="language-option" onclick="changeLanguageConstruction('en')">
                             <img src="../Resource/flags/en.png" alt="English">
                             <span>English</span>
                         </div>
-                        <div class="language-option" onclick="changeLanguage('pt')">
+                        <div class="language-option" onclick="changeLanguageConstruction('pt')">
                             <img src="../Resource/flags/pt.png" alt="Português">
                             <span>Português</span>
                         </div>
-                        <div class="language-option" onclick="changeLanguage('zh')">
+                        <div class="language-option" onclick="changeLanguageConstruction('zh')">
                             <img src="../Resource/flags/zh.png" alt="中文">
                             <span>中文</span>
                         </div>
-                        <div class="language-option" onclick="changeLanguage('ja')">
+                        <div class="language-option" onclick="changeLanguageConstruction('ja')">
                             <img src="../Resource/flags/ja.png" alt="日本語">
                             <span>日本語</span>
                         </div>
-                        <div class="language-option" onclick="changeLanguage('it')">
+                        <div class="language-option" onclick="changeLanguageConstruction('it')">
                             <img src="../Resource/flags/it.png" alt="Italiano">
                             <span>Italiano</span>
                         </div>
@@ -108,11 +105,10 @@
                         <li><a href="ia.html" data-translate="IA">IA</a></li>
                         <li><a href="bitcoin.html" data-translate="Bitcoin">Bitcoin</a></li>
                         <li><a href="otros.html" data-translate="Otros">Otros</a></li>
-                        
                     </ul>
                 </li>
                 <li>
-                    <a href="../construccion.html" data-translate="Construcción">Construcción</a>
+                    <a href="../construccion.html" data-translate="Construcción" class="active">Construcción</a>
                 </li>
 
                 <li id="translateContainer" class="translate-container">
@@ -139,132 +135,107 @@
     <!-- Overlay para el menú móvil -->
     <div class="menu-overlay"></div>
 
-    <div class="news-container">
-        <div class="news-header">
-            <h1>Noticias </h1>
-            <p>Mantente informado sobre las últimas tendencias, tecnologías y desarrollos en el sector de la construcción en Perú y el mundo.</p>
+    <div class="construction-container">
+        <div class="construction-header">
+            <h1 data-translate="Servicios de Construcción">Servicios de Construcción</h1>
+            <p data-translate="Ofrecemos soluciones integrales de construcción para proyectos residenciales, comerciales e industriales">Ofrecemos soluciones integrales de construcción para proyectos residenciales, comerciales e industriales</p>
         </div>
 
-        <!-- Noticia Destacada -->
-        <div class="news-section">
-            <div class="featured-news">
-                <div class="news-card">
-                    <img src="../Resource/background-para-ti1.jpg" alt="Tecnología en construcción" class="news-image">
-                    <div class="news-content">
-                        <span class="news-category">Tecnología</span>
-                        <h2 class="news-title">Revolución en la Construcción: Nuevas Tecnologías que Transforman el Sector</h2>
-                        <p class="news-excerpt">La industria de la construcción está experimentando una transformación digital sin precedentes. Desde la implementación de drones para inspecciones hasta el uso de inteligencia artificial en la planificación de proyectos, estas innovaciones están redefiniendo cómo construimos el futuro.</p>
-                        <div class="news-meta">
-                            <div class="news-date">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span>15 de Enero, 2025</span>
-                            </div>
-                            <a href="#" class="news-read-more">Leer más <i class="fas fa-arrow-right"></i></a>
+        <!-- Servicios destacados -->
+        <div class="services-section">
+            <h2 class="section-title" data-translate="Nuestros Servicios">Nuestros Servicios</h2>
+            <div class="services-grid">
+                <!-- Servicio de Excavación -->
+                <div class="service-card">
+                    <img src="../Resource/excavacion.jpg" alt="Servicio de Excavación" class="service-image" onerror="this.src='https://placehold.co/600x400/2c3e50/ffffff?text=Excavación'">
+                    <div class="service-content">
+                        <div class="service-icon">
+                            <i class="fas fa-digging"></i>
                         </div>
+                        <h3 data-translate="Excavación">Excavación</h3>
+                        <p data-translate="Realizamos trabajos de excavación con maquinaria especializada para cimentaciones, zanjas y nivelación de terrenos, garantizando precisión y seguridad en cada proyecto.">Realizamos trabajos de excavación con maquinaria especializada para cimentaciones, zanjas y nivelación de terrenos, garantizando precisión y seguridad en cada proyecto.</p>
+                    </div>
+                </div>
+
+                <!-- Servicio de Construcción -->
+                <div class="service-card">
+                    <img src="../Resource/construccion.jpg" alt="Servicio de Construcción" class="service-image" onerror="this.src='https://placehold.co/600x400/3498db/ffffff?text=Construcción'">
+                    <div class="service-content">
+                        <div class="service-icon">
+                            <i class="fas fa-hard-hat"></i>
+                        </div>
+                        <h3 data-translate="Construcción">Construcción</h3>
+                        <p data-translate="Desarrollamos proyectos de construcción desde cero, con materiales de primera calidad y cumpliendo con todos los estándares de seguridad y normativas vigentes.">Desarrollamos proyectos de construcción desde cero, con materiales de primera calidad y cumpliendo con todos los estándares de seguridad y normativas vigentes.</p>
+                    </div>
+                </div>
+
+                <!-- Servicio de Remodelación -->
+                <div class="service-card">
+                    <img src="../Resource/remodelacion.jpg" alt="Servicio de Remodelación" class="service-image" onerror="this.src='https://placehold.co/600x400/e74c3c/ffffff?text=Remodelación'">
+                    <div class="service-content">
+                        <div class="service-icon">
+                            <i class="fas fa-paint-roller"></i>
+                        </div>
+                        <h3 data-translate="Remodelación">Remodelación</h3>
+                        <p data-translate="Transformamos espacios existentes para modernizarlos, mejorar su funcionalidad y estética, ya sea para viviendas, oficinas o locales comerciales.">Transformamos espacios existentes para modernizarlos, mejorar su funcionalidad y estética, ya sea para viviendas, oficinas o locales comerciales.</p>
+                    </div>
+                </div>
+
+                <!-- Servicio de Demolición -->
+                <div class="service-card">
+                    <img src="../Resource/demolicion.jpg" alt="Servicio de Demolición" class="service-image" onerror="this.src='https://placehold.co/600x400/34495e/ffffff?text=Demolición'">
+                    <div class="service-content">
+                        <div class="service-icon">
+                            <i class="fas fa-wrecking-ball"></i>
+                        </div>
+                        <h3 data-translate="Demolición">Demolición</h3>
+                        <p data-translate="Ejecutamos trabajos de demolición controlada y segura, con manejo adecuado de escombros y cumpliendo con todas las medidas de protección ambiental.">Ejecutamos trabajos de demolición controlada y segura, con manejo adecuado de escombros y cumpliendo con todas las medidas de protección ambiental.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Noticias Recientes -->
-        <div class="news-section">
-            <h2 class="section-title">Noticias Recientes</h2>
-            <div class="news-grid">
-                <div class="news-card">
-                    <img src="../Resource/background-para-ti2.jpg" alt="Construcción sostenible" class="news-image">
-                    <div class="news-content">
-                        <span class="news-category">Sostenibilidad</span>
-                        <h3 class="news-title">Construcción Sostenible: El Futuro Verde de la Edificación en Perú</h3>
-                        <p class="news-excerpt">El sector de la construcción en Perú está adoptando prácticas más sostenibles, utilizando materiales eco-amigables y tecnologías que reducen el impacto ambiental. Descubre cómo las empresas constructoras están liderando este cambio.</p>
-                        <div class="news-meta">
-                            <div class="news-date">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span>12 de Enero, 2025</span>
-                            </div>
-                            <a href="#" class="news-read-more">Leer más <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
+       <!-- Proyectos recientes -->
+     
 
-                <div class="news-card">
-                    <img src="../Resource/background-para-ti3.png" alt="Materiales de construcción" class="news-image">
-                    <div class="news-content">
-                        <span class="news-category">Materiales</span>
-                        <h3 class="news-title">Innovación en Materiales: Nuevas Alternativas para la Construcción Moderna</h3>
-                        <p class="news-excerpt">Los materiales de construcción están evolucionando rápidamente. Desde hormigón autorreparable hasta madera laminada de alta resistencia, estas innovaciones están cambiando la forma en que construimos edificios más duraderos y eficientes.</p>
-                        <div class="news-meta">
-                            <div class="news-date">
-                                <i class="fas falen-cadar-alt"></i>
-                                <span>10 de Enero, 2025</span>
-                            </div>
-                            <a href="#" class="news-read-more">Leer más <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
+        <!-- Proceso de construcción -->
+        <div class="process-section">
+            <h2 class="section-title" data-translate="Nuestro Proceso">Nuestro Proceso</h2>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h3 data-translate="Consulta Inicial">Consulta Inicial</h3>
+                    <p data-translate="Evaluamos tus necesidades y objetivos para el proyecto">Evaluamos tus necesidades y objetivos para el proyecto</p>
                 </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h3 data-translate="Diseño y Planificación">Diseño y Planificación</h3>
+                    <p data-translate="Desarrollamos planos y especificaciones técnicas detalladas">Desarrollamos planos y especificaciones técnicas detalladas</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h3 data-translate="Aprobaciones y Permisos">Aprobaciones y Permisos</h3>
+                    <p data-translate="Gestionamos todos los trámites municipales y licencias necesarias">Gestionamos todos los trámites municipales y licencias necesarias</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h3 data-translate="Ejecución">Ejecución</h3>
+                    <p data-translate="Realizamos la construcción con los más altos estándares de calidad">Realizamos la construcción con los más altos estándares de calidad</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">5</div>
+                    <h3 data-translate="Entrega">Entrega</h3>
+                    <p data-translate="Hacemos entrega del proyecto terminado con todas las garantías">Hacemos entrega del proyecto terminado con todas las garantías</p>
+                </div>
+            </div>
+        </div>
 
-                <div class="news-card">
-                    <img src="../Resource/CPG1/proyecto1.jpg" alt="Proyectos inmobiliarios" class="news-image">
-                    <div class="news-content">
-                        <span class="news-category">Mercado</span>
-                        <h3 class="news-title">Mercado Inmobiliario Peruano: Tendencias y Oportunidades 2025</h3>
-                        <p class="news-excerpt">El mercado inmobiliario peruano muestra signos de recuperación con nuevas oportunidades de inversión. Analizamos las tendencias del sector, los proyectos más prometedores y las perspectivas para el año 2025.</p>
-                        <div class="news-meta">
-                            <div class="news-date">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span>8 de Enero, 2025</span>
-                            </div>
-                            <a href="#" class="news-read-more">Leer más <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="news-card">
-                    <img src="../Resource/CPG2/proyecto2.jpg" alt="Seguridad en construcción" class="news-image">
-                    <div class="news-content">
-                        <span class="news-category">Seguridad</span>
-                        <h3 class="news-title">Seguridad Laboral en Construcción: Nuevos Protocolos y Tecnologías</h3>
-                        <p class="news-excerpt">La seguridad en las obras de construcción ha mejorado significativamente gracias a nuevos protocolos y tecnologías. Conoce las últimas innovaciones en equipos de protección personal y sistemas de monitoreo en tiempo real.</p>
-                        <div class="news-meta">
-                            <div class="news-date">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span>5 de Enero, 2025</span>
-                            </div>
-                            <a href="#" class="news-read-more">Leer más <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="news-card">
-                    <img src="../Resource/CPG3/proyecto3.jpg" alt="Construcción modular" class="news-image">
-                    <div class="news-content">
-                        <span class="news-category">Innovación</span>
-                        <h3 class="news-title">Construcción Modular: La Revolución de la Edificación Prefabricada</h3>
-                        <p class="news-excerpt">La construcción modular está ganando terreno en Perú como una alternativa eficiente y sostenible. Descubre cómo esta metodología está reduciendo tiempos de construcción y costos, mientras mejora la calidad de los proyectos.</p>
-                        <div class="news-meta">
-                            <div class="news-date">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span>3 de Enero, 2025</span>
-                            </div>
-                            <a href="#" class="news-read-more">Leer más <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="news-card">
-                    <img src="../Resource/CPG4/proyecto4.jpg" alt="Construcción internacional" class="news-image">
-                    <div class="news-content">
-                        <span class="news-category">Internacional</span>
-                        <h3 class="news-title">Tendencias Globales en Construcción: Lo que Aprender de Otros Países</h3>
-                        <p class="news-excerpt">Exploramos las mejores prácticas de construcción a nivel mundial, desde los rascacielos de Dubai hasta las ciudades inteligentes de Singapur. ¿Qué puede aprender Perú de estas innovaciones internacionales?</p>
-                        <div class="news-meta">
-                            <div class="news-date">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span>1 de Enero, 2025</span>
-                            </div>
-                            <a href="#" class="news-read-more">Leer más <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <div class="cta-content">
+                <h2 data-translate="¿Listo para comenzar tu proyecto?">¿Listo para comenzar tu proyecto?</h2>
+                <p data-translate="Contáctanos hoy mismo para una consulta gratuita y cotización">Contáctanos hoy mismo para una consulta gratuita y cotización</p>
+                <a href="../contact/agenda%20una%20reuni%c3%b3n.html" class="cta-button" data-translate="Contáctanos">Contáctanos</a>
             </div>
         </div>
     </div>
@@ -289,8 +260,12 @@
         </div>
     </footer>
 
+    <!-- Scripts - ORDEN CORREGIDO -->
+    <script src="../js/construccion.js"></script> <!-- PRIMERO -->
     <script src="../scripts.js"></script>
     <script src="../js/assistant.js"></script>
+    <script type="module" src="../js/nav.js"></script>
+    <script type="module" src="../js/auth-check.js"></script> <!-- ÚLTIMO -->
     
     <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px;">
         <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
@@ -309,13 +284,6 @@
             <i class="fab fa-youtube"></i>
         </button>
     </div>
-
-    <script type="module" src="../js/nav.js"></script>
-    <script type="module" src="../js/auth-check.js"></script>
-
-    
-   
-  <script defer src="../js/otros.js"></script>
 </body>
 
 </html>

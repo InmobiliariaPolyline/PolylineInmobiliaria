@@ -223,16 +223,16 @@ function closeModal(departmentId) {
 }
 
 // Función para manejar la pantalla de carga
-document.addEventListener('DOMContentLoaded', function() {
-    const loadingScreen = document.getElementById('loading-screen');
+//document.addEventListener('DOMContentLoaded', function() {
+ //   const loadingScreen = document.getElementById('loading-screen');
     
     // Ocultar la pantalla de carga después de 2 segundos
-    setTimeout(() => {
-        loadingScreen.style.opacity = '0';
-        loadingScreen.style.visibility = 'hidden';
-        document.body.classList.add('loaded');
-    }, 2000);
-});
+ //   setTimeout(() => {
+   //     loadingScreen.style.opacity = '0';
+    //    loadingScreen.style.visibility = 'hidden';
+    //    document.body.classList.add('loaded');
+   // }, 2000);
+//});
 
 // Función para el menú móvil
 document.addEventListener('DOMContentLoaded', function() {
@@ -311,4 +311,59 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', setupDropdown);
 });
 
+// Cargar botones de noticias
+// ---------- PRELOADER ----------
+function showPreloader() {
+  const scr = document.getElementById('loading-screen');
+  if (!scr) return;
+  scr.style.display = 'flex';
+  scr.style.opacity = '1';
+  scr.style.transform = 'translateY(0)';
+}
+
+function hidePreloader() {
+  const scr = document.getElementById('loading-screen');
+  if (!scr) return;
+  // si ya está oculto, nada
+  if (scr.style.display === 'none') return;
+
+  scr.style.transform = 'translateY(-100%)';
+  scr.style.opacity = '0';
+  scr.addEventListener('transitionend', () => {
+    scr.style.display = 'none';
+  }, { once: true });
+}
+
+// Muestra preloader al navegar a otra página interna (mismo dominio)
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('a');
+  if (!a) return;
+
+  const sameOrigin = a.origin === location.origin;
+  const opensNewTab = a.target === '_blank';
+  const href = a.getAttribute('href') || '';
+  const onlyHash = href.startsWith('#');
+
+  if (sameOrigin && !opensNewTab && !onlyHash) {
+    showPreloader();
+  }
+});
+
+// Cerrar en DOMContentLoaded (no espera imágenes)
+document.addEventListener('DOMContentLoaded', () => {
+  // si la página llegó “rápido”, no dejes el loader
+  requestAnimationFrame(hidePreloader);
+});
+
+// Cerrar también en load (por si DOMContentLoaded fue antes de pintar todo)
+window.addEventListener('load', () => {
+  hidePreloader();
+});
+
+// Fallback duro: si algo se colgó, cierra sí o sí
+setTimeout(hidePreloader, 6000);
+
+// Exponer por si otras páginas quieren cerrar manualmente
+window.__hidePreloader = hidePreloader;
+window.__showPreloader = showPreloader;
 

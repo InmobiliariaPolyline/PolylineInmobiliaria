@@ -13,7 +13,7 @@
         z-index: 1000;
     }
 
-    .nav-menu.active {
+    .nav-menu.active {  
         right: 0;
     }
 
@@ -75,3 +75,28 @@
         box-shadow: none;
     }
 }
+
+
+
+/* Overlay para cerrar tocando fuera */
+.menu-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+  z-index: 999; /* debajo del menú (que tiene 1000) */
+}
+.menu-overlay.show{ opacity: 1; pointer-events: auto; }
+
+/* Bloqueo de scroll cuando el menú está abierto */
+body.menu-open{ overflow: hidden; }
+
+/* Submenús en móvil: se abren con .open */
+@media (max-width:768px){
+  .dropdown-menu{ display: none; }
+  .dropdown-menu.open{ display: block; }
+}
+
+
