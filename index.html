@@ -625,6 +625,8 @@ document.addEventListener('DOMContentLoaded', () => {
 </footer>
 
     <script src="js/assistant.js"></script>
+    <script src="js/news-sidebar.js"></script>
+
     
     <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px;">
         <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
@@ -661,6 +663,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 </script>
 <script type="module" src="js/nav.js"></script>
+<news-sidebar endpoint="/.netlify/functions/Otross" pagesize="10" title="Noticias"></news-sidebar>
+
 </body>
 
 </html>
