@@ -132,7 +132,9 @@
     // Cargar noticias desde Netlify Function (.mjs)
     async function loadNews() {
         try {
-            const response = await fetch('../.netlify/functions/construccion');
+     const response = await fetch('/.netlify/functions/construccion', { cache: 'no-store' });
+
+
             const news = await response.json();
 
             const newsGrid = document.getElementById('newsGrid');

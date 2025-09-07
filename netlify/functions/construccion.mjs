@@ -43,7 +43,8 @@
 
         try {
             //Prubea local
-            response = await fetch('./mock-news.json');
+            const response = await fetch('/.netlify/functions/construccion', { cache: 'no-store' });
+
             if (!response.ok) throw new Error('Error al cargar noticias');
 
             let newsData = await response.json();
