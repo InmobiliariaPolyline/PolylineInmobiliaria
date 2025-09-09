@@ -24,16 +24,14 @@ const getCategory = (title, desc) => {
   return 'Construcción';
 };
 
-const makeURL = page => {
-  const url = new URL('https://gnews.io/api/v4/search');
+const makeURL = (page) => {
+  const url = new URL('/.netlify/functions/Otross', window.location.origin);
   url.searchParams.set('q', QUERY);
-  url.searchParams.set('lang', 'es');
   url.searchParams.set('country', 'pe');
-  url.searchParams.set('max', '10');
   url.searchParams.set('page', String(page));
-  url.searchParams.set('apikey', GNEWS_KEY);
   return url.toString();
 };
+
 
 const fetchGNews = async () => {
   if (!GNEWS_KEY) throw new Error('API key faltante');
