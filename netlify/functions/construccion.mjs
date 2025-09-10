@@ -7,12 +7,24 @@ export const handler = async (event) => {
     'cache-control': 'public, max-age=300' // 5 min
   };
 
-  // RSS fuentes (puedes agregar/quitar)
-  const FEEDS = [
-    { source: 'Construction Dive', url: 'https://www.constructiondive.com/feeds/news/' },
-    { source: 'Engineering News-Record', url: 'https://www.enr.com/rss/articles' },
-    { source: 'Building Design + Construction', url: 'https://www.bdcnetwork.com/rss.xml' }
-  ];
+  // RSS fuentes en español
+const FEEDS = [
+  {
+    source: 'Google News — Construcción (PE)',
+    url:
+      'https://news.google.com/rss/search?q=construcci%C3%B3n%20OR%20obras%20OR%20infraestructura&hl=es-419&gl=PE&ceid=PE:es-419'
+  },
+  {
+    source: 'Google News — Ingeniería Civil (PE)',
+    url:
+      'https://news.google.com/rss/search?q=ingenier%C3%ADa%20civil%20OR%20edificaciones&hl=es-419&gl=PE&ceid=PE:es-419'
+  },
+  {
+    source: 'Europa Press — Construcción (ES)',
+    url: 'https://www.europapress.es/rss/rss.aspx?ch=279'
+  }
+];
+
 
   try {
     const results = await Promise.allSettled(
