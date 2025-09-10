@@ -1,2 +1,8 @@
+# netlify.toml
+[build]
+  # Cambia "." si tu sitio se genera en otra carpeta (p.ej. "dist" o "public")
+  publish = "."
+
 [functions]
+  directory = "netlify/functions"
   node_bundler = "esbuild"
