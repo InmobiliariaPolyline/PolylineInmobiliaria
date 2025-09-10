@@ -1,45 +1,40 @@
 // netlify/functions/Otross.mjs
-// Agregador en ESPAÑOL (IA, Cripto, Construcción) + anuncio “Construye tu app con nosotros”
+// Agregador variado (IA, Cripto, Arquitectura, Construcción, Vivienda)
+// con anuncio “Construye tu app con nosotros” (imagen real de Pexels)
 
 import { XMLParser } from "fast-xml-parser";
 
 const TIMEOUT_MS = 9000;
-const PAGE_SIZE = 12; // cantidad final (incluye el anuncio)
-const CLOUDINARY_FETCH_PREFIX = null; // opcional: "https://res.cloudinary.com/<tu_cloud>/image/fetch/f_auto,q_auto/"
+const PAGE_SIZE = 12; // total a devolver (incluye el anuncio)
+const CLOUDINARY_FETCH_PREFIX = null; // e.g. "https://res.cloudinary.com/<tu>/image/fetch/f_auto,q_auto/"
 
-// ---------- FUENTES (priorizamos español) ----------
+// ----- Fuentes en ESPAÑOL -----
 const FEEDS = {
   ai: [
-    "https://www.xataka.com/tag/inteligencia-artificial/rss",       // Xataka IA (ES)
-    "https://www.technologyreview.es/feed",                         // MIT Tech Review (ES)
-    "https://es.wired.com/rss",                                     // WIRED en español (feed general)
-    "https://blog.google/intl/es-419/technology/ai/rss/"            // Blog de Google (IA) en es-419
+    { url: "https://www.xataka.com/tag/inteligencia-artificial/rss", cat: "IA" },
+    { url: "https://www.technologyreview.es/feed",                cat: "IA" },
+    { url: "https://es.wired.com/rss",                            cat: "IA" },
   ],
   crypto: [
-    "https://es.cointelegraph.com/rss",                             // Cointelegraph en Español
-    "https://www.criptonoticias.com/feed/",                         // Criptonoticias (ES)
-    "https://www.xataka.com/tag/criptomonedas/rss"                  // Xataka Criptomonedas (ES)
+    { url: "https://www.xataka.com/tag/criptomonedas/rss",        cat: "Cripto" },
+    { url: "https://es.cointelegraph.com/rss",                    cat: "Cripto" },
+    { url: "https://www.criptonoticias.com/feed/",                cat: "Cripto" },
   ],
   build: [
-    // Si el RSS no existe, parseamos portada HTML (OG + enlaces)
-    "https://www.plataformaarquitectura.cl/cl",                     // ArchDaily / Plataforma Arquitectura (ES)
-    "https://elpais.com/economia/mercado-inmobiliario/",            // EL PAÍS (Mercado Inmobiliario)
-    "https://expansion.mx/inmobiliario"                             // Expansión MX (Inmobiliario)
-  ]
+    // Arquitectura
+    { url: "https://www.plataformaarquitectura.cl/cl",            cat: "Arquitectura" }, // HTML → OG
+    // Construcción sostenible (WP → RSS)
+    { url: "https://www.construible.es/feed",                     cat: "Construcción" },
+    // Vivienda/mercado (HTML)
+    { url: "https://www.elmundo.es/economia/vivienda.html",       cat: "Vivienda" },
+  ],
 };
 
-// ---------- FALLBACKS Google News en español ----------
-const GN = {
-  ai: "https://news.google.com/rss/search?q=inteligencia+artificial+OR+IA+when:7d&hl=es-419&gl=PE&ceid=PE:es",
-  crypto: "https://news.google.com/rss/search?q=bitcoin+OR+criptomonedas+OR+cripto+when:7d&hl=es-419&gl=PE&ceid=PE:es",
-  build: "https://news.google.com/rss/search?q=construcci%C3%B3n+OR+infraestructura+OR+inmobiliario+when:7d&hl=es-419&gl=PE&ceid=PE:es"
-};
-
-// ---------- Parser / helpers ----------
 const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_" });
 
+// ------------------ helpers ------------------
 const decodeHtml = (s = "") =>
-  s.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+  String(s).replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
 
 const tryGet = (obj, ...paths) => {
   for (const p of paths) {
@@ -47,6 +42,21 @@ const tryGet = (obj, ...paths) => {
     if (v) return v;
   }
   return null;
+};
+
+// preferimos dominios/paths en español
+const isSpanishishUrl = (u = "") => {
+  try {
+    const { hostname, pathname } = new URL(u);
+    return (
+      /\.(es|mx|cl|ar|pe)$/i.test(hostname) ||
+      hostname.startsWith("es.") ||
+      /\/es(\/|$)/i.test(pathname) ||
+      /plataformaarquitectura|archdaily/i.test(hostname)
+    );
+  } catch {
+    return false;
+  }
 };
 
 const fetchText = async (url) => {
@@ -57,9 +67,9 @@ const fetchText = async (url) => {
       signal: ctrl.signal,
       headers: {
         "user-agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36",
       },
-      cache: "no-store"
+      cache: "no-store",
     });
     return await res.text();
   } finally {
@@ -82,17 +92,21 @@ const getOgImage = async (url) => {
 const normalizeItem = async (item, sourceName, categoryHint) => {
   const title = decodeHtml(item.title || "");
   const link = decodeHtml(
-    item.link ||
-      item.guid ||
-      tryGet(item, "id", "url", "feedburner:origLink") ||
-      ""
+    item.link || item.guid || tryGet(item, "id", "url", "feedburner:origLink") || ""
   );
 
   const publishedAt =
-    item.pubDate || item.published || item.updated || tryGet(item, "dc:date") || "";
+    item.pubDate ||
+    item.published ||
+    item.updated ||
+    tryGet(item, "dc:date") ||
+    "";
 
   const rawDesc =
-    item.description || tryGet(item, "content:encoded") || tryGet(item, "summary") || "";
+    item.description ||
+    tryGet(item, "content:encoded") ||
+    tryGet(item, "summary") ||
+    "";
   const summary = decodeHtml(String(rawDesc).replace(/<[^>]+>/g, "")).slice(0, 260);
 
   let image =
@@ -113,100 +127,59 @@ const normalizeItem = async (item, sourceName, categoryHint) => {
     title,
     url: link,
     image,
-    source: decodeHtml(
-      tryGet(item, "source.#text") || tryGet(item, "source") || sourceName
-    ),
+    source: decodeHtml(tryGet(item, "source.#text") || tryGet(item, "source") || sourceName),
     publishedAt,
     summary,
-    category: categoryHint
+    category: categoryHint,
   };
 };
 
-// Detección heurística de español
-const SP_DOMAINS = /\.((es)|(mx)|(cl)|(ar)|(co)|(pe))$/i;
-const SP_SUB = /(^|\.)es\./i;
-const SP_WORDS = [
-  " el ", " la ", " los ", " las ", " de ", " del ", " y ", " en ", " para ",
-  " con ", " por ", " una ", " uno ", " un ", " sobre ", " más ", " según ",
-  " año ", " años ", " frente ", " entre ", " desde ", " hasta "
-];
-const EN_WORDS = [" the ", " and ", " for ", " with ", " from ", " in ", " on ", " of ", " is ", " are "];
-
-const looksSpanish = (url, text) => {
-  try {
-    const host = new URL(url).hostname;
-    if (SP_DOMAINS.test(host) || SP_SUB.test(host)) return true;
-  } catch {}
-  const s = ` ${String(text || "").toLowerCase()} `;
-  let score = 0;
-  if (/[áéíóúñü]/i.test(s)) score += 2;
-  for (const w of SP_WORDS) if (s.includes(w)) score += 1;
-  for (const w of EN_WORDS) if (s.includes(w)) score -= 1;
-  return score >= 1;
-};
-
-// Lee RSS/Atom o, si es página HTML, extrae enlaces/OG
+// Lee RSS/Atom o, si es HTML (p. ej. portada), extrae anchors principales y luego OG por artículo
 const parseFeedOrPage = async (url, categoryHint) => {
   const out = [];
   const text = await fetchText(url);
-  const looksXml = /^\s*<\?xml/i.test(text) || /<rss|<feed|<rdf:RDF/i.test(text);
 
+  const looksXml = /^\s*<\?xml/i.test(text) || /<rss|<feed|<rdf:RDF/i.test(text);
   if (looksXml) {
     const json = parser.parse(text);
     const channel = json.rss?.channel || json.feed || json["rdf:RDF"] || {};
     let items = channel.item || channel.entry || [];
     if (!Array.isArray(items)) items = [items];
 
-    const sourceName =
-      decodeHtml(channel?.title || channel?.["dc:title"] || new URL(url).hostname);
+    const sourceName = decodeHtml(channel?.title || channel?.["dc:title"] || new URL(url).hostname);
 
-    for (const it of items.slice(0, 24)) {
+    for (const it of items.slice(0, 20)) {
       const n = await normalizeItem(it, sourceName, categoryHint);
-      if (n.title && n.url && looksSpanish(n.url, `${n.title} ${n.summary}`)) out.push(n);
+      if (n.title && n.url) out.push(n);
     }
     return out;
   }
 
-  // Página HTML: tomamos enlaces internos prominentes y les buscamos OG:image
+  // Página HTML (ej.: ArchDaily ES, Elmundo Vivienda)
   const domain = new URL(url).hostname;
-  const candidates = [];
-  const articleRe = /<a[^>]+href=["']([^"']+)["'][^>]*>([^<]{30,140})<\/a>/gi;
+  const anchors = [];
+  const articleRe = /<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]{0,200}?)<\/a>/gi;
   let m;
-  while ((m = articleRe.exec(text)) && candidates.length < 14) {
+  while ((m = articleRe.exec(text)) && anchors.length < 14) {
     const href = m[1];
-    const title = m[2].replace(/\s+/g, " ").trim();
-    if (/^https?:\/\//.test(href) && href.includes(domain) && looksSpanish(href, title)) {
-      candidates.push({ title, link: href });
+    const txt = m[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    if (!txt || txt.length < 30) continue;
+    // solo artículos del mismo dominio
+    if (/^https?:\/\//.test(href) && href.includes(domain)) {
+      anchors.push({ title: txt, link: href });
     }
   }
-
-  for (const c of candidates) {
-    const image = await getOgImage(c.link);
+  for (const a of anchors.slice(0, 12)) {
+    const image = await getOgImage(a.link);
     out.push({
-      title: c.title,
-      url: c.link,
+      title: a.title,
+      url: a.link,
       image,
       source: domain,
       publishedAt: "",
       summary: "",
-      category: categoryHint
+      category: categoryHint,
     });
-  }
-  return out;
-};
-
-const parseGoogleNews = async (url, categoryHint) => {
-  const text = await fetchText(url);
-  const json = parser.parse(text);
-  const channel = json.rss?.channel || {};
-  let items = channel.item || [];
-  if (!Array.isArray(items)) items = [items];
-  const sourceName = "Google News";
-
-  const out = [];
-  for (const it of items.slice(0, 20)) {
-    const n = await normalizeItem(it, sourceName, categoryHint);
-    if (n.title && n.url && looksSpanish(n.url, `${n.title} ${n.summary}`)) out.push(n);
   }
   return out;
 };
@@ -221,67 +194,101 @@ const dedupe = (arr) => {
   });
 };
 
-// Anuncio promocional fijo
+// Imagen real del anuncio (Pexels, libre de uso)
+const AD_IMAGE =
+  "https://images.pexels.com/photos/8000532/pexels-photo-8000532.jpeg?auto=compress&cs=tinysrgb&w=1200&h=675&dpr=1";
+
 const buildAdCard = () => ({
   title: "Construye tu app con nosotros",
   url: "/proyectos/Anuncios.html",
-  image: "https://via.placeholder.com/1200x675?text=Construye+tu+app+con+nosotros",
+  image: AD_IMAGE,
   source: "Polyline",
   publishedAt: new Date().toISOString(),
-  summary: "¿Tienes una idea? Te ayudamos a diseñar y lanzar tu aplicación web o móvil con IA.",
-  category: "Anuncio"
+  summary:
+    "¿Tienes una idea? Diseñamos y lanzamos tu aplicación web o móvil con IA.",
+  category: "Anuncio",
 });
 
-// ---------- Handler ----------
+// interleaving balanceado por categoría
+const roundRobin = (buckets, limit) => {
+  const out = [];
+  const arrs = buckets.map((b) => [...b]); // copia
+  let added = true;
+  while (out.length < limit && added) {
+    added = false;
+    for (const a of arrs) {
+      if (!a.length) continue;
+      out.push(a.shift());
+      added = true;
+      if (out.length >= limit) break;
+    }
+  }
+  return out;
+};
+
 export const handler = async () => {
   try {
+    // 1) recolectar por categoría
     const jobs = [];
-    for (const url of FEEDS.ai) jobs.push(parseFeedOrPage(url, "IA"));
-    for (const url of FEEDS.crypto) jobs.push(parseFeedOrPage(url, "Cripto"));
-    for (const url of FEEDS.build) jobs.push(parseFeedOrPage(url, "Construcción"));
+    for (const s of FEEDS.ai)    jobs.push(parseFeedOrPage(s.url, s.cat));
+    for (const s of FEEDS.crypto) jobs.push(parseFeedOrPage(s.url, s.cat));
+    for (const s of FEEDS.build)  jobs.push(parseFeedOrPage(s.url, s.cat));
 
-    let settled = await Promise.allSettled(jobs);
+    const settled = await Promise.allSettled(jobs);
     let all = settled
       .filter((r) => r.status === "fulfilled")
       .flatMap((r) => r.value)
       .filter((n) => n && n.title && n.url);
 
-    // Si quedó muy poco (p.ej. 0–3), rellenamos con Google News ES
-    if (all.length < 6) {
-      const gnJobs = [
-        parseGoogleNews(GN.ai, "IA"),
-        parseGoogleNews(GN.crypto, "Cripto"),
-        parseGoogleNews(GN.build, "Construcción")
-      ];
-      const gn = await Promise.allSettled(gnJobs);
-      all = all.concat(
-        gn.filter((r) => r.status === "fulfilled").flatMap((r) => r.value)
-      );
+    // 2) priorizar español por dominio
+    all = all.filter((n) => isSpanishishUrl(n.url));
+
+    // 3) ordenar cada bucket por fecha desc
+    const bucketsByCat = {
+      IA: [],
+      Cripto: [],
+      Arquitectura: [],
+      Construcción: [],
+      Vivienda: [],
+    };
+    for (const n of all) {
+      const cat = bucketsByCat[n.category] ? n.category : "Construcción";
+      bucketsByCat[cat].push(n);
+    }
+    for (const k of Object.keys(bucketsByCat)) {
+      const arr = dedupe(bucketsByCat[k]).sort((a, b) => {
+        const da = new Date(a.publishedAt || 0).getTime();
+        const db = new Date(b.publishedAt || 0).getTime();
+        return db - da;
+      });
+      bucketsByCat[k] = arr;
     }
 
-    const clean = dedupe(all);
+    // 4) interleaving (balanceado) y recorte
+    const INTERLEAVE_ORDER = [
+      bucketsByCat.IA,
+      bucketsByCat.Cripto,
+      bucketsByCat.Arquitectura,
+      bucketsByCat.Construcción,
+      bucketsByCat.Vivienda,
+    ];
+    const slice = roundRobin(INTERLEAVE_ORDER, Math.max(0, PAGE_SIZE - 1)); // -1 por el anuncio
 
-    clean.sort((a, b) => {
-      const da = new Date(a.publishedAt || 0).getTime();
-      const db = new Date(b.publishedAt || 0).getTime();
-      return db - da;
-    });
-
-    const slice = clean.slice(0, PAGE_SIZE - 1);
+    // 5) anuncio primero
     const result = [buildAdCard(), ...slice];
 
     return {
       statusCode: 200,
       headers: {
         "Content-Type": "application/json",
-        "Cache-Control": "public, max-age=600" // 10 minutos
+        "Cache-Control": "public, max-age=600", // 10 min
       },
-      body: JSON.stringify(result)
+      body: JSON.stringify(result),
     };
   } catch (e) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: e.message })
+      body: JSON.stringify({ error: e.message }),
     };
   }
 };
