@@ -1,36 +1,38 @@
-// js/news-sidebar.js — abre al cargar, cierra solo, alto contraste y mayor tamaño
+// js/news-sidebar.js — abre al cargar + overlay + alto contraste + más tamaño + LOADER con logo
 class NewsSidebar extends HTMLElement {
-  static get observedAttributes() { return ["panel-title", "title"]; }
+  static get observedAttributes() { return ["panel-title", "title", "logo-src"]; }
 
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
 
-    // atributos
-    this._title = this.getAttribute("panel-title") || this.getAttribute("title") || "Noticias";
-    this.endpoint = this.getAttribute("endpoint") || "/.netlify/functions/Otross";
-    this.pageSize = parseInt(this.getAttribute("pagesize") || "12", 10);
-    this.initialDelay = Math.max(0, parseInt(this.getAttribute("initial-open-ms") || "800", 10)); // abre rápido
-    this.autoCloseMs   = Math.max(0, parseInt(this.getAttribute("autoclose-ms")   || "12000", 10));
+    // Atributos
+    this._title       = this.getAttribute("panel-title") || this.getAttribute("title") || "Noticias";
+    this.endpoint     = this.getAttribute("endpoint") || "/.netlify/functions/Otross";
+    this.pageSize     = parseInt(this.getAttribute("pagesize") || "12", 10);
+    this.initialDelay = Math.max(0, parseInt(this.getAttribute("initial-open-ms") || "600", 10));
+    this.autoCloseMs  = Math.max(0, parseInt(this.getAttribute("autoclose-ms")   || "12000", 10));
+    this.logoSrcAttr  = this.getAttribute("logo-src") || "/Resource/Logo/logo.png"; // sugerido absoluto
+    this.minLoaderMs  = 600;
 
-    // estado
+    // Estado
     this.state = { q: "", items: [], filtered: [] };
     this._autoCloseTimer = null;
     this._userInteracted = false;
     this._bound = false;
+    this._hadError = false;
   }
 
   connectedCallback() {
-    // color de marca (tomas tu CTA si existe)
-    const sample = document.querySelector('.btn-details') || document.querySelector('.cta-button');
-    if (sample) this.style.setProperty('--accent', getComputedStyle(sample).backgroundColor);
+    // Color de marca desde tu CTA si existe
+    const sample = document.querySelector('.cta-button') || document.querySelector('.btn-details');
+    if (sample) this.style.setProperty('--accent', getComputedStyle(sample).backgroundColor || '#f39c12');
 
     this.render();
     this.bind();
 
-    // fetch y render
+    // Carga datos y abre automáticamente
     this.fetchAndRender().finally(() => {
-      // apertura inicial robusta (tras mount y tras posible fetch)
       setTimeout(() => { this.open(); this.startAutoClose(); }, this.initialDelay);
     });
   }
@@ -41,44 +43,62 @@ class NewsSidebar extends HTMLElement {
       const h3 = this.shadowRoot.querySelector(".news-header h3");
       if (h3) h3.textContent = this._title;
     }
+    if (name === "logo-src" && this.shadowRoot) {
+      const img = this.shadowRoot.querySelector(".news-loader img");
+      if (img) img.src = this.resolveLogo(val || this.logoSrcAttr);
+    }
   }
 
   get title() { return this._title; }
 
-  // ====== ESTILOS (alto contraste + más tamaño) ======
+  // ==================== ESTILOS ====================
   get styles() {
     return `
 :host{ all: initial; }
 *,*::before,*::after{ box-sizing: border-box; font-family: 'Open Sans','Roboto',system-ui,-apple-system,Segoe UI,sans-serif; }
 
-/* Tokens de tema */
 :host{
-  --accent: #f39c12;            /* se sobrescribe con el color de tu CTA si existe */
-  --bg: #101114;                /* fondo alto contraste */
-  --fg: #ffffff;                /* texto claro */
-  --muted: #c9c9c9;
-  --chip: #17181c;              /* chips oscuros */
-  --chipBorder: #2a2d33;
-  --elev: 0 14px 50px rgba(0,0,0,.45);
-}
-:host-context(body.dark-mode){
-  --bg: #101114; --fg: #ffffff; --muted:#d0d0d0; --chip:#17181c; --chipBorder:#2a2d33;
+  --accent: #f39c12;
+  --bg: #0f1116;
+  --fg: #ffffff;
+  --muted: #cfd3da;
+  --chip: #171a20;
+  --chipBorder: #2a2f39;
+  --elev: 0 18px 60px rgba(0,0,0,.55);
 }
 
-/* Botón flotante */
+/* Overlay */
+.backdrop{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.35);
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease;
+  z-index: 99997;
+}
+.backdrop.open{ opacity:1; pointer-events: auto; }
+
+/* FAB */
 .news-fab{
   position: fixed; left: 20px; bottom: 24px; width: 60px; height: 60px; border-radius: 50%;
-  border: 0; cursor: pointer; display: grid; place-items: center;
-  background: var(--accent); color: #fff; box-shadow: var(--elev); z-index: 100000;
+  border: 2px solid var(--fab-ring, color-mix(in oklab, var(--fab-bg, var(--accent)), white 35%));
+  cursor: pointer; display: grid; place-items: center;
+  background: var(--fab-bg, var(--accent)) !important;
+  color: var(--fab-icon, #fff);
+  box-shadow: 0 14px 40px rgba(0,0,0,.35);
+  z-index: 100000;
+  transition: transform .15s ease, box-shadow .2s ease;
 }
+.news-fab:hover{ transform: translateY(-1px); box-shadow: 0 18px 50px rgba(0,0,0,.4); }
 .news-fab svg{ width:22px; height:22px; }
 
 /* Sidebar */
 .news-sidebar{
-  position: fixed; inset: 0 auto 0 0; width: min(520px, 95vw);  /* más ancho */
+  position: fixed; inset: 0 auto 0 0; width: min(560px, 96vw);
   background: var(--bg); color: var(--fg); transform: translateX(-100%);
   transition: transform .28s ease; z-index: 99999; display: flex; flex-direction: column;
-  border-right: 1px solid var(--chipBorder); box-shadow: var(--elev);
+  border-right: 3px solid color-mix(in oklab, var(--accent), white 10%);
+  box-shadow: var(--elev);
+  border-top-right-radius: 14px; border-bottom-right-radius: 14px;
 }
 .news-sidebar.open{ transform: translateX(0); }
 
@@ -86,17 +106,43 @@ class NewsSidebar extends HTMLElement {
 .news-header{
   display:flex; align-items:center; justify-content:space-between; gap:12px;
   padding:14px; border-bottom:1px solid var(--chipBorder);
-  background: color-mix(in oklab, var(--bg), var(--accent) 12%); /* leve tinte con tu marca */
+  background: color-mix(in oklab, var(--bg), var(--accent) 14%);
 }
 .news-header h3{ margin:0; font-size:18px; letter-spacing:.2px; }
 .close-btn{ background:transparent; color: var(--fg); border:0; font-size:28px; cursor:pointer; line-height:1; }
 
-/* Filtros */
+/* Loader con logo */
+.news-loader{
+  display:none; align-items:center; justify-content:center; gap:14px;
+  padding:16px 14px; border-bottom:1px solid var(--chipBorder);
+}
+.news-loader.show{ display:flex; }
+.logo-wrap{ display:flex; align-items:center; gap:12px; }
+.logo-wrap .logo-box{
+  width:44px; height:44px; border-radius:12px; position:relative; display:grid; place-items:center;
+  background: color-mix(in oklab, var(--bg), white 6%);
+  box-shadow: inset 0 0 0 1px var(--chipBorder), 0 6px 18px rgba(0,0,0,.3);
+}
+.logo-wrap img{ width:28px; height:28px; object-fit:contain; }
+.logo-wrap .ring{
+  position:absolute; inset:-4px; border-radius:14px; border:2px solid color-mix(in oklab, var(--accent), white 35%);
+  animation: ringSpin 1200ms ease-in-out infinite;
+  opacity:.9;
+}
+@keyframes ringSpin{
+  0%,100%{ transform: scale(1); }
+  50%{ transform: scale(1.08); }
+}
+.load-text{ font-size:14px; color:var(--muted); margin:0; }
+.retry-btn{
+  margin-left:auto; padding:8px 12px; border-radius:10px; border:0; cursor:pointer;
+  background: var(--accent); color:#fff;
+}
+
+/* Filtros / búsqueda */
 .news-filters{ padding:10px 12px; display:flex; gap:8px; flex-wrap:wrap; border-bottom:1px solid var(--chipBorder); }
 .chip{ border:1px solid var(--chipBorder); background:var(--chip); color:var(--fg); padding:6px 10px; border-radius:999px; cursor:pointer; font-size:14px; }
-.chip.active{ outline: 2px solid color-mix(in oklab, var(--accent), white 10%); }
-
-/* Búsqueda */
+.chip.active{ outline: 2px solid color-mix(in oklab, var(--accent), white 12%); }
 .news-search{ display:flex; gap:8px; padding:10px 12px; border-bottom:1px solid var(--chipBorder); }
 .news-search input{ flex:1; padding:10px 12px; border-radius:10px; border:1px solid var(--chipBorder); background:var(--chip); color:var(--fg); outline:none; }
 .news-search button{ padding:10px 12px; border-radius:10px; border:0; cursor:pointer; background: var(--accent); color:#fff; }
@@ -104,7 +150,7 @@ class NewsSidebar extends HTMLElement {
 /* Lista + tarjetas */
 .news-list{ overflow-y:auto; padding:14px; height:100%; display:grid; gap:12px; }
 .news-card{
-  display:grid; grid-template-columns:130px 1fr; gap:12px;
+  display:grid; grid-template-columns:140px 1fr; gap:12px;
   background: color-mix(in oklab, var(--bg), white 6%);
   border:1px solid var(--chipBorder); border-radius:12px; padding:10px;
 }
@@ -114,18 +160,18 @@ class NewsSidebar extends HTMLElement {
 .news-body h4 a:hover{ text-decoration:underline; }
 .news-meta{ font-size:12px; color:var(--muted); display:flex; gap:10px; margin-top:6px; }
 .news-body p{ margin:4px 0 0 0; font-size:13px; color:var(--muted); }
-
 .ad-badge{ font-size:11px; background:var(--accent); color:#fff; padding:2px 6px; border-radius:6px; margin-left:6px; }
 
-@media (max-width: 560px){
-  .news-card{ grid-template-columns:1fr; }
-}
+@media (max-width: 620px){ .news-card{ grid-template-columns:1fr; } }
     `;
   }
 
-  // ====== PLANTILLA ======
+  // ==================== MARCADO ====================
   get template() {
+    const logoURL = this.resolveLogo(this.logoSrcAttr);
     return `
+<div class="backdrop"></div>
+
 <button class="news-fab" aria-label="Noticias" title="Noticias">
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 3H5a2 2 0 0 0-2 2v12a4 4 0 0 0 4 4h10a4 4 0 0 0 4-4V5a2 2 0 0 0-2-2Zm0 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14v11ZM8 7h8v2H8V7Zm0 4h8v2H8v-2Zm0 4h5v2H8v-2Z"/></svg>
 </button>
@@ -134,6 +180,18 @@ class NewsSidebar extends HTMLElement {
   <div class="news-header">
     <h3>${this.title}</h3>
     <button class="close-btn" aria-label="Cerrar">×</button>
+  </div>
+
+  <!-- LOADER -->
+  <div class="news-loader" aria-live="polite">
+    <div class="logo-wrap">
+      <div class="logo-box">
+        <span class="ring" aria-hidden="true"></span>
+        <img src="${logoURL}" alt="Polyline" />
+      </div>
+      <p class="load-text">Cargando noticias…</p>
+    </div>
+    <button class="retry-btn" hidden>Reintentar</button>
   </div>
 
   <div class="news-filters">
@@ -155,31 +213,33 @@ class NewsSidebar extends HTMLElement {
     `;
   }
 
-  // ====== RENDER ======
-  render() {
-    this.shadowRoot.innerHTML = `<style>${this.styles}</style>${this.template}`;
-  }
+  // ==================== RENDER ====================
+  render() { this.shadowRoot.innerHTML = `<style>${this.styles}</style>${this.template}`; }
 
   bind() {
     if (this._bound) return; this._bound = true;
     const $ = (s)=>this.shadowRoot.querySelector(s);
     const $$=(s)=>Array.from(this.shadowRoot.querySelectorAll(s));
 
-    this.sidebar = $(".news-sidebar");
-    this.fab     = $(".news-fab");
-    this.closeBtn= $(".close-btn");
-    this.list    = $(".news-list");
+    this.sidebar   = $(".news-sidebar");
+    this.fab       = $(".news-fab");
+    this.closeBtn  = $(".close-btn");
+    this.list      = $(".news-list");
+    this.backdrop  = $(".backdrop");
     this.searchInput = this.shadowRoot.querySelector(".news-search input");
     this.searchBtn   = this.shadowRoot.querySelector(".news-search button");
+    this.loader      = $(".news-loader");
+    this.retryBtn    = $(".retry-btn");
 
-    const open  = ()=>{ this.sidebar.classList.add("open"); this.sidebar.setAttribute("aria-hidden","false"); };
-    const close = ()=>{ this.sidebar.classList.remove("open"); this.sidebar.setAttribute("aria-hidden","true"); };
+    const open  = ()=>{ this.sidebar.classList.add("open"); this.backdrop.classList.add("open"); this.sidebar.setAttribute("aria-hidden","false"); };
+    const close = ()=>{ this.sidebar.classList.remove("open"); this.backdrop.classList.remove("open"); this.sidebar.setAttribute("aria-hidden","true"); };
 
     this.open = open; this.close = close;
 
-    // Botones
+    // Botones / overlay
     this.fab.addEventListener("click", () => { open(); this._userInteracted = true; this.clearAutoClose(); });
     this.closeBtn.addEventListener("click", () => { close(); this.clearAutoClose(); });
+    this.backdrop.addEventListener("click", () => { close(); this.clearAutoClose(); });
 
     // Cancelar autocierre si el usuario interactúa
     const cancelOnInteract = () => { this._userInteracted = true; this.clearAutoClose(); };
@@ -204,11 +264,36 @@ class NewsSidebar extends HTMLElement {
     };
     this.searchBtn.addEventListener("click", doSearch);
     this.searchInput.addEventListener("keydown", e => e.key === "Enter" && doSearch());
+
+    // Reintentar
+    this.retryBtn.addEventListener("click", () => {
+      this._hadError = false;
+      this.retryBtn.hidden = true;
+      this.shadowRoot.querySelector('.load-text').textContent = 'Cargando noticias…';
+      this.fetchAndRender();
+    });
+  }
+
+  // Resolver la ruta del logo de manera confiable (relativa o absoluta)
+  resolveLogo(src) {
+    try { return new URL(src, document.baseURI).href; } catch { return src; }
+  }
+
+  showLoader(show, { message = 'Cargando noticias…', allowRetry = false } = {}) {
+    if (!this.loader) return;
+    const txt = this.shadowRoot.querySelector('.load-text');
+    if (txt) txt.textContent = message;
+    this.retryBtn.hidden = !allowRetry;
+    this.loader.classList.toggle('show', !!show);
   }
 
   async fetchAndRender() {
+    const start = performance.now();
+    this._hadError = false;
+    this.list.setAttribute("aria-busy", "true");
+    this.showLoader(true, { message: 'Cargando noticias…', allowRetry: false });
+
     try {
-      this.list.setAttribute("aria-busy", "true");
       const res = await fetch(this.endpoint, { cache: "no-store" });
       const data = await res.json();
       const items = Array.isArray(data) ? data : (data.articles || data.items || []);
@@ -216,12 +301,20 @@ class NewsSidebar extends HTMLElement {
       this.state.filtered = this.state.items;
       this.paint();
     } catch (e) {
+      console.error("NewsSidebar fetch error:", e);
+      this._hadError = true;
       this.state.items = [];
       this.state.filtered = [];
       this.list.innerHTML = `<p style="opacity:.8">No se pudieron cargar las noticias.</p>`;
-      console.error("NewsSidebar fetch error:", e);
+      this.showLoader(true, { message: 'Sin conexión. ', allowRetry: true });
     } finally {
-      this.list.removeAttribute("aria-busy");
+      const elapsed = performance.now() - start;
+      const wait = Math.max(0, this.minLoaderMs - elapsed);
+      setTimeout(() => {
+        // Si hubo error, mantenemos el loader con botón Reintentar
+        if (!this._hadError) this.showLoader(false);
+        this.list.removeAttribute("aria-busy");
+      }, wait);
     }
   }
 
@@ -274,7 +367,7 @@ class NewsSidebar extends HTMLElement {
     `;
   }
 
-  // ====== AUTOCIERRE ======
+  // ==================== AUTOCIERRE ====================
   startAutoClose() {
     if (this._userInteracted || this.autoCloseMs <= 0) return;
     this.clearAutoClose();
