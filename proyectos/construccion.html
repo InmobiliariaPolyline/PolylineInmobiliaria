@@ -240,6 +240,195 @@
         </div>
     </div>
 
+
+
+<!-- Noticias Recientes -->
+<div class="news-section">
+    <h2 class="section-title" data-translate="Noticias Recientes">Noticias Recientes</h2>
+    <div class="news-grid" id="newsGrid">
+        <!-- Aquí Netlify llenará las noticias -->
+           <main class="ia-section">
+    <header class="ia-header">
+      <h1>Noticias Más Recientes</h1>
+      <p class="ia-subtitle">Novedades en el mercado de construcción en Latinoamérica</p>
+    </header>
+
+    <section id="btc-grid" class="ia-grid" aria-live="polite">
+      <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
+      <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
+      <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
+    </section>
+  </main>
+
+  <style>
+
+    /* Contenedor de grid de noticias */
+    .ia-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    padding: 30px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    }
+
+    /* Tarjeta individual */
+    .ia-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    }
+
+    /* Efecto al pasar el mouse */
+    .ia-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Imagen superior */
+    .ia-card-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    }
+
+    /* Contenido interno de la tarjeta */
+    .ia-card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    }
+
+    /* Fuente de la noticia y fecha */
+    .ia-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85em;
+    color: #777;
+    }
+
+    /* Chips (fuente) */
+    .chip {
+    background-color: #0077cc;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.75em;
+    }
+
+    /* Título */
+    .ia-card-title {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #222;
+    margin: 0;
+    }
+
+    .ia-card-title a {
+    text-decoration: none;
+    color: inherit;
+    }
+
+    /* Extracto */
+    .ia-card-excerpt {
+    color: #555;
+    font-size: 0.95em;
+    line-height: 1.4em;
+    }
+
+    /* Enlace de "Leer más" */
+    .ia-card-link {
+    margin-top: auto;
+    align-self: flex-start;
+    font-weight: 600;
+    color: #0077cc;
+    text-decoration: none;
+    font-size: 0.95em;
+    }
+
+    .ia-card-link:hover {
+    text-decoration: underline;
+    }
+
+  </style>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const GRID = document.getElementById("btc-grid");
+      GRID.innerHTML = "<p>Cargando noticias...</p>";
+
+      // Usa ruta relativa para que funcione con cualquier dominio en Netlify
+      const ENDPOINT = "/.netlify/functions/construccion";
+
+      try {
+        const res = await fetch(ENDPOINT, { headers: { "cache-control": "no-cache" } });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+
+        const items = await res.json();
+
+        if (!Array.isArray(items) || items.length === 0) {
+          GRID.innerHTML = "<p>No hay noticias disponibles en este momento.</p>";
+          return;
+        }
+
+        GRID.innerHTML = items.map(n => `
+          <article class="ia-card">
+            <a class="ia-card-image" href="${n.url}" target="_blank" rel="noopener noreferrer" aria-label="Abrir noticia: ${n.title || "Noticia"}">
+              <img
+                src="${n.image || 'https://via.placeholder.com/900x500?text=Bitcoin'}"
+                alt="${n.title ? n.title.replace(/"/g, '&quot;') : 'Noticia de Bitcoin'}" />
+            </a>
+
+            <div class="ia-card-body">
+              <div class="ia-card-meta">
+                <span class="chip">${n.source || "Fuente"}</span>
+                <time datetime="${n.publishedAt || ""}">
+                  ${n.publishedAt
+                    ? new Date(n.publishedAt).toLocaleDateString("es-PE", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })
+                    : ""}
+                </time>
+              </div>
+
+              <h3 class="ia-card-title">
+                <a href="${n.url}" target="_blank" rel="noopener noreferrer">
+                  ${n.title || "Ver noticia"}
+                </a>
+              </h3>
+
+              <p class="ia-card-excerpt">${n.summary || ""}</p>
+
+              <a class="ia-card-link" href="${n.url}" target="_blank" rel="noopener noreferrer">
+                Leer más
+              </a>
+            </div>
+          </article>
+        `).join("");
+      } catch (err) {
+        console.error(err);
+        GRID.innerHTML = `<p style="color:#c00">No se pudieron cargar las noticias. ${err.message || err}</p>`;
+      }
+    });
+
+    
+
+  </script>
+    </div>
+</div>
+
+
+
+
     <!-- Botón de modo oscuro -->
     <button id="dark-mode-toggle" class="dark-mode-button" style="position: fixed; bottom: 20px; right: 30px;"></button>
 
