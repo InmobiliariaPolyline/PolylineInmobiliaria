@@ -1,5 +1,4 @@
-# netlify.toml
 [build]
-  publish = "public"                 # <- SOLO los archivos estáticos
-  functions = "netlify/functions"    # <- tus funciones (Otross.mjs)
+  publish = "."
+  functions = "netlify/functions"
   node_bundler = "esbuild"
