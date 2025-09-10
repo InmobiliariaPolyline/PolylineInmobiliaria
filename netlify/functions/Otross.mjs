@@ -25,7 +25,7 @@ const getCategory = (title, desc) => {
 };
 
 const makeURL = (page) => {
-  const url = new URL('/.netlify/functions/Otross', window.location.origin);
+  const url = new URL('https://gnews.io/api/v4/search');
   url.searchParams.set('q', QUERY);
   url.searchParams.set('country', 'pe');
   url.searchParams.set('page', String(page));
