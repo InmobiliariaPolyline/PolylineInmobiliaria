@@ -1,4 +1,4 @@
-// js/news-sidebar.js — Panel de noticias con fetch + autocierre + apertura inicial
+// js/news-sidebar.js — abre al cargar, cierra solo, alto contraste y mayor tamaño
 class NewsSidebar extends HTMLElement {
   static get observedAttributes() { return ["panel-title", "title"]; }
 
@@ -6,29 +6,32 @@ class NewsSidebar extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
 
+    // atributos
     this._title = this.getAttribute("panel-title") || this.getAttribute("title") || "Noticias";
     this.endpoint = this.getAttribute("endpoint") || "/.netlify/functions/Otross";
     this.pageSize = parseInt(this.getAttribute("pagesize") || "12", 10);
-    this.initialDelay = parseInt(this.getAttribute("initial-open-ms") || "1500", 10);
-    this.autoCloseMs = parseInt(this.getAttribute("autoclose-ms") || "12000", 10);
+    this.initialDelay = Math.max(0, parseInt(this.getAttribute("initial-open-ms") || "800", 10)); // abre rápido
+    this.autoCloseMs   = Math.max(0, parseInt(this.getAttribute("autoclose-ms")   || "12000", 10));
 
+    // estado
     this.state = { q: "", items: [], filtered: [] };
     this._autoCloseTimer = null;
     this._userInteracted = false;
+    this._bound = false;
   }
 
   connectedCallback() {
+    // color de marca (tomas tu CTA si existe)
     const sample = document.querySelector('.btn-details') || document.querySelector('.cta-button');
-    if (sample) {
-      const ac = getComputedStyle(sample).backgroundColor;
-      this.style.setProperty('--accent', ac);
-    }
+    if (sample) this.style.setProperty('--accent', getComputedStyle(sample).backgroundColor);
+
     this.render();
     this.bind();
+
+    // fetch y render
     this.fetchAndRender().finally(() => {
-      // apertura inicial
-      setTimeout(() => this.open(), this.initialDelay);
-      this.startAutoClose();
+      // apertura inicial robusta (tras mount y tras posible fetch)
+      setTimeout(() => { this.open(); this.startAutoClose(); }, this.initialDelay);
     });
   }
 
@@ -42,48 +45,70 @@ class NewsSidebar extends HTMLElement {
 
   get title() { return this._title; }
 
-  // ---------- estilos & plantilla ----------
+  // ====== ESTILOS (alto contraste + más tamaño) ======
   get styles() {
     return `
 :host{ all: initial; }
 *,*::before,*::after{ box-sizing: border-box; font-family: 'Open Sans','Roboto',system-ui,-apple-system,Segoe UI,sans-serif; }
-:host{ --accent:#e67e22; --bg:#fff; --fg:#333; --muted:#515050; --chip:#f3f3f3; --chipBorder:#e9e9e9; }
-:host-context(body.dark-mode){ --bg:#1e1e1e; --fg:#fff; --muted:#d0d0d0; --chip:#141414; --chipBorder:#2a2a2a; }
 
+/* Tokens de tema */
+:host{
+  --accent: #f39c12;            /* se sobrescribe con el color de tu CTA si existe */
+  --bg: #101114;                /* fondo alto contraste */
+  --fg: #ffffff;                /* texto claro */
+  --muted: #c9c9c9;
+  --chip: #17181c;              /* chips oscuros */
+  --chipBorder: #2a2d33;
+  --elev: 0 14px 50px rgba(0,0,0,.45);
+}
+:host-context(body.dark-mode){
+  --bg: #101114; --fg: #ffffff; --muted:#d0d0d0; --chip:#17181c; --chipBorder:#2a2d33;
+}
+
+/* Botón flotante */
 .news-fab{
-  position: fixed; left: 20px; bottom: 24px; width: 56px; height: 56px; border-radius: 50%;
+  position: fixed; left: 20px; bottom: 24px; width: 60px; height: 60px; border-radius: 50%;
   border: 0; cursor: pointer; display: grid; place-items: center;
-  background: var(--accent); color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.25); z-index: 10060;
+  background: var(--accent); color: #fff; box-shadow: var(--elev); z-index: 100000;
 }
 .news-fab svg{ width:22px; height:22px; }
 
+/* Sidebar */
 .news-sidebar{
-  position: fixed; inset: 0 auto 0 0; width: min(420px, 92vw);
+  position: fixed; inset: 0 auto 0 0; width: min(520px, 95vw);  /* más ancho */
   background: var(--bg); color: var(--fg); transform: translateX(-100%);
-  transition: transform .28s ease; z-index: 10050; display: flex; flex-direction: column;
-  border-right: 1px solid var(--chipBorder);
+  transition: transform .28s ease; z-index: 99999; display: flex; flex-direction: column;
+  border-right: 1px solid var(--chipBorder); box-shadow: var(--elev);
 }
 .news-sidebar.open{ transform: translateX(0); }
 
-.news-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px; border-bottom:1px solid var(--chipBorder); }
+/* Header */
+.news-header{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:14px; border-bottom:1px solid var(--chipBorder);
+  background: color-mix(in oklab, var(--bg), var(--accent) 12%); /* leve tinte con tu marca */
+}
 .news-header h3{ margin:0; font-size:18px; letter-spacing:.2px; }
 .close-btn{ background:transparent; color: var(--fg); border:0; font-size:28px; cursor:pointer; line-height:1; }
 
+/* Filtros */
 .news-filters{ padding:10px 12px; display:flex; gap:8px; flex-wrap:wrap; border-bottom:1px solid var(--chipBorder); }
 .chip{ border:1px solid var(--chipBorder); background:var(--chip); color:var(--fg); padding:6px 10px; border-radius:999px; cursor:pointer; font-size:14px; }
-.chip.active{ outline: 2px solid var(--accent); }
+.chip.active{ outline: 2px solid color-mix(in oklab, var(--accent), white 10%); }
 
+/* Búsqueda */
 .news-search{ display:flex; gap:8px; padding:10px 12px; border-bottom:1px solid var(--chipBorder); }
 .news-search input{ flex:1; padding:10px 12px; border-radius:10px; border:1px solid var(--chipBorder); background:var(--chip); color:var(--fg); outline:none; }
-.news-search button{ padding:10px 12px; border-radius:10px; border:0; cursor:pointer; background:var(--accent); color:#fff; }
+.news-search button{ padding:10px 12px; border-radius:10px; border:0; cursor:pointer; background: var(--accent); color:#fff; }
 
+/* Lista + tarjetas */
 .news-list{ overflow-y:auto; padding:14px; height:100%; display:grid; gap:12px; }
 .news-card{
-  display:grid; grid-template-columns:110px 1fr; gap:12px;
-  background: color-mix(in oklab, var(--bg), var(--fg) 6%);
+  display:grid; grid-template-columns:130px 1fr; gap:12px;
+  background: color-mix(in oklab, var(--bg), white 6%);
   border:1px solid var(--chipBorder); border-radius:12px; padding:10px;
 }
-.news-thumb{ width:100%; aspect-ratio:16/10; object-fit:cover; border-radius:8px; background:#ddd; }
+.news-thumb{ width:100%; aspect-ratio:16/10; object-fit:cover; border-radius:8px; background:#2a2a2a; }
 .news-body h4{ margin:0 0 6px 0; font-size:15px; line-height:1.25; }
 .news-body h4 a{ color:var(--fg); text-decoration:none; }
 .news-body h4 a:hover{ text-decoration:underline; }
@@ -92,10 +117,13 @@ class NewsSidebar extends HTMLElement {
 
 .ad-badge{ font-size:11px; background:var(--accent); color:#fff; padding:2px 6px; border-radius:6px; margin-left:6px; }
 
-@media (max-width: 520px){ .news-card{ grid-template-columns:1fr; } }
+@media (max-width: 560px){
+  .news-card{ grid-template-columns:1fr; }
+}
     `;
   }
 
+  // ====== PLANTILLA ======
   get template() {
     return `
 <button class="news-fab" aria-label="Noticias" title="Noticias">
@@ -127,6 +155,7 @@ class NewsSidebar extends HTMLElement {
     `;
   }
 
+  // ====== RENDER ======
   render() {
     this.shadowRoot.innerHTML = `<style>${this.styles}</style>${this.template}`;
   }
@@ -137,26 +166,26 @@ class NewsSidebar extends HTMLElement {
     const $$=(s)=>Array.from(this.shadowRoot.querySelectorAll(s));
 
     this.sidebar = $(".news-sidebar");
-    this.fab = $(".news-fab");
-    this.closeBtn = $(".close-btn");
-    this.list = $(".news-list");
+    this.fab     = $(".news-fab");
+    this.closeBtn= $(".close-btn");
+    this.list    = $(".news-list");
     this.searchInput = this.shadowRoot.querySelector(".news-search input");
-    this.searchBtn = this.shadowRoot.querySelector(".news-search button");
+    this.searchBtn   = this.shadowRoot.querySelector(".news-search button");
 
-    const open = ()=>{ this.sidebar.classList.add("open"); this.sidebar.setAttribute("aria-hidden","false"); };
-    const close= ()=>{ this.sidebar.classList.remove("open"); this.sidebar.setAttribute("aria-hidden","true"); };
+    const open  = ()=>{ this.sidebar.classList.add("open"); this.sidebar.setAttribute("aria-hidden","false"); };
+    const close = ()=>{ this.sidebar.classList.remove("open"); this.sidebar.setAttribute("aria-hidden","true"); };
 
     this.open = open; this.close = close;
 
-    this.fab.addEventListener("click", () => { open(); this.startAutoClose(); });
+    // Botones
+    this.fab.addEventListener("click", () => { open(); this._userInteracted = true; this.clearAutoClose(); });
     this.closeBtn.addEventListener("click", () => { close(); this.clearAutoClose(); });
 
-    // interacción → cancela autocierre
+    // Cancelar autocierre si el usuario interactúa
     const cancelOnInteract = () => { this._userInteracted = true; this.clearAutoClose(); };
-    this.sidebar.addEventListener("mousemove", cancelOnInteract);
-    this.sidebar.addEventListener("scroll", cancelOnInteract);
-    this.sidebar.addEventListener("click", cancelOnInteract);
-    this.searchInput.addEventListener("focus", cancelOnInteract);
+    ["mousemove","scroll","click","keydown","focusin"].forEach(ev =>
+      this.sidebar.addEventListener(ev, cancelOnInteract)
+    );
 
     // Chips
     $$(".chip").forEach(chip => chip.addEventListener("click", () => {
@@ -187,7 +216,6 @@ class NewsSidebar extends HTMLElement {
       this.state.filtered = this.state.items;
       this.paint();
     } catch (e) {
-      // fallback a demo si falla
       this.state.items = [];
       this.state.filtered = [];
       this.list.innerHTML = `<p style="opacity:.8">No se pudieron cargar las noticias.</p>`;
@@ -221,7 +249,7 @@ class NewsSidebar extends HTMLElement {
       title: n.title,
       desc: n.summary || n.description || "",
       url: n.url || n.link || "#",
-      img: n.image || "",
+      img: n.image || "https://via.placeholder.com/640x360?text=Noticia",
       date: n.publishedAt || n.pubDate || "",
       source: (n.category === "Anuncio" ? `${n.source || ""} <span class="ad-badge">Anuncio</span>` : (n.source || "")),
       category: n.category || ""
@@ -232,7 +260,7 @@ class NewsSidebar extends HTMLElement {
     const dateTxt = item.date ? new Date(item.date).toLocaleDateString() : "";
     return `
       <article class="news-card" role="article">
-        <img class="news-thumb" src="${item.img || "https://via.placeholder.com/640x360?text=Noticia"}" alt="">
+        <img class="news-thumb" src="${item.img}" alt="">
         <div class="news-body">
           <h4><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></h4>
           ${item.desc ? `<p>${item.desc}</p>` : ""}
@@ -246,7 +274,7 @@ class NewsSidebar extends HTMLElement {
     `;
   }
 
-  // ---------- autocierre ----------
+  // ====== AUTOCIERRE ======
   startAutoClose() {
     if (this._userInteracted || this.autoCloseMs <= 0) return;
     this.clearAutoClose();
