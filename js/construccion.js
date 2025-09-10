@@ -179,45 +179,58 @@
 
   // Render de tarjetas
   function renderNews(items = []) {
-    const GRID = document.getElementById('construction-grid');
-    if (!GRID) return;
-    if (!Array.isArray(items) || items.length === 0) {
-      GRID.innerHTML = `<p style="color:var(--muted)">No hay noticias disponibles en este momento.</p>`;
-      return;
-    }
-    GRID.innerHTML = items
-      .map((n) => {
-        const title = n.title || 'Ver noticia';
-        const safeTitle = title.replace(/"/g, '&quot;');
-        const img = n.image || 'https://via.placeholder.com/900x500?text=Construcci%C3%B3n';
-        const summary = n.summary || '';
-        const source = n.source || 'Fuente';
-        const published = n.publishedAt ? new Date(n.publishedAt) : null;
-        const dateStr = published
-          ? published.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' })
-          : '';
-
-        return `
-          <article class="ia-card">
-            <a class="ia-card-image" href="${n.url}" target="_blank" rel="noopener noreferrer" aria-label="Abrir noticia: ${safeTitle}">
-              <img src="${img}" alt="${safeTitle}">
-            </a>
-            <div class="ia-card-body">
-              <div class="ia-card-meta">
-                <span class="chip">${source}</span>
-                <time datetime="${n.publishedAt || ''}">${dateStr}</time>
-              </div>
-              <h3 class="ia-card-title">
-                <a href="${n.url}" target="_blank" rel="noopener noreferrer">${title}</a>
-              </h3>
-              <p class="ia-card-excerpt">${summary}</p>
-              <a class="ia-card-link" href="${n.url}" target="_blank" rel="noopener noreferrer">Leer más</a>
-            </div>
-          </article>
-        `;
-      })
-      .join('');
+  const GRID = document.getElementById('construction-grid');
+  if (!GRID) return;
+  if (!Array.isArray(items) || items.length === 0) {
+    GRID.innerHTML = `<p style="color:var(--muted)">No hay noticias disponibles en este momento.</p>`;
+    return;
   }
+
+  const PLACEHOLDER = '../Resource/construccion.jpg'; // imagen local
+
+  GRID.innerHTML = items.map((n) => {
+    const title = n.title || 'Ver noticia';
+    const safeTitle = title.replace(/"/g, '&quot;');
+
+    // Si la URL no es http(s), usamos placeholder
+    const validImg = n.image && /^https?:\/\//i.test(n.image) ? n.image : PLACEHOLDER;
+
+    const summary = n.summary || '';
+    const source = n.source || 'Fuente';
+    const published = n.publishedAt ? new Date(n.publishedAt) : null;
+    const dateStr = published
+      ? published.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' })
+      : '';
+
+    return `
+      <article class="ia-card">
+        <a class="ia-card-image" href="${n.url}" target="_blank" rel="noopener noreferrer"
+           aria-label="Abrir noticia: ${safeTitle}">
+          <img
+            src="${validImg}"
+            alt="${safeTitle}"
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+            onerror="this.onerror=null; this.src='${PLACEHOLDER}';"
+          >
+        </a>
+        <div class="ia-card-body">
+          <div class="ia-card-meta">
+            <span class="chip">${source}</span>
+            <time datetime="${n.publishedAt || ''}">${dateStr}</time>
+          </div>
+          <h3 class="ia-card-title">
+            <a href="${n.url}" target="_blank" rel="noopener noreferrer">${title}</a>
+          </h3>
+          <p class="ia-card-excerpt">${summary}</p>
+          <a class="ia-card-link" href="${n.url}" target="_blank" rel="noopener noreferrer">Leer más</a>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
 
   // Fetch a la función serverless
   async function loadConstructionNews() {

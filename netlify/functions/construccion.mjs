@@ -156,10 +156,13 @@ function truncate(s = '', n = 200) {
   return s.length > n ? s.slice(0, n - 1) + '…' : s;
 }
 function sanitizeItem(x) {
-  // Normalizaciones simples
-  if (x.image && x.image.startsWith('//')) x.image = 'https:' + x.image;
+  if (x.image) {
+    if (x.image.startsWith('//')) x.image = 'https:' + x.image;
+    if (!/^https?:\/\//i.test(x.image)) x.image = null;
+  }
   return x;
 }
+
 function dedupe(arr, keyFn) {
   const seen = new Set();
   const out = [];
