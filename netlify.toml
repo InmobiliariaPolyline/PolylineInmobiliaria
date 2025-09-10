@@ -2,4 +2,3 @@
   publish = "."
   functions = "netlify/functions"
   node_bundler = "esbuild"
-git 
