@@ -77,77 +77,114 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } catch (e) { }
 });
-
-// ===== Noticias con GNews API (clasificación automática) =====
+// ===== Noticias desde /.netlify/functions/Otross (misma API del sidebar) =====
 (() => {
-  const MAX = 12;
-  const TTL = 7 * 24 * 60 * 60 * 1000;
-  const KEY = 'gnews_cache_auto';
-  const PLACEHOLDER = 'https://via.placeholder.com/1200x675?text=Construccion';
-  const GNEWS_KEY = '28e26406b365ba48c945913613c5975c'; // Tu API Key
-
+  const API = '/.netlify/functions/Otross';        // <- tu función Netlify ya existente
   const GRID = document.querySelector('.news-grid');
-  if (!GRID) return;
+  const FEATURED_WRAP = document.querySelector('.featured-news');
+  if (!GRID || !FEATURED_WRAP) return;
 
-  const fmt = d => { try { return new Date(d).toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' }); } catch { return ''; } };
-  const plain = h => (h || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const PLACEHOLDER = 'https://via.placeholder.com/1200x675?text=Noticias';
+  const fmt = d => { try {
+    return new Date(d).toLocaleDateString('es-PE', { day:'2-digit', month:'long', year:'numeric' });
+  } catch { return ''; } };
+  const plain = h => String(h || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
-  // Función de categorización
-  const getCategory = (title, desc) => {
-    const s = (String(title) + ' ' + String(desc || '')).toLowerCase();
-    const cats = [
-      ['Obra', ['obra', 'obras', 'licitación', 'contratista', 'contrata']],
-      ['Infraestructura', ['infraestructura', 'puente', 'carretera', 'vía', 'autopista', 'ferrocarril', 'aeropuerto', 'puerto']],
-      ['Vivienda', ['vivienda', 'departamento', 'inmueble', 'edificio residencial', 'hogar', 'condominio']],
-      ['Inmobiliario', ['inmobiliario', 'alquiler', 'venta', 'hipoteca', 'metro cuadrado', 'tasación']],
-      ['Arquitectura', ['arquitectura', 'diseño', 'urbanismo', 'paisajismo']],
-      ['Materiales', ['cemento', 'acero', 'concreto', 'ladrillo', 'asfalto', 'yeso', 'hormigón']],
-    ];
-    for (const [label, terms] of cats) {
-      if (terms.some(w => s.includes(w))) return label;
+  // Skeletons mientras carga
+  const showSkeletons = () => {
+    FEATURED_WRAP.innerHTML = `
+      <div class="news-card">
+        <div class="news-image" style="height:260px;background:#eee"></div>
+        <div class="news-content">
+          <span class="news-category" style="opacity:.4">Cargando…</span>
+          <h3 class="news-title" style="height:22px;background:#eee;border-radius:8px;width:80%"></h3>
+          <p class="news-excerpt" style="height:48px;background:#f1f1f1;border-radius:8px"></p>
+          <div class="news-meta" style="border-top:0;padding-top:0;color:#aaa"> </div>
+        </div>
+      </div>`;
+    GRID.innerHTML = Array.from({length:6}).map(()=>`
+      <article class="news-card">
+        <div class="news-image" style="height:200px;background:#eee"></div>
+        <div class="news-content">
+          <span class="news-category" style="opacity:.4">Cargando…</span>
+          <h3 class="news-title" style="height:18px;background:#eee;border-radius:8px;width:90%"></h3>
+          <p class="news-excerpt" style="height:44px;background:#f1f1f1;border-radius:8px"></p>
+          <div class="news-meta" style="border-top:0;padding-top:0;color:#aaa"> </div>
+        </div>
+      </article>`).join('');
+  };
+
+  const featuredCard = (n) => `
+    <div class="news-card">
+      <img class="news-image" loading="lazy"
+           src="${n.image || PLACEHOLDER}" alt=""
+           onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
+      <div class="news-content">
+        ${n.category ? `<span class="news-category">${n.category}</span>` : ''}
+        <h2 class="news-title">${n.title || ''}</h2>
+        ${n.summary ? `<p class="news-excerpt">${plain(n.summary).slice(0, 260)}</p>` : ''}
+        <div class="news-meta">
+          <div class="news-date"><i class="fas fa-calendar-alt"></i>
+            <span>${fmt(n.publishedAt || Date.now())}</span>
+          </div>
+          <a class="news-read-more" href="${n.url || n.link || '#'}" target="_blank" rel="noopener">
+            Leer más <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>`;
+
+  const gridCard = (n) => `
+    <article class="news-card">
+      <img class="news-image" loading="lazy"
+           src="${n.image || PLACEHOLDER}" alt=""
+           onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
+      <div class="news-content">
+        ${n.category ? `<span class="news-category">${n.category}</span>` : ''}
+        <h3 class="news-title">${n.title || ''}</h3>
+        ${n.summary ? `<p class="news-excerpt">${plain(n.summary).slice(0, 220)}</p>` : ''}
+        <div class="news-meta">
+          <div class="news-date"><i class="fas fa-calendar-alt"></i>
+            <span>${fmt(n.publishedAt || Date.now())}</span>
+          </div>
+          <a class="news-read-more" href="${n.url || n.link || '#'}" target="_blank" rel="noopener">
+            Leer más <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </article>`;
+
+  const render = (items=[]) => {
+    // Para "Otros", excluimos IA y Cripto (ya tienen páginas propias)
+    const pool = items.filter(n => (n.category || '').toLowerCase() !== 'ia'
+                                && (n.category || '').toLowerCase() !== 'cripto');
+
+    if (!pool.length) {
+      GRID.innerHTML = '<p style="opacity:.8">No se encontraron noticias.</p>';
+      FEATURED_WRAP.innerHTML = '';
+      return;
     }
-    return 'Construcción';
-  };
+    // Evita poner el anuncio como destacado; si primero es “Anuncio”, usa el siguiente
+    const first = pool[0]?.category === 'Anuncio' ? pool[1] || pool[0] : pool[0];
+    FEATURED_WRAP.innerHTML = featuredCard(first);
 
-  const render = items => {
-    GRID.innerHTML = '';
-    if (!items.length) { GRID.innerHTML = '<p style="opacity:.8">No se encontraron noticias.</p>'; return; }
-    items.forEach(n => {
-      const a = document.createElement('article');
-      a.className = 'news-card';
-      a.innerHTML = `
-  <img class="news-image" loading="lazy" src="${n.image || PLACEHOLDER}" alt="" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
-  <div class="news-content">
-    
-    <h3 class="news-title">${n.title || ''}</h3>
-    <p class="news-excerpt">${(n.description || '').slice(0, 220)}</p>
-    <div class="news-meta">
-      <span class="news-date">${fmt(n.pubDate || Date.now())}</span>
-      <a class="news-read-more" href="${n.link || '#'}" target="_blank" rel="noopener">Leer más →</a>
-    </div>
-  </div>`;
-      GRID.appendChild(a);
-    });
-  };
-
-  const loadCache = () => { try { const raw = localStorage.getItem(KEY); if (!raw) return null; const o = JSON.parse(raw); return Date.now() - o.ts > TTL ? null : o.items || null; } catch { return null; } };
-  const saveCache = items => { try { localStorage.setItem(KEY, JSON.stringify({ ts: Date.now(), items })); } catch { } };
-
-  const QUERY = '(construcción OR infraestructura OR obra OR vivienda OR inmobiliario OR arquitectura OR carretera OR puente)';
-
-  // Ya no se necesita makeURL, la función serverless lo maneja
-
-  // Ahora fetchGNews consulta la función serverless
-  const fetchGNews = async () => {
-    const resp = await fetch('/.netlify/functions/gnews', { cache: 'no-store' });
-    if (!resp.ok) throw new Error('No se pudo obtener noticias');
-    const items = await resp.json();
-    return Array.isArray(items) ? items : [];
+    // Resto al grid (dejamos “Anuncio” visible si viene en la lista)
+    const rest = pool.filter(n => n !== first);
+    GRID.innerHTML = rest.map(gridCard).join('');
   };
 
   (async () => {
-    const cached = loadCache();
-    if (cached && cached.length) { render(cached); fetchGNews().then(saveCache).catch(() => { }); return; }
-    try { const items = await fetchGNews(); saveCache(items); render(items); } catch (e) { console.error(e); GRID.innerHTML = '<p style="opacity:.8">No se pudieron cargar las noticias.</p>'; }
+    try {
+      showSkeletons();
+      const resp = await fetch(API, { cache: 'no-store' });
+      if (!resp.ok) throw new Error('No se pudo obtener noticias');
+      const data = await resp.json();
+      // La función devuelve arreglo con {title,url,image,source,publishedAt,summary,category}
+      render(Array.isArray(data) ? data : (data.items || data.articles || []));
+    } catch (e) {
+      console.error(e);
+      FEATURED_WRAP.innerHTML = '';
+      GRID.innerHTML = '<p style="opacity:.8">No se pudieron cargar las noticias.</p>';
+    }
   })();
 })();
