@@ -1,4 +1,4 @@
-// js/news-sidebar.js — Panel de noticias (solo plantillas, sin fetch)
+// js/news-sidebar.js — Panel de noticias con fetch + autocierre + apertura inicial
 class NewsSidebar extends HTMLElement {
   static get observedAttributes() { return ["panel-title", "title"]; }
 
@@ -7,53 +7,17 @@ class NewsSidebar extends HTMLElement {
     this.attachShadow({ mode: "open" });
 
     this._title = this.getAttribute("panel-title") || this.getAttribute("title") || "Noticias";
-    this.state = {
-      q: "(construcción OR infraestructura OR obra)"
-    };
+    this.endpoint = this.getAttribute("endpoint") || "/.netlify/functions/Otross";
+    this.pageSize = parseInt(this.getAttribute("pagesize") || "12", 10);
+    this.initialDelay = parseInt(this.getAttribute("initial-open-ms") || "1500", 10);
+    this.autoCloseMs = parseInt(this.getAttribute("autoclose-ms") || "12000", 10);
 
-    // Tarjetas de ejemplo (puedes editar títulos, descripciones e imágenes)
-    this.demoItems = [
-      {
-        title: "Puente modular reduce tiempos en la Panamericana Sur",
-        desc: "Proyecto vial que mejora seguridad y flujo vehicular.",
-        img: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop",
-        source: "InfraPerú", date: "2025-08-20", url: "#"
-      },
-      {
-        title: "Vivienda con estrategias pasivas de climatización",
-        desc: "Arquitectura bioclimática para eficiencia energética.",
-        img: "https://images.unsplash.com/photo-1464146072230-91cabc968266?q=80&w=1200&auto=format&fit=crop",
-        source: "ArqLatam", date: "2025-08-18", url: "#"
-      },
-      {
-        title: "BIM 7D en hospitales: costos y mantenimiento",
-        desc: "Ingeniería digital para el ciclo de vida de activos.",
-        img: "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?q=80&w=1200&auto=format&fit=crop",
-        source: "ConstruyeHoy", date: "2025-08-12", url: "#"
-      },
-      {
-        title: "Concreto de ultra alto desempeño en viaductos",
-        desc: "Mejor comportamiento ante cargas cíclicas y durabilidad.",
-        img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=1200&auto=format&fit=crop",
-        source: "IngCivil.pe", date: "2025-08-10", url: "#"
-      },
-      {
-        title: "Revestimientos ventilados para fachadas",
-        desc: "Soluciones de envolventes térmicas y mantenimiento reducido.",
-        img: "https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200&auto=format&fit=crop",
-        source: "Detail Arq", date: "2025-08-05", url: "#"
-      },
-      {
-        title: "Gestión LEAN en obra: menos desperdicio",
-        desc: "Pull Planning y Last Planner en proyectos residenciales.",
-        img: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1200&auto=format&fit=crop",
-        source: "ObraEficiente", date: "2025-08-02", url: "#"
-      }
-    ];
+    this.state = { q: "", items: [], filtered: [] };
+    this._autoCloseTimer = null;
+    this._userInteracted = false;
   }
 
   connectedCallback() {
-    // Hereda color de acento de tu sitio (si tienes un botón/elemento con el color de marca)
     const sample = document.querySelector('.btn-details') || document.querySelector('.cta-button');
     if (sample) {
       const ac = getComputedStyle(sample).backgroundColor;
@@ -61,41 +25,31 @@ class NewsSidebar extends HTMLElement {
     }
     this.render();
     this.bind();
+    this.fetchAndRender().finally(() => {
+      // apertura inicial
+      setTimeout(() => this.open(), this.initialDelay);
+      this.startAutoClose();
+    });
   }
 
   attributeChangedCallback(name, _old, val) {
-    if (name === "panel-title" || name === "title") {
+    if ((name === "panel-title" || name === "title") && this.shadowRoot) {
       this._title = val || "Noticias";
-      const h3 = this.shadowRoot?.querySelector(".news-header h3");
+      const h3 = this.shadowRoot.querySelector(".news-header h3");
       if (h3) h3.textContent = this._title;
     }
   }
 
   get title() { return this._title; }
 
+  // ---------- estilos & plantilla ----------
   get styles() {
     return `
 :host{ all: initial; }
 *,*::before,*::after{ box-sizing: border-box; font-family: 'Open Sans','Roboto',system-ui,-apple-system,Segoe UI,sans-serif; }
+:host{ --accent:#e67e22; --bg:#fff; --fg:#333; --muted:#515050; --chip:#f3f3f3; --chipBorder:#e9e9e9; }
+:host-context(body.dark-mode){ --bg:#1e1e1e; --fg:#fff; --muted:#d0d0d0; --chip:#141414; --chipBorder:#2a2a2a; }
 
-/* Tokens de tema (heredables) */
-:host{
-  --accent: #e67e22;   /* se sobreescribe arriba si detecta tu color de marca */
-  --bg: #ffffff;
-  --fg: #333333;
-  --muted: #515050;
-  --chip: #f3f3f3;
-  --chipBorder: #e9e9e9;
-}
-:host-context(body.dark-mode){
-  --bg: #1e1e1e;
-  --fg: #ffffff;
-  --muted: #d0d0d0;
-  --chip: #141414;
-  --chipBorder: #2a2a2a;
-}
-
-/* FAB */
 .news-fab{
   position: fixed; left: 20px; bottom: 24px; width: 56px; height: 56px; border-radius: 50%;
   border: 0; cursor: pointer; display: grid; place-items: center;
@@ -103,7 +57,6 @@ class NewsSidebar extends HTMLElement {
 }
 .news-fab svg{ width:22px; height:22px; }
 
-/* Sidebar */
 .news-sidebar{
   position: fixed; inset: 0 auto 0 0; width: min(420px, 92vw);
   background: var(--bg); color: var(--fg); transform: translateX(-100%);
@@ -112,22 +65,18 @@ class NewsSidebar extends HTMLElement {
 }
 .news-sidebar.open{ transform: translateX(0); }
 
-/* Header */
 .news-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px; border-bottom:1px solid var(--chipBorder); }
 .news-header h3{ margin:0; font-size:18px; letter-spacing:.2px; }
 .close-btn{ background:transparent; color: var(--fg); border:0; font-size:28px; cursor:pointer; line-height:1; }
 
-/* Filtros */
 .news-filters{ padding:10px 12px; display:flex; gap:8px; flex-wrap:wrap; border-bottom:1px solid var(--chipBorder); }
 .chip{ border:1px solid var(--chipBorder); background:var(--chip); color:var(--fg); padding:6px 10px; border-radius:999px; cursor:pointer; font-size:14px; }
 .chip.active{ outline: 2px solid var(--accent); }
 
-/* Búsqueda */
 .news-search{ display:flex; gap:8px; padding:10px 12px; border-bottom:1px solid var(--chipBorder); }
 .news-search input{ flex:1; padding:10px 12px; border-radius:10px; border:1px solid var(--chipBorder); background:var(--chip); color:var(--fg); outline:none; }
 .news-search button{ padding:10px 12px; border-radius:10px; border:0; cursor:pointer; background:var(--accent); color:#fff; }
 
-/* Lista + tarjetas */
 .news-list{ overflow-y:auto; padding:14px; height:100%; display:grid; gap:12px; }
 .news-card{
   display:grid; grid-template-columns:110px 1fr; gap:12px;
@@ -140,6 +89,8 @@ class NewsSidebar extends HTMLElement {
 .news-body h4 a:hover{ text-decoration:underline; }
 .news-meta{ font-size:12px; color:var(--muted); display:flex; gap:10px; margin-top:6px; }
 .news-body p{ margin:4px 0 0 0; font-size:13px; color:var(--muted); }
+
+.ad-badge{ font-size:11px; background:var(--accent); color:#fff; padding:2px 6px; border-radius:6px; margin-left:6px; }
 
 @media (max-width: 520px){ .news-card{ grid-template-columns:1fr; } }
     `;
@@ -158,14 +109,16 @@ class NewsSidebar extends HTMLElement {
   </div>
 
   <div class="news-filters">
-    <button class="chip active" data-q="(construcción OR infraestructura OR obra)">Construcción</button>
-    <button class="chip" data-q="(arquitectura OR arquitecto OR diseño)">Arquitectura</button>
-    <button class="chip" data-q="(ingeniería OR ingeniero OR civil)">Ingeniería</button>
-    <button class="chip" data-q="(vivienda OR inmobiliario OR urbanismo)">Vivienda</button>
+    <button class="chip active" data-q="Construcción">Construcción</button>
+    <button class="chip" data-q="Arquitectura">Arquitectura</button>
+    <button class="chip" data-q="Ingeniería">Ingeniería</button>
+    <button class="chip" data-q="Vivienda">Vivienda</button>
+    <button class="chip" data-q="IA">IA</button>
+    <button class="chip" data-q="Cripto">Cripto</button>
   </div>
 
   <div class="news-search">
-    <input type="search" placeholder="Buscar (p.ej. puentes, BIM, sismoresistente)">
+    <input type="search" placeholder="Buscar (p.ej. puentes, BIM, sismoresistente, Bitcoin)">
     <button aria-label="Buscar">Buscar</button>
   </div>
 
@@ -183,79 +136,127 @@ class NewsSidebar extends HTMLElement {
     const $ = (s)=>this.shadowRoot.querySelector(s);
     const $$=(s)=>Array.from(this.shadowRoot.querySelectorAll(s));
 
-    const sidebar = $(".news-sidebar");
-    const fab = $(".news-fab");
-    const closeBtn = $(".close-btn");
-    const list = $(".news-list");
-    const searchInput = this.shadowRoot.querySelector(".news-search input");
-    const searchBtn = this.shadowRoot.querySelector(".news-search button");
+    this.sidebar = $(".news-sidebar");
+    this.fab = $(".news-fab");
+    this.closeBtn = $(".close-btn");
+    this.list = $(".news-list");
+    this.searchInput = this.shadowRoot.querySelector(".news-search input");
+    this.searchBtn = this.shadowRoot.querySelector(".news-search button");
 
-    const open = ()=>{ sidebar.classList.add("open"); sidebar.setAttribute("aria-hidden","false"); };
-    const close= ()=>{ sidebar.classList.remove("open"); sidebar.setAttribute("aria-hidden","true"); };
+    const open = ()=>{ this.sidebar.classList.add("open"); this.sidebar.setAttribute("aria-hidden","false"); };
+    const close= ()=>{ this.sidebar.classList.remove("open"); this.sidebar.setAttribute("aria-hidden","true"); };
 
-    fab.addEventListener("click", () => {
-      if (!list.children.length) this.renderDemo();
-      open();
-    });
-    closeBtn.addEventListener("click", close);
+    this.open = open; this.close = close;
 
-    // Filtros por chips (filtra las plantillas)
+    this.fab.addEventListener("click", () => { open(); this.startAutoClose(); });
+    this.closeBtn.addEventListener("click", () => { close(); this.clearAutoClose(); });
+
+    // interacción → cancela autocierre
+    const cancelOnInteract = () => { this._userInteracted = true; this.clearAutoClose(); };
+    this.sidebar.addEventListener("mousemove", cancelOnInteract);
+    this.sidebar.addEventListener("scroll", cancelOnInteract);
+    this.sidebar.addEventListener("click", cancelOnInteract);
+    this.searchInput.addEventListener("focus", cancelOnInteract);
+
+    // Chips
     $$(".chip").forEach(chip => chip.addEventListener("click", () => {
       $$(".chip").forEach(c => c.classList.remove("active"));
       chip.classList.add("active");
-      this.state.q = chip.dataset.q;
-      this.renderDemoFiltered();
+      this.state.q = chip.dataset.q || "";
+      this.applyFilter();
     }));
 
-    // Búsqueda (filtra las plantillas)
+    // Búsqueda
     const doSearch = () => {
-      const val = (searchInput.value || "").trim();
-      if (!val) return;
-      this.state.q = `(${val})`;
+      const val = (this.searchInput.value || "").trim();
+      this.state.q = val;
       $$(".chip").forEach(c => c.classList.remove("active"));
-      this.renderDemoFiltered();
+      this.applyFilter();
     };
-    searchBtn.addEventListener("click", doSearch);
-    searchInput.addEventListener("keydown", e => e.key === "Enter" && doSearch());
-
-    // Exponer helpers (por si quieres abrirlo desde el menú Noticias)
-    this.open = open; this.close = close;
+    this.searchBtn.addEventListener("click", doSearch);
+    this.searchInput.addEventListener("keydown", e => e.key === "Enter" && doSearch());
   }
 
-  // ---- Render de plantillas ----
-  renderDemo(){
-    const list = this.shadowRoot.querySelector(".news-list");
-    list.innerHTML = this.demoItems.map(it => this.cardTemplate(this.normalize(it))).join("");
+  async fetchAndRender() {
+    try {
+      this.list.setAttribute("aria-busy", "true");
+      const res = await fetch(this.endpoint, { cache: "no-store" });
+      const data = await res.json();
+      const items = Array.isArray(data) ? data : (data.articles || data.items || []);
+      this.state.items = items.slice(0, this.pageSize);
+      this.state.filtered = this.state.items;
+      this.paint();
+    } catch (e) {
+      // fallback a demo si falla
+      this.state.items = [];
+      this.state.filtered = [];
+      this.list.innerHTML = `<p style="opacity:.8">No se pudieron cargar las noticias.</p>`;
+      console.error("NewsSidebar fetch error:", e);
+    } finally {
+      this.list.removeAttribute("aria-busy");
+    }
   }
 
-  renderDemoFiltered(){
-    const list = this.shadowRoot.querySelector(".news-list");
-    const q = (this.state.q || "").toLowerCase().replace(/[()]/g,"");
-    const filtered = this.demoItems.filter(it => (it.title + " " + (it.desc||"")).toLowerCase().includes(q));
-    list.innerHTML = filtered.length
-      ? filtered.map(it => this.cardTemplate(this.normalize(it))).join("")
-      : `<p style="opacity:.8">No se encontraron resultados para <b>${this.state.q}</b>.</p>`;
+  applyFilter() {
+    const q = (this.state.q || "").toLowerCase();
+    const filtered = (this.state.items || []).filter(n => {
+      const haystack = `${n.title||""} ${n.summary||n.description||""} ${n.source||""} ${n.category||""}`.toLowerCase();
+      return !q || haystack.includes(q);
+    });
+    this.state.filtered = filtered;
+    this.paint();
+  }
+
+  paint() {
+    const arr = this.state.filtered || [];
+    if (!arr.length) {
+      this.list.innerHTML = `<p style="opacity:.8">Sin resultados.</p>`;
+      return;
+    }
+    this.list.innerHTML = arr.map(it => this.cardTemplate(this.normalize(it))).join("");
   }
 
   normalize(n){
-    return { title:n.title, desc:n.desc, url:n.url||"#", img:n.img, date:n.date, source:n.source };
+    return {
+      title: n.title,
+      desc: n.summary || n.description || "",
+      url: n.url || n.link || "#",
+      img: n.image || "",
+      date: n.publishedAt || n.pubDate || "",
+      source: (n.category === "Anuncio" ? `${n.source || ""} <span class="ad-badge">Anuncio</span>` : (n.source || "")),
+      category: n.category || ""
+    };
   }
 
   cardTemplate(item){
     const dateTxt = item.date ? new Date(item.date).toLocaleDateString() : "";
     return `
       <article class="news-card" role="article">
-        <img class="news-thumb" src="${item.img}" alt="">
+        <img class="news-thumb" src="${item.img || "https://via.placeholder.com/640x360?text=Noticia"}" alt="">
         <div class="news-body">
           <h4><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></h4>
           ${item.desc ? `<p>${item.desc}</p>` : ""}
           <div class="news-meta">
             <span>${item.source}</span>
+            ${item.category ? `<span>${item.category}</span>` : ""}
             ${dateTxt ? `<time datetime="${item.date}">${dateTxt}</time>` : ""}
           </div>
         </div>
       </article>
     `;
+  }
+
+  // ---------- autocierre ----------
+  startAutoClose() {
+    if (this._userInteracted || this.autoCloseMs <= 0) return;
+    this.clearAutoClose();
+    this._autoCloseTimer = setTimeout(() => {
+      if (!this._userInteracted) this.close();
+    }, this.autoCloseMs);
+  }
+  clearAutoClose() {
+    if (this._autoCloseTimer) clearTimeout(this._autoCloseTimer);
+    this._autoCloseTimer = null;
   }
 }
 

@@ -663,7 +663,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 </script>
 <script type="module" src="js/nav.js"></script>
-<news-sidebar endpoint="/.netlify/functions/Otross" pagesize="10" title="Noticias"></news-sidebar>
+<news-sidebar
+  endpoint="/.netlify/functions/Otross"
+  pagesize="10"
+  title="Noticias"
+  initial-open-ms="1500"
+  autoclose-ms="12000">
+</news-sidebar>
+
 
 </body>
 
