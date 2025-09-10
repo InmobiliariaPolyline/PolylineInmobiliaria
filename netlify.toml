@@ -1,8 +1,5 @@
 # netlify.toml
 [build]
-  # Cambia "." si tu sitio se genera en otra carpeta (p.ej. "dist" o "public")
-  publish = "."
-
-[functions]
-  directory = "netlify/functions"
+  publish = "public"                 # <- SOLO los archivos estáticos
+  functions = "netlify/functions"    # <- tus funciones (Otross.mjs)
   node_bundler = "esbuild"
