@@ -88,6 +88,13 @@ class NewsSidebar extends HTMLElement {
   z-index: 100000;
   transition: transform .15s ease, box-shadow .2s ease;
 }
+
+/* Ajuste para móviles - mover el botón hacia arriba para evitar conflicto con redes sociales */
+@media (max-width: 768px) {
+  .news-fab {
+    bottom: 100px; /* Mover hacia arriba para evitar conflicto con botones sociales */
+  }
+}
 .news-fab:hover{ transform: translateY(-1px); box-shadow: 0 18px 50px rgba(0,0,0,.4); }
 .news-fab svg{ width:22px; height:22px; }
 
