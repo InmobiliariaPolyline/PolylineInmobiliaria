@@ -89,12 +89,15 @@ class NewsSidebar extends HTMLElement {
   transition: transform .15s ease, box-shadow .2s ease;
 }
 
-/* Ajuste para móviles - mover el botón hacia arriba para evitar conflicto con redes sociales */
+/* Ajuste para móviles - mover el botón a la derecha y hacia arriba */
 @media (max-width: 768px) {
   .news-fab {
+    left: auto;
+    right: 20px;
     bottom: 100px; /* Mover hacia arriba para evitar conflicto con botones sociales */
   }
 }
+
 .news-fab:hover{ transform: translateY(-1px); box-shadow: 0 18px 50px rgba(0,0,0,.4); }
 .news-fab svg{ width:22px; height:22px; }
 
@@ -108,6 +111,20 @@ class NewsSidebar extends HTMLElement {
   border-top-right-radius: 14px; border-bottom-right-radius: 14px;
 }
 .news-sidebar.open{ transform: translateX(0); }
+
+/* Sidebar en móviles - se desliza desde la derecha */
+@media (max-width: 768px) {
+  .news-sidebar {
+    inset: 0 0 0 auto;
+    transform: translateX(100%);
+    border-right: none;
+    border-left: 3px solid color-mix(in oklab, var(--accent), white 10%);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 14px;
+    border-bottom-left-radius: 14px;
+  }
+}
 
 /* Header */
 .news-header{
@@ -237,6 +254,7 @@ class NewsSidebar extends HTMLElement {
     this.searchBtn   = this.shadowRoot.querySelector(".news-search button");
     this.loader      = $(".news-loader");
     this.retryBtn    = $(".retry-btn");
+
 
     const open  = ()=>{ this.sidebar.classList.add("open"); this.backdrop.classList.add("open"); this.sidebar.setAttribute("aria-hidden","false"); };
     const close = ()=>{ this.sidebar.classList.remove("open"); this.backdrop.classList.remove("open"); this.sidebar.setAttribute("aria-hidden","true"); };
@@ -386,6 +404,7 @@ class NewsSidebar extends HTMLElement {
     if (this._autoCloseTimer) clearTimeout(this._autoCloseTimer);
     this._autoCloseTimer = null;
   }
+
 }
 
 if (!customElements.get('news-sidebar')) customElements.define('news-sidebar', NewsSidebar);
