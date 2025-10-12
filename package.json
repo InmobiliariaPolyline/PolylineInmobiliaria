@@ -19,6 +19,7 @@
   "homepage": "https://github.com/InmobiliariaPolyline/PolylineInmobiliaria#readme",
   "description": "",
   "dependencies": {
-    "fast-xml-parser": "^5.2.5"
+    "fast-xml-parser": "^5.2.5",
+    "node-fetch": "^3.3.2"
   }
 }
