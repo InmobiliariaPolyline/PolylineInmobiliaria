@@ -218,6 +218,10 @@ class NewsSidebar extends HTMLElement {
     <button class="retry-btn" hidden>Reintentar</button>
   </div>
 
+  <div class="cta-section" style="padding:10px 12px; border-bottom:1px solid var(--chipBorder);">
+    <button class="chip cta" onclick="window.open('/contact/agenda una reunión.html', '_blank')">Construye tu app con nosotros</button>
+  </div>
+
   <div class="news-filters">
     <button class="chip active" data-q="Construcción y Vivienda">Construcción y Vivienda</button>
     <button class="chip" data-q="IA">IA</button>
