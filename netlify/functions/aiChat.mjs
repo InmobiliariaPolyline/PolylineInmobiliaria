@@ -1,11 +1,11 @@
 // netlify/functions/iaChat.js
 
-const fetch = require("node-fetch");  // usar require para node-fetch v2
+const fetch = require("node-fetch");  // para node-fetch v2
 
 exports.handler = async function(event, context) {
   try {
     if (event.httpMethod === "OPTIONS") {
-      // Preflight CORS
+      // Manejo de CORS preflight
       return {
         statusCode: 200,
         headers: {
@@ -40,10 +40,10 @@ exports.handler = async function(event, context) {
       };
     }
 
-    const OPENAI_KEY = process.env.OPENAI_API_KEY;
-    console.log("OPENAI_KEY:", OPENAI_KEY);
-    if (!OPENAI_KEY) {
-      console.error("Missing OPENAI_API_KEY");
+    const DEEPSEEK_KEY = process.env.DEEPSEEK_API_KEY;
+    console.log("DEEPSEEK_KEY:", DEEPSEEK_KEY);
+    if (!DEEPSEEK_KEY) {
+      console.error("Missing DEEPSEEK_API_KEY");
       return {
         statusCode: 500,
         headers: {
@@ -53,7 +53,9 @@ exports.handler = async function(event, context) {
       };
     }
 
-    const apiUrl = "https://api.openai.com/v1/chat/completions";
+    // URL base para DeepSeek — puedes usar /v1 para compatibilidad
+    const apiUrl = "https://api.deepseek.com/chat/completions";
+    // (también podría usarse "https://api.deepseek.com/v1/chat/completions") :contentReference[oaicite:1]{index=1}
 
     const messages = [
       {
@@ -71,38 +73,38 @@ exports.handler = async function(event, context) {
     messages.push({ role: "user", content: message });
 
     const payload = {
-      model: "gpt-3.5-turbo",
+      model: "deepseek-chat",  // modelo por defecto de DeepSeek :contentReference[oaicite:2]{index=2}
       messages,
       max_tokens: 500,
       temperature: 0.7
     };
 
-    console.log("Payload to OpenAI:", payload);
+    console.log("Payload to DeepSeek:", payload);
 
     const resp = await fetch(apiUrl, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${OPENAI_KEY}`,
+        "Authorization": `Bearer ${DEEPSEEK_KEY}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify(payload)
     });
 
-    console.log("OpenAI response status:", resp.status);
+    console.log("DeepSeek response status:", resp.status);
     if (!resp.ok) {
       const errText = await resp.text();
-      console.error("OpenAI API error:", resp.status, errText);
+      console.error("DeepSeek API error:", resp.status, errText);
       return {
         statusCode: 500,
         headers: {
           "Access-Control-Allow-Origin": "*"
         },
-        body: JSON.stringify({ error: "Error calling OpenAI API", details: errText })
+        body: JSON.stringify({ error: "Error calling DeepSeek API", details: errText })
       };
     }
 
     const data = await resp.json();
-    console.log("OpenAI response body:", data);
+    console.log("DeepSeek response body:", data);
 
     const reply = data.choices?.[0]?.message?.content || "Lo siento, no entendí eso.";
 
