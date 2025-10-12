@@ -65,8 +65,8 @@ exports.handler = async function(event, context) {
     const payload = {
       model: "deepseek/deepseek-r1:free",  // modelo gratuito DeepSeek vía OpenRouter :contentReference[oaicite:0]{index=0}
       messages: messages,
-      max_tokens: 50,
-      temperature: 0.7
+      max_tokens: 5,
+      temperature: 0.5
     };
 
     console.log("Payload to OpenRouter:", payload);
