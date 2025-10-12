@@ -218,11 +218,8 @@ class NewsSidebar extends HTMLElement {
     <button class="retry-btn" hidden>Reintentar</button>
   </div>
 
-  <div class="cta-section" style="padding:10px 12px; border-bottom:1px solid var(--chipBorder);">
-    <button class="chip cta" onclick="window.open('/contact/agenda una reunión.html', '_blank')">Construye tu app con nosotros</button>
-  </div>
-
   <div class="news-filters">
+    <button class="chip cta" onclick="window.open('/contact/agenda una reunión.html', '_blank')">Construye tu app con nosotros</button>
     <button class="chip active" data-q="Construcción y Vivienda">Construcción y Vivienda</button>
     <button class="chip" data-q="IA">IA</button>
     <button class="chip" data-q="Cripto">Cripto</button>
@@ -273,19 +270,27 @@ class NewsSidebar extends HTMLElement {
       this.sidebar.addEventListener(ev, cancelOnInteract)
     );
 
-    // Chips
-    $$(".chip").forEach(chip => chip.addEventListener("click", () => {
-      $$(".chip").forEach(c => c.classList.remove("active"));
+    // Chips (excluyendo CTA)
+    $$(".chip:not(.cta)").forEach(chip => chip.addEventListener("click", () => {
+      $$(".chip:not(.cta)").forEach(c => c.classList.remove("active"));
       chip.classList.add("active");
       this.state.q = chip.dataset.q || "";
       this.applyFilter();
     }));
 
+    // CTA chip
+    const ctaChip = this.shadowRoot.querySelector(".chip.cta");
+    if (ctaChip) {
+      ctaChip.addEventListener("click", () => {
+        window.open('/contact/agenda una reunión.html', '_blank');
+      });
+    }
+
     // Búsqueda
     const doSearch = () => {
       const val = (this.searchInput.value || "").trim();
       this.state.q = val;
-      $$(".chip").forEach(c => c.classList.remove("active"));
+      $$(".chip:not(.cta)").forEach(c => c.classList.remove("active"));
       this.applyFilter();
     };
     this.searchBtn.addEventListener("click", doSearch);
