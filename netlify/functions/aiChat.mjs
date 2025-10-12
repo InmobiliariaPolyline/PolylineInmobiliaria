@@ -1,11 +1,11 @@
 // netlify/functions/iaChat.js
 
-import fetch from "node-fetch";
+const fetch = require("node-fetch");  // usar require para node-fetch v2
 
-export async function handler(event, context) {
+exports.handler = async function(event, context) {
   try {
-    // Manejar petición OPTIONS de preflight CORS
     if (event.httpMethod === "OPTIONS") {
+      // Preflight CORS
       return {
         statusCode: 200,
         headers: {
@@ -21,10 +21,9 @@ export async function handler(event, context) {
       return {
         statusCode: 405,
         headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization"
+          "Access-Control-Allow-Origin": "*"
         },
-        body: JSON.stringify({ error: "Only POST allowed" }),
+        body: JSON.stringify({ error: "Only POST allowed" })
       };
     }
 
@@ -35,30 +34,27 @@ export async function handler(event, context) {
       return {
         statusCode: 400,
         headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization"
+          "Access-Control-Allow-Origin": "*"
         },
-        body: JSON.stringify({ error: "Message is required" }),
+        body: JSON.stringify({ error: "Message is required" })
       };
     }
 
     const OPENAI_KEY = process.env.OPENAI_API_KEY;
-    console.log("OPENAI_KEY:", OPENAI_KEY);  // <-- log para verificar valor
+    console.log("OPENAI_KEY:", OPENAI_KEY);
     if (!OPENAI_KEY) {
       console.error("Missing OPENAI_API_KEY");
       return {
         statusCode: 500,
         headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization"
+          "Access-Control-Allow-Origin": "*"
         },
-        body: JSON.stringify({ error: "API key not configured" }),
+        body: JSON.stringify({ error: "API key not configured" })
       };
     }
 
     const apiUrl = "https://api.openai.com/v1/chat/completions";
 
-    // Preparar mensajes para OpenAI
     const messages = [
       {
         role: "system",
@@ -76,12 +72,12 @@ export async function handler(event, context) {
 
     const payload = {
       model: "gpt-3.5-turbo",
-      messages: messages,
+      messages,
       max_tokens: 500,
       temperature: 0.7
     };
 
-    console.log("Payload to OpenAI:", JSON.stringify(payload));  // <-- log del payload
+    console.log("Payload to OpenAI:", payload);
 
     const resp = await fetch(apiUrl, {
       method: "POST",
@@ -92,30 +88,28 @@ export async function handler(event, context) {
       body: JSON.stringify(payload)
     });
 
-    console.log("OpenAI response status:", resp.status);  // <-- log status
+    console.log("OpenAI response status:", resp.status);
     if (!resp.ok) {
       const errText = await resp.text();
       console.error("OpenAI API error:", resp.status, errText);
       return {
         statusCode: 500,
         headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization"
+          "Access-Control-Allow-Origin": "*"
         },
         body: JSON.stringify({ error: "Error calling OpenAI API", details: errText })
       };
     }
 
     const data = await resp.json();
-    console.log("OpenAI response body:", data);  // <-- log del cuerpo completo
+    console.log("OpenAI response body:", data);
 
     const reply = data.choices?.[0]?.message?.content || "Lo siento, no entendí eso.";
 
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+        "Access-Control-Allow-Origin": "*"
       },
       body: JSON.stringify({ reply })
     };
@@ -124,10 +118,9 @@ export async function handler(event, context) {
     return {
       statusCode: 500,
       headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+        "Access-Control-Allow-Origin": "*"
       },
       body: JSON.stringify({ error: err.message || "Internal error" })
     };
   }
-}
+};
