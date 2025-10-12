@@ -5,4 +5,4 @@
 
   [functions]
   # Aquí defines módulos que no serán empaquetados por esbuild
-  external_node_modules = ["node-fetch", "openai"]
+  external_node_modules = ["node-fetch"]
