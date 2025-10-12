@@ -2,3 +2,4 @@
   publish = "."
   functions = "netlify/functions"
   node_bundler = "esbuild"
+    external_node_modules = ["node-fetch"]
