@@ -219,10 +219,7 @@ class NewsSidebar extends HTMLElement {
   </div>
 
   <div class="news-filters">
-    <button class="chip active" data-q="Construcción">Construcción</button>
-    <button class="chip" data-q="Arquitectura">Arquitectura</button>
-    <button class="chip" data-q="Ingeniería">Ingeniería</button>
-    <button class="chip" data-q="Vivienda">Vivienda</button>
+    <button class="chip active" data-q="Construcción y Vivienda">Construcción y Vivienda</button>
     <button class="chip" data-q="IA">IA</button>
     <button class="chip" data-q="Cripto">Cripto</button>
   </div>
@@ -347,7 +344,12 @@ class NewsSidebar extends HTMLElement {
     const q = (this.state.q || "").toLowerCase();
     const filtered = (this.state.items || []).filter(n => {
       const haystack = `${n.title||""} ${n.summary||n.description||""} ${n.source||""} ${n.category||""}`.toLowerCase();
-      return !q || haystack.includes(q);
+      if (!q) return true;
+      if (q === "construcción y vivienda") {
+        const combinedCategories = ["construcción", "arquitectura", "ingeniería", "vivienda"];
+        return combinedCategories.some(cat => haystack.includes(cat));
+      }
+      return haystack.includes(q);
     });
     this.state.filtered = filtered;
     this.paint();
