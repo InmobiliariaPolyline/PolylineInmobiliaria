@@ -35,9 +35,9 @@ export async function handler(event, context) {
       };
     }
 
-    const OPENAI_KEY = process.env.OPENAI_API_KEY;
+    const OPENAI_KEY = process.env.api_key;
     if (!OPENAI_KEY) {
-      console.error("Missing OPENAI_API_KEY");
+      console.error("Missing api_key");
       return {
         statusCode: 500,
         headers: { "Access-Control-Allow-Origin": "*" },
