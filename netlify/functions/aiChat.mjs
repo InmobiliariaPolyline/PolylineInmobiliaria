@@ -21,20 +21,18 @@ export async function handler(event, context) {
       };
     }
 
-    // Usar la variable de entorno que configuraste en Netlify
-    const DEEPSEEK_KEY = process.env.DEEPSEEK_API_KEY;
-    if (!DEEPSEEK_KEY) {
-      console.error("Missing DEEPSEEK_API_KEY");
+    const OPENAI_KEY = process.env.OPENAI_API_KEY;
+    if (!OPENAI_KEY) {
+      console.error("Missing OPENAI_API_KEY");
       return {
         statusCode: 500,
         body: JSON.stringify({ error: "API key not configured" }),
       };
     }
 
-    // Endpoint de DeepSeek para chat completions
-    const apiUrl = "https://api.deepseek.com/chat/completions";
+    const apiUrl = "https://api.openai.com/v1/chat/completions";
 
-    // Preparar los mensajes que enviarás al modelo
+    // Preparar mensajes para OpenAI
     const messages = [
       {
         role: "system",
@@ -45,14 +43,13 @@ export async function handler(event, context) {
 
     if (Array.isArray(history)) {
       for (const msg of history) {
-        // Asegura que tengan esa estructura
         messages.push(msg);
       }
     }
     messages.push({ role: "user", content: message });
 
     const payload = {
-      model: "deepseek-chat",  // modelo estándar de chat de DeepSeek
+      model: "gpt-3.5-turbo",
       messages: messages,
       max_tokens: 500,
       temperature: 0.7
@@ -61,7 +58,7 @@ export async function handler(event, context) {
     const resp = await fetch(apiUrl, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${DEEPSEEK_KEY}`,
+        "Authorization": `Bearer ${OPENAI_KEY}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify(payload)
@@ -69,10 +66,10 @@ export async function handler(event, context) {
 
     if (!resp.ok) {
       const errText = await resp.text();
-      console.error("DeepSeek API error:", resp.status, errText);
+      console.error("OpenAI API error:", resp.status, errText);
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: "Error calling DeepSeek API", details: errText })
+        body: JSON.stringify({ error: "Error calling OpenAI API", details: errText })
       };
     }
 

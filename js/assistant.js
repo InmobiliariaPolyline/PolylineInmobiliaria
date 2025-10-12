@@ -7,11 +7,11 @@ class VirtualAssistant {
       ],
       default: "Lo siento, no tengo una respuesta preparada para eso aún.",
       keywords: {
-        "proyecto": "Tenemos varios proyectos en desarrollo. ¿Te gustaría conocer nuestros proyectos en Benavides o Pueblo Libre?",
-        "precio": "Los precios varían según el proyecto y el tipo de unidad. ¿Te gustaría que un asesor te contacte con información detallada?",
-        "ubicación": "Nuestros proyectos están ubicados en zonas estratégicas de Lima. ¿Qué zona te interesa?",
-        "contacto": "Puedes contactarnos al 907341122 o enviarnos un correo a polylinesac@yahoo.com",
-        "horario": "Nuestro horario de atención es de Lunes a Viernes de 9am a 6pm y Sábados de 9am a 1pm"
+        proyecto: "Tenemos varios proyectos en desarrollo. ¿Te gustaría conocer nuestros proyectos en Benavides o Pueblo Libre?",
+        precio: "Los precios varían según el proyecto y el tipo de unidad. ¿Te gustaría que un asesor te contacte con información detallada?",
+        ubicación: "Nuestros proyectos están ubicados en zonas estratégicas de Lima. ¿Qué zona te interesa?",
+        contacto: "Puedes contactarnos al 907341122 o enviarnos un correo a polylinesac@yahoo.com",
+        horario: "Nuestro horario de atención es de Lunes a Viernes de 9am a 6pm y Sábados de 9am a 1pm"
       }
     };
     this.standardOptions = [
@@ -35,28 +35,31 @@ class VirtualAssistant {
     this.synthesis = window.speechSynthesis;
     this.voice = null;
     this.voiceName = 'Microsoft Helena Desktop - Spanish (Spain)';
-    this.chatHistory = [];  // Para contexto
+    this.chatHistory = [];
     this.init();
     this.initVoice();
   }
 
   async initVoice() {
-    const loadVoices = () => new Promise(resolve => {
-      const voices = this.synthesis.getVoices();
-      if (voices.length > 0) {
-        resolve(voices);
-      } else {
-        speechSynthesis.addEventListener('voiceschanged', () => {
-          resolve(this.synthesis.getVoices());
-        });
-      }
-    });
+    const loadVoices = () =>
+      new Promise(resolve => {
+        const voices = this.synthesis.getVoices();
+        if (voices.length > 0) {
+          resolve(voices);
+        } else {
+          speechSynthesis.addEventListener('voiceschanged', () => {
+            resolve(this.synthesis.getVoices());
+          });
+        }
+      });
 
     const voices = await loadVoices();
-    this.voice = voices.find(voice =>
-      voice.name.includes('Helena') ||
-      (voice.lang.startsWith('es') && voice.name.toLowerCase().includes('female'))
-    ) || voices.find(voice => voice.lang.startsWith('es'));
+    this.voice =
+      voices.find(
+        voice =>
+          voice.name.includes('Helena') ||
+          (voice.lang.startsWith('es') && voice.name.toLowerCase().includes('female'))
+      ) || voices.find(voice => voice.lang.startsWith('es'));
 
     console.log('Voz seleccionada:', this.voice?.name);
   }
@@ -64,15 +67,12 @@ class VirtualAssistant {
   speak(text) {
     if (this.isMuted || !text) return;
     this.synthesis.cancel();
-
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.voice = this.voice;
     utterance.rate = 1.1;
     utterance.pitch = 1.2;
     utterance.volume = 1;
     utterance.lang = 'es-ES';
-
-    // Opcional: limpiar texto si necesitas
     utterance.text = text;
     this.synthesis.speak(utterance);
   }
@@ -84,8 +84,13 @@ class VirtualAssistant {
 
   createHTML() {
     const currentPath = window.location.pathname;
-    const isRoot = currentPath.endsWith('index.html') || currentPath === '/' || currentPath === '';
-    const logoPath = isRoot ? 'Resource/Logo/logo.png' : '../Resource/Logo/logo.png';
+    const isRoot =
+      currentPath.endsWith('index.html') ||
+      currentPath === '/' ||
+      currentPath === '';
+    const logoPath = isRoot
+      ? 'Resource/Logo/logo.png'
+      : '../Resource/Logo/logo.png';
 
     const assistantHTML = `
       <div class="virtual-assistant">
@@ -121,16 +126,16 @@ class VirtualAssistant {
     const muteButton = document.querySelector('.mute-button');
 
     avatar.addEventListener('click', () => this.toggleChat());
-    input.addEventListener('keypress', (e) => {
+    input.addEventListener('keypress', e => {
       if (e.key === 'Enter') this.sendMessage();
     });
     button.addEventListener('click', () => this.sendMessage());
 
     muteButton.addEventListener('click', () => {
       this.isMuted = !this.isMuted;
-      muteButton.innerHTML = this.isMuted ?
-        '<i class="fas fa-volume-mute"></i>' :
-        '<i class="fas fa-volume-up"></i>';
+      muteButton.innerHTML = this.isMuted
+        ? '<i class="fas fa-volume-mute"></i>'
+        : '<i class="fas fa-volume-up"></i>';
       if (this.isMuted) this.synthesis.cancel();
     });
   }
@@ -159,10 +164,9 @@ class VirtualAssistant {
         avatar.classList.remove('bounce');
         avatar.querySelector('i').style.transform = '';
       }, 1000);
-
     } else {
       chatContainer.classList.remove('open');
-      setTimeout(() => chatContainer.style.display = 'none', 500);
+      setTimeout(() => (chatContainer.style.display = 'none'), 500);
     }
   }
 
@@ -172,10 +176,7 @@ class VirtualAssistant {
     if (!message) return;
     this.addMessage(message, 'user');
     inputEl.value = '';
-
-    // Añadir al historial
-    this.chatHistory.push({ role: "user", content: message });
-
+    this.chatHistory.push({ role: 'user', content: message });
     this.processWithAI(message);
   }
 
@@ -183,16 +184,13 @@ class VirtualAssistant {
     const messages = document.querySelector('.chat-messages');
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', `${sender}-message`);
-
     messageDiv.style.color = sender === 'user' ? 'white' : '#333';
     messageDiv.style.fontWeight = '400';
     messageDiv.textContent = text;
     messages.appendChild(messageDiv);
-
     if (sender === 'bot') {
       this.speak(text);
     }
-
     messages.scrollTop = messages.scrollHeight;
   }
 
@@ -211,16 +209,16 @@ class VirtualAssistant {
       });
       const j = await resp.json();
       if (j.error) {
-        console.error("Chatbot error:", j.error);
-        this.addMessage("Lo siento, hubo un error al procesar tu mensaje.", 'bot');
+        console.error('Chatbot error:', j.error);
+        this.addMessage('Lo siento, hubo un error al procesar tu mensaje.', 'bot');
       } else {
         const reply = j.reply;
-        this.chatHistory.push({ role: "assistant", content: reply });
+        this.chatHistory.push({ role: 'assistant', content: reply });
         this.addMessage(reply, 'bot');
       }
     } catch (err) {
-      console.error("Fetch error:", err);
-      this.addMessage("Lo siento, error de conexión.", 'bot');
+      console.error('Fetch error:', err);
+      this.addMessage('Lo siento, error de conexión.', 'bot');
     } finally {
       typing.style.display = 'none';
     }
