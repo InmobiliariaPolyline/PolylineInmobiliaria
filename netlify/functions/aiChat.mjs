@@ -4,9 +4,26 @@ import fetch from "node-fetch";
 
 export async function handler(event, context) {
   try {
+    // Manejar petición OPTIONS de preflight CORS
+    if (event.httpMethod === "OPTIONS") {
+      return {
+        statusCode: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Allow-Methods": "POST, OPTIONS"
+        },
+        body: ""
+      };
+    }
+
     if (event.httpMethod !== "POST") {
       return {
         statusCode: 405,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization"
+        },
         body: JSON.stringify({ error: "Only POST allowed" }),
       };
     }
@@ -17,15 +34,24 @@ export async function handler(event, context) {
     if (!message) {
       return {
         statusCode: 400,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization"
+        },
         body: JSON.stringify({ error: "Message is required" }),
       };
     }
 
     const OPENAI_KEY = process.env.OPENAI_API_KEY;
+    console.log("OPENAI_KEY:", OPENAI_KEY);  // <-- log para verificar valor
     if (!OPENAI_KEY) {
       console.error("Missing OPENAI_API_KEY");
       return {
         statusCode: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization"
+        },
         body: JSON.stringify({ error: "API key not configured" }),
       };
     }
@@ -55,6 +81,8 @@ export async function handler(event, context) {
       temperature: 0.7
     };
 
+    console.log("Payload to OpenAI:", JSON.stringify(payload));  // <-- log del payload
+
     const resp = await fetch(apiUrl, {
       method: "POST",
       headers: {
@@ -64,26 +92,41 @@ export async function handler(event, context) {
       body: JSON.stringify(payload)
     });
 
+    console.log("OpenAI response status:", resp.status);  // <-- log status
     if (!resp.ok) {
       const errText = await resp.text();
       console.error("OpenAI API error:", resp.status, errText);
       return {
         statusCode: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization"
+        },
         body: JSON.stringify({ error: "Error calling OpenAI API", details: errText })
       };
     }
 
     const data = await resp.json();
+    console.log("OpenAI response body:", data);  // <-- log del cuerpo completo
+
     const reply = data.choices?.[0]?.message?.content || "Lo siento, no entendí eso.";
 
     return {
       statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+      },
       body: JSON.stringify({ reply })
     };
   } catch (err) {
     console.error("iaChat error:", err);
     return {
       statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+      },
       body: JSON.stringify({ error: err.message || "Internal error" })
     };
   }
