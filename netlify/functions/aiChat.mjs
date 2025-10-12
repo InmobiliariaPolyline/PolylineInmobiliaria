@@ -1,5 +1,10 @@
 const fetch = require("node-fetch");  // usando node-fetch v2
 
+// Función auxiliar: duerme por “ms” milisegundos
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 exports.handler = async function(event, context) {
   try {
     if (event.httpMethod === "OPTIONS") {
@@ -33,7 +38,7 @@ exports.handler = async function(event, context) {
       };
     }
 
-    const OPENROUTER_KEY = process.env.api_key;
+    const OPENROUTER_KEY = process.env.api_key;  // asegúrate de que esta variable de entorno esté bien nombrada
     console.log("OPENROUTER_KEY:", OPENROUTER_KEY);
     if (!OPENROUTER_KEY) {
       console.error("Missing OPENROUTER_API_KEY");
@@ -44,7 +49,6 @@ exports.handler = async function(event, context) {
       };
     }
 
-    // Endpoint de OpenRouter (compatible con modelos tipo DeepSeek)
     const apiUrl = "https://openrouter.ai/api/v1/chat/completions";
 
     // Construir mensajes
@@ -63,45 +67,85 @@ exports.handler = async function(event, context) {
     messages.push({ role: "user", content: message });
 
     const payload = {
-      model: "deepseek/deepseek-r1:free",  // modelo gratuito DeepSeek vía OpenRouter :contentReference[oaicite:0]{index=0}
+      model: "deepseek/deepseek-r1:free",
       messages: messages,
-      max_tokens: 5,
+      max_tokens: 1,
       temperature: 0.5
     };
 
     console.log("Payload to OpenRouter:", payload);
 
-    const resp = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${OPENROUTER_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
+    // Parámetros de reintento
+    const maxRetries = 3;
+    let attempt = 0;
+    let backoffMs = 500;  // empezamos con medio segundo
 
-    console.log("OpenRouter / DeepSeek response status:", resp.status);
-    if (!resp.ok) {
-      const errText = await resp.text();
-      console.error("OpenRouter API error:", resp.status, errText);
-      return {
-        statusCode: 500,
-        headers: { "Access-Control-Allow-Origin": "*" },
-        body: JSON.stringify({ error: "Error calling OpenRouter API", details: errText })
-      };
+    let lastError = null;
+
+    while (attempt <= maxRetries) {
+      try {
+        const resp = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${OPENROUTER_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        console.log(`Attempt ${attempt} — status:`, resp.status);
+
+        if (resp.ok) {
+          const data = await resp.json();
+          console.log("OpenRouter response body:", data);
+
+          const reply = data.choices?.[0]?.message?.content || "Lo siento, no entendí eso.";
+
+          return {
+            statusCode: 200,
+            headers: { "Access-Control-Allow-Origin": "*" },
+            body: JSON.stringify({ reply })
+          };
+        } else {
+          const errText = await resp.text();
+          console.error(`OpenRouter API error on attempt ${attempt}:`, resp.status, errText);
+
+          // Si es 429 (rate limit) o 502 (modelo caído), intentamos reintentar
+          if (resp.status === 429 || resp.status === 502) {
+            lastError = { status: resp.status, text: errText };
+            // espera antes de reintentar
+            await sleep(backoffMs);
+            attempt++;
+            backoffMs *= 2;  // duplicar el intervalo
+            continue;  // intentar nuevamente
+          } else {
+            // otro tipo de error: no reintentar
+            return {
+              statusCode: 500,
+              headers: { "Access-Control-Allow-Origin": "*" },
+              body: JSON.stringify({ error: "Error calling OpenRouter API", details: errText })
+            };
+          }
+        }
+      } catch (innerErr) {
+        console.error(`Fetch error on attempt ${attempt}:`, innerErr);
+        lastError = innerErr;
+        // esperar y reintentar
+        await sleep(backoffMs);
+        attempt++;
+        backoffMs *= 2;
+        continue;
+      }
     }
 
-    const data = await resp.json();
-    console.log("OpenRouter response body:", data);
-
-    // La respuesta estándar tiene estructura similar a OpenAI
-    const reply = data.choices?.[0]?.message?.content || "Lo siento, no entendí eso.";
-
+    // Si llegamos aquí, todos los intentos fallaron
+    console.error("All attempts failed. Last error:", lastError);
     return {
-      statusCode: 200,
+      statusCode: 500,
       headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({ reply })
+      body: JSON.stringify({ error: "Unable to get a valid response after retries.", details: lastError })
     };
+
   } catch (err) {
     console.error("iaChat error:", err);
     return {
