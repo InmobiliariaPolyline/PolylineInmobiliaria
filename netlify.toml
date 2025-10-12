@@ -2,7 +2,7 @@
   publish = "."
   functions = "netlify/functions"
   node_bundler = "esbuild"
-  
+
   [functions]
   # Aquí defines módulos que no serán empaquetados por esbuild
-  external_node_modules = ["node-fetch"]
+  external_node_modules = ["node-fetch", "openai"]

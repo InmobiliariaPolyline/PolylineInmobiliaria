@@ -20,6 +20,7 @@
   "description": "",
   "dependencies": {
     "fast-xml-parser": "^5.2.5",
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^2.7.0",
+    "openai": "^6.3.0"
   }
 }
