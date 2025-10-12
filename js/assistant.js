@@ -305,29 +305,39 @@ class VirtualAssistant {
         this.speak(optionsText);
     }
 
-    processMessage(message) {
+    async processMessage(message) {
         const typing = document.querySelector('.typing-indicator');
         typing.style.display = 'block';
 
-        setTimeout(() => {
-            let response = this.responses.default;
-            const lowercaseMessage = message.toLowerCase();
+        try {
+            const response = await fetch('/.netlify/functions/llama', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt: message })
+            });
 
-            for (let [key, value] of Object.entries(this.responses.keywords)) {
-                if (lowercaseMessage.includes(key)) {
-                    response = value;
-                    break;
-                }
-            }
+            const data = await response.json();
+            const botResponse = data.response || 'Lo siento, no pude procesar tu mensaje.';
 
             typing.style.display = 'none';
-            this.addMessage(response, 'bot');
-            
+            this.addMessage(botResponse, 'bot');
+
             // Agregar delay antes de mostrar opciones
             setTimeout(() => {
                 this.addMessage("¿Cómo te gustaría continuar?", 'bot', true);
             }, 500);
-        }, 1000);
+        } catch (error) {
+            console.error('Error calling Llama API:', error);
+            typing.style.display = 'none';
+            this.addMessage('Lo siento, hubo un problema técnico. Por favor, contacta directamente a POLYLINE.', 'bot');
+
+            // Mostrar opciones de contacto
+            setTimeout(() => {
+                this.addMessage("¿Cómo te gustaría continuar?", 'bot', true);
+            }, 500);
+        }
     }
 }
 
