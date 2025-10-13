@@ -43,6 +43,7 @@ export async function handler(event, context) {
         body: JSON.stringify({ error: "Message is required" })
       };
     }
+    console.log("VALOR DE API AQUI (early):", process.env.api_key);
 
     const OPENROUTER_KEY = process.env.api_key;
     console.log("OPENROUTER_KEY:", OPENROUTER_KEY);
