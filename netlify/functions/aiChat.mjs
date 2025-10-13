@@ -14,6 +14,9 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "POST, OPTIONS"
 };
 
+console.log("ENV api_key early:", process.env.api_key);
+
+
 export async function handler(event, context) {
   try {
     // Preflight CORS: responder a OPTIONS

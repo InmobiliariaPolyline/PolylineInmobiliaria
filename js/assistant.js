@@ -199,7 +199,7 @@ class VirtualAssistant {
     typing.style.display = 'block';
 
     try {
-      const resp = await fetch('/.netlify/functions/aiChat', {
+      const resp = await fetch('https://zippy-brioche-fe647a.netlify.app/.netlify/functions/aiChat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
