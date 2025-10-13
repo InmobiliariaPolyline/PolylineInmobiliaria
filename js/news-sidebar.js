@@ -88,6 +88,16 @@ class NewsSidebar extends HTMLElement {
   z-index: 100000;
   transition: transform .15s ease, box-shadow .2s ease;
 }
+
+/* Ajuste para móviles - mover el botón a la derecha y hacia arriba */
+@media (max-width: 768px) {
+  .news-fab {
+    left: auto;
+    right: 20px;
+    bottom: 100px; /* Mover hacia arriba para evitar conflicto con botones sociales */
+  }
+}
+
 .news-fab:hover{ transform: translateY(-1px); box-shadow: 0 18px 50px rgba(0,0,0,.4); }
 .news-fab svg{ width:22px; height:22px; }
 
@@ -101,6 +111,20 @@ class NewsSidebar extends HTMLElement {
   border-top-right-radius: 14px; border-bottom-right-radius: 14px;
 }
 .news-sidebar.open{ transform: translateX(0); }
+
+/* Sidebar en móviles - se desliza desde la derecha */
+@media (max-width: 768px) {
+  .news-sidebar {
+    inset: 0 0 0 auto;
+    transform: translateX(100%);
+    border-right: none;
+    border-left: 3px solid color-mix(in oklab, var(--accent), white 10%);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 14px;
+    border-bottom-left-radius: 14px;
+  }
+}
 
 /* Header */
 .news-header{
@@ -195,10 +219,8 @@ class NewsSidebar extends HTMLElement {
   </div>
 
   <div class="news-filters">
-    <button class="chip active" data-q="Construcción">Construcción</button>
-    <button class="chip" data-q="Arquitectura">Arquitectura</button>
-    <button class="chip" data-q="Ingeniería">Ingeniería</button>
-    <button class="chip" data-q="Vivienda">Vivienda</button>
+    <button class="chip cta" onclick="window.open('/contact/agenda una reunión.html', '_blank')">Construye tu app con nosotros</button>
+    <button class="chip active" data-q="Construcción y Vivienda">Construcción y Vivienda</button>
     <button class="chip" data-q="IA">IA</button>
     <button class="chip" data-q="Cripto">Cripto</button>
   </div>
@@ -231,6 +253,7 @@ class NewsSidebar extends HTMLElement {
     this.loader      = $(".news-loader");
     this.retryBtn    = $(".retry-btn");
 
+
     const open  = ()=>{ this.sidebar.classList.add("open"); this.backdrop.classList.add("open"); this.sidebar.setAttribute("aria-hidden","false"); };
     const close = ()=>{ this.sidebar.classList.remove("open"); this.backdrop.classList.remove("open"); this.sidebar.setAttribute("aria-hidden","true"); };
 
@@ -247,19 +270,27 @@ class NewsSidebar extends HTMLElement {
       this.sidebar.addEventListener(ev, cancelOnInteract)
     );
 
-    // Chips
-    $$(".chip").forEach(chip => chip.addEventListener("click", () => {
-      $$(".chip").forEach(c => c.classList.remove("active"));
+    // Chips (excluyendo CTA)
+    $$(".chip:not(.cta)").forEach(chip => chip.addEventListener("click", () => {
+      $$(".chip:not(.cta)").forEach(c => c.classList.remove("active"));
       chip.classList.add("active");
       this.state.q = chip.dataset.q || "";
       this.applyFilter();
     }));
 
+    // CTA chip
+    const ctaChip = this.shadowRoot.querySelector(".chip.cta");
+    if (ctaChip) {
+      ctaChip.addEventListener("click", () => {
+        window.open('/contact/agenda una reunión.html', '_blank');
+      });
+    }
+
     // Búsqueda
     const doSearch = () => {
       const val = (this.searchInput.value || "").trim();
       this.state.q = val;
-      $$(".chip").forEach(c => c.classList.remove("active"));
+      $$(".chip:not(.cta)").forEach(c => c.classList.remove("active"));
       this.applyFilter();
     };
     this.searchBtn.addEventListener("click", doSearch);
@@ -322,7 +353,12 @@ class NewsSidebar extends HTMLElement {
     const q = (this.state.q || "").toLowerCase();
     const filtered = (this.state.items || []).filter(n => {
       const haystack = `${n.title||""} ${n.summary||n.description||""} ${n.source||""} ${n.category||""}`.toLowerCase();
-      return !q || haystack.includes(q);
+      if (!q) return true;
+      if (q === "construcción y vivienda") {
+        const combinedCategories = ["construcción", "arquitectura", "ingeniería", "vivienda"];
+        return combinedCategories.some(cat => haystack.includes(cat));
+      }
+      return haystack.includes(q);
     });
     this.state.filtered = filtered;
     this.paint();
@@ -379,6 +415,7 @@ class NewsSidebar extends HTMLElement {
     if (this._autoCloseTimer) clearTimeout(this._autoCloseTimer);
     this._autoCloseTimer = null;
   }
+
 }
 
 if (!customElements.get('news-sidebar')) customElements.define('news-sidebar', NewsSidebar);
