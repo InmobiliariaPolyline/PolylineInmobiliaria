@@ -7,24 +7,28 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Encabezados CORS reutilizables
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Methods": "POST, OPTIONS"
+};
+
 export async function handler(event, context) {
   try {
+    // Preflight CORS: responder a OPTIONS
     if (event.httpMethod === "OPTIONS") {
       return {
         statusCode: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
-          "Access-Control-Allow-Methods": "POST, OPTIONS"
-        },
-        body: ""
+        headers: CORS_HEADERS,
+        body: ""  // puede estar vacío
       };
     }
 
     if (event.httpMethod !== "POST") {
       return {
         statusCode: 405,
-        headers: { "Access-Control-Allow-Origin": "*" },
+        headers: CORS_HEADERS,
         body: JSON.stringify({ error: "Only POST allowed" })
       };
     }
@@ -35,7 +39,7 @@ export async function handler(event, context) {
     if (!message) {
       return {
         statusCode: 400,
-        headers: { "Access-Control-Allow-Origin": "*" },
+        headers: CORS_HEADERS,
         body: JSON.stringify({ error: "Message is required" })
       };
     }
@@ -46,7 +50,7 @@ export async function handler(event, context) {
       console.error("Missing OPENROUTER_API_KEY");
       return {
         statusCode: 500,
-        headers: { "Access-Control-Allow-Origin": "*" },
+        headers: CORS_HEADERS,
         body: JSON.stringify({ error: "API key not configured" })
       };
     }
@@ -81,7 +85,6 @@ export async function handler(event, context) {
     const maxRetries = 3;
     let attempt = 0;
     let backoffMs = 500;  // empezamos con medio segundo
-
     let lastError = null;
 
     while (attempt <= maxRetries) {
@@ -105,26 +108,23 @@ export async function handler(event, context) {
 
           return {
             statusCode: 200,
-            headers: { "Access-Control-Allow-Origin": "*" },
+            headers: CORS_HEADERS,
             body: JSON.stringify({ reply })
           };
         } else {
           const errText = await resp.text();
           console.error(`OpenRouter API error on attempt ${attempt}:`, resp.status, errText);
 
-          // Si es 429 (rate limit) o 502 (modelo caído), intentamos reintentar
           if (resp.status === 429 || resp.status === 502) {
             lastError = { status: resp.status, text: errText };
-            // espera antes de reintentar
             await sleep(backoffMs);
             attempt++;
-            backoffMs *= 2;  // duplicar el intervalo
-            continue;  // intentar nuevamente
+            backoffMs *= 2;
+            continue;
           } else {
-            // otro tipo de error: no reintentar
             return {
               statusCode: 500,
-              headers: { "Access-Control-Allow-Origin": "*" },
+              headers: CORS_HEADERS,
               body: JSON.stringify({ error: "Error calling OpenRouter API", details: errText })
             };
           }
@@ -132,7 +132,6 @@ export async function handler(event, context) {
       } catch (innerErr) {
         console.error(`Fetch error on attempt ${attempt}:`, innerErr);
         lastError = innerErr;
-        // esperar y reintentar
         await sleep(backoffMs);
         attempt++;
         backoffMs *= 2;
@@ -140,11 +139,10 @@ export async function handler(event, context) {
       }
     }
 
-    // Si llegamos aquí, todos los intentos fallaron
     console.error("All attempts failed. Last error:", lastError);
     return {
       statusCode: 500,
-      headers: { "Access-Control-Allow-Origin": "*" },
+      headers: CORS_HEADERS,
       body: JSON.stringify({ error: "Unable to get a valid response after retries.", details: lastError })
     };
 
@@ -152,7 +150,7 @@ export async function handler(event, context) {
     console.error("iaChat error:", err);
     return {
       statusCode: 500,
-      headers: { "Access-Control-Allow-Origin": "*" },
+      headers: CORS_HEADERS,
       body: JSON.stringify({ error: err.message || "Internal error" })
     };
   }
