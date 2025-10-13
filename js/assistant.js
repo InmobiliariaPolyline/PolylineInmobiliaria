@@ -36,6 +36,8 @@ class VirtualAssistant {
     this.voice = null;
     this.voiceName = 'Microsoft Helena Desktop - Spanish (Spain)';
     this.chatHistory = [];
+    this.inactivityTimer = null;
+    this.inactivityDelay = 30000; // 30 segundos
     this.init();
     this.initVoice();
   }
@@ -177,6 +179,7 @@ class VirtualAssistant {
     this.addMessage(message, 'user');
     inputEl.value = '';
     this.chatHistory.push({ role: 'user', content: message });
+    this.resetInactivityTimer();
     this.processWithAI(message);
   }
 
@@ -190,6 +193,7 @@ class VirtualAssistant {
     messages.appendChild(messageDiv);
     if (sender === 'bot') {
       this.speak(text);
+      this.startInactivityTimer();
     }
     messages.scrollTop = messages.scrollHeight;
   }
@@ -222,6 +226,65 @@ class VirtualAssistant {
     } finally {
       typing.style.display = 'none';
     }
+  }
+
+  startInactivityTimer() {
+    this.clearInactivityTimer();
+    this.inactivityTimer = setTimeout(() => {
+      this.showStandardOptions();
+    }, this.inactivityDelay);
+  }
+
+  resetInactivityTimer() {
+    this.clearInactivityTimer();
+    this.startInactivityTimer();
+  }
+
+  clearInactivityTimer() {
+    if (this.inactivityTimer) {
+      clearTimeout(this.inactivityTimer);
+      this.inactivityTimer = null;
+    }
+  }
+
+  showStandardOptions() {
+    const messages = document.querySelector('.chat-messages');
+    const optionsDiv = document.createElement('div');
+    optionsDiv.className = 'standard-options';
+    optionsDiv.innerHTML = `
+      <p style="margin: 10px 0; font-weight: bold; color: #333;">¿Necesitas ayuda adicional?</p>
+      ${this.standardOptions.map(option => `
+        <button class="option-button" data-url="${option.url}" style="
+          display: block;
+          width: 100%;
+          padding: 8px 12px;
+          margin: 5px 0;
+          background: #007bff;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          text-align: left;
+          font-size: 14px;
+        ">${option.text}</button>
+      `).join('')}
+    `;
+
+    // Agregar event listeners a los botones
+    optionsDiv.addEventListener('click', (e) => {
+      if (e.target.classList.contains('option-button')) {
+        const url = e.target.getAttribute('data-url');
+        if (url.startsWith('http') || url.startsWith('mailto:')) {
+          window.open(url, '_blank');
+        } else {
+          window.location.href = url;
+        }
+        this.clearInactivityTimer();
+      }
+    });
+
+    messages.appendChild(optionsDiv);
+    messages.scrollTop = messages.scrollHeight;
   }
 }
 
