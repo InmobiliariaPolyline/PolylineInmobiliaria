@@ -69,7 +69,7 @@ export async function handler(event, context) {
     messages.push({ role: "user", content: message });
 
     const payload = {
-      model: "deepseek/deepseek-r1:free",
+      model: "microsoft/wizardlm-2-8x22b",
       messages: messages,
       max_tokens: 500,
       temperature: 0.7
