@@ -375,6 +375,7 @@
             <ul class="admin-menu">
                 <li><a href="../pages/perfilAdmin.html"><i class="fas fa-arrow-left"></i> Volver al Panel</a></li>
                 <li><a href="#projects" class="active"><i class="fas fa-building"></i> Gestión de Proyectos</a></li>
+                <li><a href="#beach-houses"><i class="fas fa-umbrella-beach"></i> Casas de Playa</a></li>
             </ul>
 
             <div class="theme-toggle">
@@ -387,6 +388,170 @@
 
         <!-- Main Content -->
         <main class="admin-main">
+            <section id="beach-houses" class="admin-section">
+                <div class="admin-header">
+                    <h1 class="admin-title">Gestión de Casas de Playa</h1>
+                    <button class="action-btn" id="toggleBeachHouseForm">
+                        <i class="fas fa-plus"></i> Nueva Casa de Playa
+                    </button>
+                </div>
+
+                <!-- Formulario de Casa de Playa -->
+                <div class="project-management-section">
+                    <div class="project-form-container" id="beachHouseFormContainer" style="display: none;">
+                        <form class="project-form" id="createBeachHouseForm">
+                            <div class="form-group">
+                                <label for="beachHouseName">Nombre de la Casa</label>
+                                <input type="text" id="beachHouseName" placeholder="Ej: Casa de Playa Golf 5" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="beachHouseLocation">Ubicación</label>
+                                <input type="text" id="beachHouseLocation" placeholder="Ej: Golf Club, Punta Hermosa" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="beachHouseBedrooms">Dormitorios</label>
+                                <input type="number" id="beachHouseBedrooms" min="1" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="beachHouseBathrooms">Baños</label>
+                                <input type="number" id="beachHouseBathrooms" min="1" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="beachHouseParking">Estacionamiento</label>
+                                <input type="number" id="beachHouseParking" min="0" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="beachHouseArea">Área (m²)</label>
+                                <input type="number" id="beachHouseArea" step="0.01" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="beachHouseGarden">Jardín (m²)</label>
+                                <input type="number" id="beachHouseGarden" step="0.01" min="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="beachHousePool">Piscina</label>
+                                <select id="beachHousePool">
+                                    <option value="false">No</option>
+                                    <option value="true">Sí</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="beachHouseTerrace">Terraza (m²)</label>
+                                <input type="number" id="beachHouseTerrace" step="0.01" min="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="beachHouseServices">Servicios</label>
+                                <textarea id="beachHouseServices" rows="3" placeholder="Ej: Agua, luz, gas, internet, etc."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="beachHouseGreenAreas">Áreas Verdes (m²)</label>
+                                <input type="number" id="beachHouseGreenAreas" step="0.01" min="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="beachHouseFloors">Número de Pisos</label>
+                                <input type="number" id="beachHouseFloors" min="1" required>
+                            </div>
+
+                            <!-- Pisos con descripciones -->
+                            <div class="floors-section" id="floorsSection">
+                                <h3>Descripción de Pisos</h3>
+                                <div id="floorsContainer">
+                                    <!-- Los pisos se agregarán dinámicamente aquí -->
+                                </div>
+                            </div>
+
+                            <style>
+                                .floor-group {
+                                    margin-bottom: 1rem;
+                                    padding: 1rem;
+                                    border: 1px solid var(--border-color);
+                                    border-radius: 6px;
+                                    background: var(--input-bg);
+                                }
+
+                                .floor-group label {
+                                    display: block;
+                                    margin-bottom: 0.5rem;
+                                    font-weight: 500;
+                                    color: var(--text-color);
+                                }
+
+                                .floor-group textarea {
+                                    width: 100%;
+                                    padding: 0.75rem;
+                                    border: 1px solid var(--border-color);
+                                    border-radius: 6px;
+                                    background: var(--input-bg);
+                                    color: var(--text-color);
+                                    resize: vertical;
+                                    min-height: 80px;
+                                }
+                            </style>
+
+                            <div class="form-group">
+                                <label for="beachHouseDescription">Descripción General</label>
+                                <textarea id="beachHouseDescription" rows="4" placeholder="Descripción detallada de la casa de playa"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="beachHouseStatus">Estado</label>
+                                <select id="beachHouseStatus">
+                                    <option value="available">Disponible</option>
+                                    <option value="reserved">Reservado</option>
+                                    <option value="sold">Vendido</option>
+                                </select>
+                            </div>
+
+                            <!-- Sección de Imágenes -->
+                            <div class="project-images-section">
+                                <h3>Imágenes de la Casa de Playa</h3>
+                                <div class="images-grid" id="beachHouseImagesGrid">
+                                    <div class="image-upload-card" id="beachHouseImageUploadCard">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Subir Imagen</p>
+                                        <input type="file" id="beachHouseImageInput" accept="image/*" multiple style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="action-btn cancel-btn" id="cancelBeachHouse">Cancelar</button>
+                                <button type="submit" class="action-btn save-btn">Guardar Casa de Playa</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Tabla de Casas de Playa -->
+                    <div class="projects-table-container">
+                        <table class="projects-table">
+                            <thead>
+                                <tr>
+                                    <th>Casa</th>
+                                    <th>Ubicación</th>
+                                    <th>Características</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="beachHousesTableBody">
+                                <!-- Las casas se cargarán aquí dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
             <section id="projects" class="admin-section">
                 <div class="admin-header">
                     <h1 class="admin-title">Gestión de Proyectos y Departamentos</h1>
@@ -525,6 +690,7 @@
                             document.getElementById('adminName').textContent = userData.displayName || user.displayName || "Administrador";
                             document.getElementById('adminEmail').textContent = user.email;
                             loadProjects();
+                            loadBeachHouses();
                         } else {
                             alert('No tienes permisos de administrador');
                             window.location.href = '../pages/perfil.html';
@@ -576,6 +742,11 @@
         let currentProjectImages = [];
         let editingProjectId = null;
 
+        // Variables para casas de playa
+        let currentBeachHouseImages = [];
+        let editingBeachHouseId = null;
+        let currentFloors = [];
+
         // Elementos del DOM
         const projectFormContainer = document.getElementById('projectFormContainer');
         const createProjectForm = document.getElementById('createProjectForm');
@@ -585,6 +756,17 @@
         const imageUploadCard = document.getElementById('imageUploadCard');
         const projectImageInput = document.getElementById('projectImageInput');
         const projectImagesGrid = document.getElementById('projectImagesGrid');
+
+        // Elementos del DOM para casas de playa
+        const beachHouseFormContainer = document.getElementById('beachHouseFormContainer');
+        const createBeachHouseForm = document.getElementById('createBeachHouseForm');
+        const toggleBeachHouseForm = document.getElementById('toggleBeachHouseForm');
+        const cancelBeachHouse = document.getElementById('cancelBeachHouse');
+        const beachHousesTableBody = document.getElementById('beachHousesTableBody');
+        const beachHouseImageUploadCard = document.getElementById('beachHouseImageUploadCard');
+        const beachHouseImageInput = document.getElementById('beachHouseImageInput');
+        const beachHouseImagesGrid = document.getElementById('beachHouseImagesGrid');
+        const floorsContainer = document.getElementById('floorsContainer');
 
         // Mostrar/ocultar formulario
         toggleProjectForm.addEventListener('click', () => {
@@ -600,12 +782,38 @@
             }
         });
 
+        // Mostrar/ocultar formulario de casas de playa
+        toggleBeachHouseForm.addEventListener('click', () => {
+            const isVisible = beachHouseFormContainer.style.display !== 'none';
+            beachHouseFormContainer.style.display = isVisible ? 'none' : 'block';
+            if (!isVisible) {
+                // Resetear formulario para nueva casa de playa
+                createBeachHouseForm.reset();
+                currentBeachHouseImages = [];
+                currentFloors = [];
+                editingBeachHouseId = null;
+                updateBeachHouseImagesGrid();
+                updateFloorsDisplay();
+                createBeachHouseForm.querySelector('.save-btn').textContent = 'Guardar Casa de Playa';
+            }
+        });
+
         cancelProject.addEventListener('click', () => {
             projectFormContainer.style.display = 'none';
             createProjectForm.reset();
             currentProjectImages = [];
             editingProjectId = null;
             updateImagesGrid();
+        });
+
+        cancelBeachHouse.addEventListener('click', () => {
+            beachHouseFormContainer.style.display = 'none';
+            createBeachHouseForm.reset();
+            currentBeachHouseImages = [];
+            currentFloors = [];
+            editingBeachHouseId = null;
+            updateBeachHouseImagesGrid();
+            updateFloorsDisplay();
         });
 
         // Manejo de subida de imágenes
@@ -637,6 +845,38 @@
             e.target.value = '';
         });
 
+        // Manejo de subida de imágenes de casas de playa
+        beachHouseImageUploadCard.addEventListener('click', () => {
+            beachHouseImageInput.click();
+        });
+
+        beachHouseImageInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) {
+                    alert('Por favor, selecciona solo archivos de imagen');
+                    continue;
+                }
+
+                try {
+                    const result = await uploadToCloudinary(file);
+                    currentBeachHouseImages.push({
+                        url: result.secure_url,
+                        filename: result.original_filename,
+                        size: result.bytes
+                    });
+                    updateBeachHouseImagesGrid();
+                } catch (error) {
+                    alert('Error al subir imagen: ' + error.message);
+                }
+            }
+            // Limpiar input
+            e.target.value = '';
+        });
+
+        // Evento para actualizar pisos dinámicamente
+        document.getElementById('beachHouseFloors').addEventListener('change', updateFloorsDisplay);
+
         // Actualizar grid de imágenes
         function updateImagesGrid() {
             const uploadCard = projectImagesGrid.querySelector('.image-upload-card');
@@ -663,10 +903,64 @@
             });
         }
 
+        // Actualizar grid de imágenes de casas de playa
+        function updateBeachHouseImagesGrid() {
+            const uploadCard = beachHouseImagesGrid.querySelector('.image-upload-card');
+            const existingImages = beachHouseImagesGrid.querySelectorAll('.uploaded-image-card');
+
+            // Remover imágenes existentes
+            existingImages.forEach(card => card.remove());
+
+            // Agregar imágenes actuales
+            currentBeachHouseImages.forEach((image, index) => {
+                const imageCard = document.createElement('div');
+                imageCard.className = 'uploaded-image-card';
+                imageCard.innerHTML = `
+                    <img src="${image.url}" alt="${image.filename}">
+                    <div class="image-info">
+                        <p><strong>${image.filename}</strong></p>
+                        <p>${(image.size / 1024).toFixed(1)} KB</p>
+                    </div>
+                    <button class="remove-image-btn" onclick="removeBeachHouseImage(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                beachHouseImagesGrid.insertBefore(imageCard, uploadCard);
+            });
+        }
+
+        // Actualizar display de pisos
+        function updateFloorsDisplay() {
+            floorsContainer.innerHTML = '';
+            const floorsCount = parseInt(document.getElementById('beachHouseFloors').value) || 0;
+
+            for (let i = 1; i <= floorsCount; i++) {
+                const floorDiv = document.createElement('div');
+                floorDiv.className = 'form-group floor-group';
+                floorDiv.innerHTML = `
+                    <label for="floor${i}Desc">Piso ${i} - Descripción</label>
+                    <textarea id="floor${i}Desc" rows="2" placeholder="Describe las características del piso ${i}"></textarea>
+                `;
+                floorsContainer.appendChild(floorDiv);
+
+                // Cargar descripción existente si hay
+                const existingFloor = currentFloors.find(f => f.floor === i);
+                if (existingFloor) {
+                    floorDiv.querySelector('textarea').value = existingFloor.description;
+                }
+            }
+        }
+
         // Remover imagen del proyecto
         window.removeProjectImage = function(index) {
             currentProjectImages.splice(index, 1);
             updateImagesGrid();
+        };
+
+        // Remover imagen de casa de playa
+        window.removeBeachHouseImage = function(index) {
+            currentBeachHouseImages.splice(index, 1);
+            updateBeachHouseImagesGrid();
         };
 
         // Enviar formulario
@@ -696,6 +990,13 @@
                 }
 
                 if (editingProjectId) {
+                    // Para actualización, preservar createdAt y createdBy
+                    const existingDoc = await getDoc(doc(db, 'proyectos', editingProjectId));
+                    if (existingDoc.exists()) {
+                        const existingData = existingDoc.data();
+                        projectData.createdAt = existingData.createdAt;
+                        projectData.createdBy = existingData.createdBy;
+                    }
                     await updateDoc(doc(db, 'proyectos', editingProjectId), projectData);
                 } else {
                     projectData.createdAt = serverTimestamp();
@@ -722,6 +1023,89 @@
             } finally {
                 const submitBtn = createProjectForm.querySelector('.save-btn');
                 submitBtn.innerHTML = 'Guardar Proyecto';
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Enviar formulario de casa de playa
+        createBeachHouseForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            try {
+                const submitBtn = createBeachHouseForm.querySelector('.save-btn');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+                submitBtn.disabled = true;
+
+                // Recopilar datos de pisos
+                const floorsCount = parseInt(document.getElementById('beachHouseFloors').value) || 0;
+                const floors = [];
+                for (let i = 1; i <= floorsCount; i++) {
+                    const desc = document.getElementById(`floor${i}Desc`).value.trim();
+                    if (desc) {
+                        floors.push({ floor: i, description: desc });
+                    }
+                }
+
+                const beachHouseData = {
+                    name: document.getElementById('beachHouseName').value.trim(),
+                    location: document.getElementById('beachHouseLocation').value.trim(),
+                    bedrooms: parseInt(document.getElementById('beachHouseBedrooms').value),
+                    bathrooms: parseInt(document.getElementById('beachHouseBathrooms').value),
+                    parking: parseInt(document.getElementById('beachHouseParking').value),
+                    area: parseFloat(document.getElementById('beachHouseArea').value),
+                    garden: parseFloat(document.getElementById('beachHouseGarden').value) || 0,
+                    pool: document.getElementById('beachHousePool').value === 'true',
+                    terrace: parseFloat(document.getElementById('beachHouseTerrace').value) || 0,
+                    services: document.getElementById('beachHouseServices').value.trim(),
+                    greenAreas: parseFloat(document.getElementById('beachHouseGreenAreas').value) || 0,
+                    floors: floors,
+                    description: document.getElementById('beachHouseDescription').value.trim(),
+                    status: document.getElementById('beachHouseStatus').value,
+                    images: currentBeachHouseImages,
+                    type: 'beach-house',
+                    updatedAt: serverTimestamp()
+                };
+
+                if (!beachHouseData.name || !beachHouseData.location) {
+                    throw new Error('Por favor, completa todos los campos obligatorios');
+                }
+
+                if (editingBeachHouseId) {
+                    // Para actualización, preservar createdAt y createdBy
+                    const existingDoc = await getDoc(doc(db, 'proyectoFormatoA', editingBeachHouseId));
+                    if (existingDoc.exists()) {
+                        const existingData = existingDoc.data();
+                        beachHouseData.createdAt = existingData.createdAt;
+                        beachHouseData.createdBy = existingData.createdBy;
+                    }
+                    await updateDoc(doc(db, 'proyectoFormatoA', editingBeachHouseId), beachHouseData);
+                } else {
+                    beachHouseData.createdAt = serverTimestamp();
+                    beachHouseData.createdBy = auth.currentUser.uid;
+                    await addDoc(collection(db, 'proyectoFormatoA'), beachHouseData);
+                }
+
+                // Resetear formulario
+                createBeachHouseForm.reset();
+                currentBeachHouseImages = [];
+                currentFloors = [];
+                editingBeachHouseId = null;
+                updateBeachHouseImagesGrid();
+                updateFloorsDisplay();
+                beachHouseFormContainer.style.display = 'none';
+
+                // Recargar casas de playa
+                await loadBeachHouses();
+
+                // Mostrar mensaje de éxito
+                showSuccessMessage(editingBeachHouseId ? 'Casa de playa actualizada exitosamente' : 'Casa de playa creada exitosamente');
+
+            } catch (error) {
+                console.error('Error al guardar casa de playa:', error);
+                alert('Error al guardar casa de playa: ' + error.message);
+            } finally {
+                const submitBtn = createBeachHouseForm.querySelector('.save-btn');
+                submitBtn.innerHTML = 'Guardar Casa de Playa';
                 submitBtn.disabled = false;
             }
         });
@@ -778,6 +1162,58 @@
             }
         }
 
+        // Cargar casas de playa
+        async function loadBeachHouses() {
+            try {
+                beachHousesTableBody.innerHTML = '<tr><td colspan="5">Cargando casas de playa...</td></tr>';
+
+                const beachHousesQuery = query(collection(db, 'proyectoFormatoA'), orderBy('createdAt', 'desc'));
+                const beachHousesSnapshot = await getDocs(beachHousesQuery);
+
+                if (beachHousesSnapshot.empty) {
+                    beachHousesTableBody.innerHTML = '<tr><td colspan="5">No hay casas de playa registradas</td></tr>';
+                    return;
+                }
+
+                beachHousesTableBody.innerHTML = '';
+                beachHousesSnapshot.forEach(doc => {
+                    const beachHouse = doc.data();
+                    const row = document.createElement('tr');
+
+                    const mainImage = beachHouse.images && beachHouse.images.length > 0 ? beachHouse.images[0].url : '../Resource/Logo/logo.png';
+
+                    row.innerHTML = `
+                        <td>
+                            <div class="project-info">
+                                <img src="${mainImage}" alt="${beachHouse.name}" class="project-thumbnail">
+                                <div class="project-details">
+                                    <h4>${beachHouse.name}</h4>
+                                    <p>${beachHouse.location}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${beachHouse.bedrooms} dorm, ${beachHouse.bathrooms} baños</td>
+                        <td>${beachHouse.area}m², ${beachHouse.parking} estac., ${beachHouse.pool ? 'Con piscina' : 'Sin piscina'}</td>
+                        <td><span class="status-badge status-${beachHouse.status}">${beachHouse.status}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit-btn" onclick="editBeachHouse('${doc.id}')">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteBeachHouse('${doc.id}')">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    beachHousesTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error al cargar casas de playa:', error);
+                beachHousesTableBody.innerHTML = `<tr><td colspan="5">Error al cargar casas de playa: ${error.message}</td></tr>`;
+            }
+        }
+
         // Editar proyecto
         window.editProject = async function(projectId) {
             try {
@@ -813,6 +1249,57 @@
             }
         };
 
+        // Editar casa de playa
+        window.editBeachHouse = async function(beachHouseId) {
+            try {
+                const beachHouseDoc = await getDoc(doc(db, 'proyectoFormatoA', beachHouseId));
+                if (!beachHouseDoc.exists()) {
+                    throw new Error('Casa de playa no encontrada');
+                }
+
+                const beachHouse = beachHouseDoc.data();
+
+                // Resetear formulario antes de llenarlo
+                createBeachHouseForm.reset();
+                currentBeachHouseImages = [];
+                currentFloors = [];
+                editingBeachHouseId = null;
+                updateBeachHouseImagesGrid();
+                updateFloorsDisplay();
+
+                // Llenar formulario con datos de la casa de playa
+                document.getElementById('beachHouseName').value = beachHouse.name || '';
+                document.getElementById('beachHouseLocation').value = beachHouse.location || '';
+                document.getElementById('beachHouseBedrooms').value = beachHouse.bedrooms || '';
+                document.getElementById('beachHouseBathrooms').value = beachHouse.bathrooms || '';
+                document.getElementById('beachHouseParking').value = beachHouse.parking || '';
+                document.getElementById('beachHouseArea').value = beachHouse.area || '';
+                document.getElementById('beachHouseGarden').value = beachHouse.garden || '';
+                document.getElementById('beachHousePool').value = beachHouse.pool ? 'true' : 'false';
+                document.getElementById('beachHouseTerrace').value = beachHouse.terrace || '';
+                document.getElementById('beachHouseServices').value = beachHouse.services || '';
+                document.getElementById('beachHouseGreenAreas').value = beachHouse.greenAreas || '';
+                document.getElementById('beachHouseFloors').value = beachHouse.floors ? beachHouse.floors.length : '';
+                document.getElementById('beachHouseDescription').value = beachHouse.description || '';
+                document.getElementById('beachHouseStatus').value = beachHouse.status || 'available';
+
+                // Cargar imágenes y pisos
+                currentBeachHouseImages = beachHouse.images || [];
+                currentFloors = beachHouse.floors || [];
+                updateBeachHouseImagesGrid();
+                updateFloorsDisplay();
+
+                // Mostrar formulario
+                beachHouseFormContainer.style.display = 'block';
+                editingBeachHouseId = beachHouseId;
+                createBeachHouseForm.querySelector('.save-btn').textContent = 'Actualizar Casa de Playa';
+
+            } catch (error) {
+                console.error('Error al editar casa de playa:', error);
+                alert('Error al editar casa de playa: ' + error.message);
+            }
+        };
+
         // Eliminar proyecto
         window.deleteProject = async function(projectId) {
             if (!confirm('¿Estás seguro de que deseas eliminar este proyecto?')) {
@@ -829,6 +1316,28 @@
             }
         };
 
+        // Eliminar casa de playa
+        window.deleteBeachHouse = async function(beachHouseId) {
+            if (!confirm('¿Estás seguro de que deseas eliminar esta casa de playa? Esta acción no se puede deshacer.')) {
+                return;
+            }
+
+            try {
+                // Verificar que el documento existe antes de eliminarlo
+                const beachHouseDoc = await getDoc(doc(db, 'proyectoFormatoA', beachHouseId));
+                if (!beachHouseDoc.exists()) {
+                    throw new Error('Casa de playa no encontrada');
+                }
+
+                await deleteDoc(doc(db, 'proyectoFormatoA', beachHouseId));
+                await loadBeachHouses();
+                showSuccessMessage('Casa de playa eliminada exitosamente');
+            } catch (error) {
+                console.error('Error al eliminar casa de playa:', error);
+                alert('Error al eliminar casa de playa: ' + error.message);
+            }
+        };
+
         // Mostrar mensaje de éxito
         function showSuccessMessage(message) {
             const successDiv = document.createElement('div');
@@ -840,6 +1349,36 @@
             document.body.appendChild(successDiv);
             setTimeout(() => successDiv.remove(), 3000);
         }
+
+        // Manejo de navegación entre secciones
+        const menuLinks = document.querySelectorAll('.admin-menu a');
+        const sections = document.querySelectorAll('.admin-section');
+
+        menuLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+
+                // Ocultar todas las secciones
+                sections.forEach(section => {
+                    section.style.display = 'none';
+                });
+
+                // Mostrar la sección objetivo
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                }
+
+                // Actualizar clase active
+                menuLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+
+        // Mostrar sección por defecto (proyectos)
+        document.getElementById('projects').style.display = 'block';
+        document.getElementById('beach-houses').style.display = 'none';
 
         // Tema oscuro
         const themeToggle = document.getElementById('themeToggle');

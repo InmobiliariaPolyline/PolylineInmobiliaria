@@ -36,6 +36,7 @@
                         const userDoc = await getDoc(doc(db, 'users', user.uid));
                         const userData = userDoc.data() || {};
                         if (userData.isAdmin) {
+                            await loadDepartmentsFromFirebase();
                             showAdminControls();
                         }
                     } catch (err) {
@@ -45,11 +46,106 @@
             });
         });
 
+        async function loadDepartmentsFromFirebase() {
+            try {
+                const { getAllDepartments } = await import('../js/add-department.js');
+                const departments = await getAllDepartments();
+
+                // Add Firebase departments to the grid
+                departments.forEach(dept => {
+                    // Check if department card already exists
+                    const existingCards = document.querySelectorAll('.departamento-card');
+                    let cardExists = false;
+
+                    existingCards.forEach(card => {
+                        if (!card.classList.contains('add-new-card')) {
+                            const title = card.querySelector('h3');
+                            if (title && title.textContent.includes(dept.numero)) {
+                                cardExists = true;
+                            }
+                        }
+                    });
+
+                    // Only add if card doesn't exist
+                    if (!cardExists) {
+                        addDepartmentCardFromFirebase(dept);
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading departments from Firebase:', error);
+            }
+        }
+
+        function addDepartmentCardFromFirebase(dept) {
+            const grid = document.querySelector('.departamentos-grid');
+            const newCard = document.createElement('div');
+            newCard.className = 'departamento-card';
+            newCard.innerHTML = `
+                <img src="${dept.imagen || '../Resource/Logo/logo.png'}" alt="Departamento ${dept.numero}" class="departamento-img">
+                <div class="card-details">
+                    <h3 data-translate="Departamento ${dept.numero}">${dept.titulo}</h3>
+                    <p data-translate="${dept.dormitorios} Dormitorios, ${dept.banos} Baños, ${dept.area} m²">${dept.dormitorios} Dormitorios, ${dept.banos} Baños, ${dept.area} m²</p>
+                    <div class="button-container">
+                        <button class="btn-details" data-department="${dept.numero}" data-video="${dept.video || ''}" data-translate="Ver detalles">Ver detalles</button>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                </div>
+            `;
+
+            // Insert before the "Add New" card if it exists, otherwise at the end
+            const addCard = grid.querySelector('.add-new-card');
+            if (addCard) {
+                grid.insertBefore(newCard, addCard);
+            } else {
+                grid.appendChild(newCard);
+            }
+
+            // Add admin controls to the Firebase-loaded card
+            addAdminControlsToCard(newCard, dept.numero);
+
+            // Add event listener for the "Ver detalles" button
+            const detailsBtn = newCard.querySelector('.btn-details');
+            if (detailsBtn) {
+                detailsBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const departmentNumber = this.getAttribute('data-department');
+                    const videoUrl = this.getAttribute('data-video');
+
+                    if (videoUrl) {
+                        showDepartmentModal(departmentNumber, videoUrl, dept.imagen);
+                    } else {
+                        alert('Video no disponible para este departamento');
+                    }
+                });
+            }
+        }
+
         function showAdminControls() {
             // Add admin controls to each department card
             const departmentCards = document.querySelectorAll('.departamento-card');
             departmentCards.forEach(card => {
-                const departmentNumber = card.querySelector('h3').textContent.split(' ')[1]; // Extract number from title
+                // Skip if already has admin controls or is the add-new-card
+                if (card.querySelector('.admin-controls') || card.classList.contains('add-new-card')) {
+                    return;
+                }
+
+                // Extract department number from title (handle different formats)
+                const titleElement = card.querySelector('h3');
+                let departmentNumber = '';
+
+                if (titleElement) {
+                    const titleText = titleElement.textContent.trim();
+                    // Handle formats like "Departamento 101", "Departamento 101 - DUPLEX", etc.
+                    const match = titleText.match(/(\d+)/);
+                    if (match) {
+                        departmentNumber = match[1];
+                    }
+                }
+
+                // Skip if we couldn't extract the number
+                if (!departmentNumber) {
+                    return;
+                }
 
                 // Create admin controls container
                 const adminControls = document.createElement('div');
@@ -69,49 +165,102 @@
                 card.appendChild(adminControls);
             });
 
-            // Add "Add New Department" button
+            // Add "Add New Department" button only if it doesn't exist
             const grid = document.querySelector('.departamentos-grid');
-            const addButton = document.createElement('div');
-            addButton.className = 'departamento-card add-new-card';
-            addButton.innerHTML = `
-                <div class="add-new-content">
-                    <i class="fas fa-plus-circle"></i>
-                    <h3>Agregar Departamento</h3>
-                    <p>Haz clic para agregar un nuevo departamento</p>
+            if (!grid.querySelector('.add-new-card')) {
+                const addButton = document.createElement('div');
+                addButton.className = 'departamento-card add-new-card';
+                addButton.innerHTML = `
+                    <div class="add-new-content">
+                        <i class="fas fa-plus-circle"></i>
+                        <h3>Agregar Departamento</h3>
+                        <p>Haz clic para agregar un nuevo departamento</p>
+                    </div>
+                `;
+                addButton.onclick = () => openAddDepartmentModal();
+                grid.appendChild(addButton);
+            }
+        }
+
+        // Function to add admin controls to newly created departments
+        function addAdminControlsToCard(card, departmentNumber) {
+            // Skip if already has admin controls
+            if (card.querySelector('.admin-controls')) {
+                return;
+            }
+
+            // Create admin controls container
+            const adminControls = document.createElement('div');
+            adminControls.className = 'admin-controls';
+            adminControls.innerHTML = `
+                <div class="admin-buttons">
+                    <button class="admin-btn edit-btn" onclick="editDepartment('${departmentNumber}')" title="Editar departamento">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="admin-btn delete-btn" onclick="deleteDepartment('${departmentNumber}')" title="Eliminar departamento">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
             `;
-            addButton.onclick = () => openAddDepartmentModal();
-            grid.appendChild(addButton);
+
+            // Add controls to card
+            card.appendChild(adminControls);
         }
 
         // Admin functions
-        window.editDepartment = function(deptNumber) {
-            // Find the department card
-            const cards = document.querySelectorAll('.departamento-card');
-            let selectedCard = null;
-            let departmentData = {};
+        window.editDepartment = async function(deptNumber) {
+            try {
+                // Get department data from Firebase
+                const { getAllDepartments } = await import('../js/add-department.js');
+                const allDepartments = await getAllDepartments();
 
-            cards.forEach(card => {
-                if (!card.classList.contains('add-new-card')) {
-                    const title = card.querySelector('h3').textContent;
-                    if (title.includes(deptNumber)) {
-                        selectedCard = card;
-                        const details = card.querySelector('.card-details p').textContent;
-                        const specs = details.split(', ');
+                // Find the department with matching numero
+                const departmentFromFirebase = allDepartments.find(dept => dept.numero === deptNumber);
 
-                        departmentData = {
-                            number: deptNumber,
-                            title: title,
-                            bedrooms: parseInt(specs[0].split(' ')[0]),
-                            bathrooms: parseInt(specs[1].split(' ')[0]),
-                            area: parseFloat(specs[2].split(' ')[0])
-                        };
+                if (departmentFromFirebase) {
+                    // Use Firebase data
+                    const departmentData = {
+                        number: departmentFromFirebase.numero,
+                        title: departmentFromFirebase.titulo,
+                        bedrooms: departmentFromFirebase.dormitorios,
+                        bathrooms: departmentFromFirebase.banos,
+                        area: departmentFromFirebase.area,
+                        description: departmentFromFirebase.descripcion || '',
+                        image: departmentFromFirebase.imagen || null
+                    };
+                    openEditModal(departmentData);
+                } else {
+                    // Fallback to DOM data if not found in Firebase
+                    const cards = document.querySelectorAll('.departamento-card');
+                    let selectedCard = null;
+                    let departmentData = {};
+
+                    cards.forEach(card => {
+                        if (!card.classList.contains('add-new-card')) {
+                            const title = card.querySelector('h3').textContent;
+                            if (title.includes(deptNumber)) {
+                                selectedCard = card;
+                                const details = card.querySelector('.card-details p').textContent;
+                                const specs = details.split(', ');
+
+                                departmentData = {
+                                    number: deptNumber,
+                                    title: title,
+                                    bedrooms: parseInt(specs[0].split(' ')[0]),
+                                    bathrooms: parseInt(specs[1].split(' ')[0]),
+                                    area: parseFloat(specs[2].split(' ')[0])
+                                };
+                            }
+                        }
+                    });
+
+                    if (selectedCard) {
+                        openEditModal(departmentData);
                     }
                 }
-            });
-
-            if (selectedCard) {
-                openEditModal(departmentData);
+            } catch (error) {
+                console.error('Error al obtener datos del departamento:', error);
+                alert('Error al cargar datos del departamento: ' + error.message);
             }
         };
 
@@ -121,8 +270,20 @@
             }
 
             try {
-                // Here you would implement the actual deletion from database
-                // For now, just remove from DOM
+                // Find the department in Firebase by numero field
+                const { getAllDepartments, deleteDepartment: deleteFromFirebase } = await import('../js/add-department.js');
+                const allDepartments = await getAllDepartments();
+
+                // Find the department with matching numero
+                const departmentToDelete = allDepartments.find(dept => dept.numero === deptNumber);
+
+                if (departmentToDelete) {
+                    // Delete from Firebase
+                    await deleteFromFirebase(departmentToDelete.id);
+                    console.log('Departamento eliminado de Firebase');
+                }
+
+                // Remove from DOM
                 const cards = document.querySelectorAll('.departamento-card');
                 cards.forEach(card => {
                     if (!card.classList.contains('add-new-card')) {
@@ -134,6 +295,7 @@
                     }
                 });
             } catch (error) {
+                console.error('Error al eliminar departamento:', error);
                 alert('Error al eliminar departamento: ' + error.message);
             }
         };
@@ -267,15 +429,15 @@
 
         window.saveDepartment = async function(isNew) {
             const formData = {
-                number: document.getElementById('deptNumber').value.trim(),
-                title: document.getElementById('deptTitle').value.trim(),
-                bedrooms: parseInt(document.getElementById('bedrooms').value),
-                bathrooms: parseInt(document.getElementById('bathrooms').value),
+                numero: document.getElementById('deptNumber').value.trim(),
+                titulo: document.getElementById('deptTitle').value.trim(),
+                dormitorios: parseInt(document.getElementById('bedrooms').value),
+                banos: parseInt(document.getElementById('bathrooms').value),
                 area: parseFloat(document.getElementById('area').value),
-                description: document.getElementById('description').value.trim()
+                descripcion: document.getElementById('description').value.trim()
             };
 
-            if (!formData.number || !formData.title) {
+            if (!formData.numero || !formData.titulo) {
                 alert('Por favor, completa todos los campos obligatorios');
                 return;
             }
@@ -297,7 +459,23 @@
                 }
 
                 if (isNew) {
-                    // Add new department card
+                    // Save to Firebase first
+                    const { addDepartment } = await import('../js/add-department.js');
+                    const departmentData = {
+                        numero: formData.numero,
+                        titulo: formData.titulo,
+                        dormitorios: formData.dormitorios,
+                        banos: formData.banos,
+                        area: formData.area,
+                        descripcion: formData.descripcion,
+                        imagen: imageUrl
+                    };
+
+                    console.log('Enviando datos a Firebase:', departmentData);
+                    const docId = await addDepartment(departmentData);
+                    console.log('Departamento guardado en Firebase con ID:', docId);
+
+                    // Add new department card to UI
                     addNewDepartmentCard(formData, imageUrl);
                     showSuccessMessage('Departamento creado exitosamente');
                 } else {
@@ -308,6 +486,7 @@
 
                 closeAdminModal();
             } catch (error) {
+                console.error('Error completo:', error);
                 alert('Error al guardar departamento: ' + error.message);
             }
         };
@@ -319,21 +498,11 @@
             newCard.innerHTML = `
                 <img src="${imageUrl || '../Resource/Logo/logo.png'}" alt="Nuevo Departamento" class="departamento-img">
                 <div class="card-details">
-                    <h3 data-translate="Departamento ${data.number}">${data.title}</h3>
-                    <p data-translate="${data.bedrooms} Dormitorios, ${data.bathrooms} Baños, ${data.area} m²">${data.bedrooms} Dormitorios, ${data.bathrooms} Baños, ${data.area} m²</p>
+                    <h3 data-translate="Departamento ${data.numero}">${data.titulo}</h3>
+                    <p data-translate="${data.dormitorios} Dormitorios, ${data.banos} Baños, ${data.area} m²">${data.dormitorios} Dormitorios, ${data.banos} Baños, ${data.area} m²</p>
                     <div class="button-container">
-                        <a href="#" class="btn-details" data-department="${data.number}" data-translate="Ver detalles">Ver detalles</a>
+                        <button class="btn-details" data-department="${data.numero}" data-video="${data.video || ''}" data-translate="Ver detalles">Ver detalles</button>
                         <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
-                    </div>
-                </div>
-                <div class="admin-controls">
-                    <div class="admin-buttons">
-                        <button class="admin-btn edit-btn" onclick="editDepartment('${data.number}')" title="Editar departamento">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="admin-btn delete-btn" onclick="deleteDepartment('${data.number}')" title="Eliminar departamento">
-                            <i class="fas fa-trash"></i>
-                        </button>
                     </div>
                 </div>
             `;
@@ -341,6 +510,61 @@
             // Insert before the "Add New" card
             const addCard = grid.querySelector('.add-new-card');
             grid.insertBefore(newCard, addCard);
+
+            // Add admin controls to the new card
+            addAdminControlsToCard(newCard, data.numero);
+
+            // Add event listener for the "Ver detalles" button
+            const detailsBtn = newCard.querySelector('.btn-details');
+            if (detailsBtn) {
+                detailsBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const departmentNumber = this.getAttribute('data-department');
+                    const videoUrl = this.getAttribute('data-video');
+
+                    if (videoUrl) {
+                        // If video URL exists, show modal with video
+                        showDepartmentModal(departmentNumber, videoUrl, imageUrl);
+                    } else {
+                        // If no video, show default modal or alert
+                        alert('Video no disponible para este departamento');
+                    }
+                });
+            }
+        }
+
+        function showDepartmentModal(departmentNumber, videoUrl, imageUrl) {
+            // Create modal for new departments
+            const modal = document.createElement('div');
+            modal.className = 'modal dark-mode';
+            modal.id = `detail-modal-${departmentNumber}`;
+            modal.innerHTML = `
+                <div class="modal-content dark-mode">
+                    <span class="close-btn" onclick="closeModal(${departmentNumber})">&times;</span>
+                    <div id="main-content-container" class="video-container dark-mode">
+                        <video id="main-content" controls autoplay muted>
+                            <source src="${videoUrl}" type="video/mp4">
+                            Tu navegador no soporta el elemento de video.
+                        </video>
+                    </div>
+                    <div class="image-carousel">
+                        <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <div class="carousel-track">
+                            <div class="carousel-item" onclick="changeContent('${videoUrl}', true, ${departmentNumber})">
+                                <img src="${imageUrl || '../Resource/Logo/logo.png'}" alt="Vista principal">
+                            </div>
+                        </div>
+                        <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
         }
 
         function updateDepartmentCard(data, imageUrl = null) {
