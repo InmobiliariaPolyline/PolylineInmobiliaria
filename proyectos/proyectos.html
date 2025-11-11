@@ -342,18 +342,40 @@
                 <img src="../Resource/CSUR/proyectoSur.png" alt="Casa en Surco">
                 <h3 class="project-title" data-translate="Casa en Surco">Casa en Surco</h3>
             </div>
+
             <!-- Proyectos dinámicos de Firebase -->
+             <div class="proyect-card">
             <div id="dynamicProjectsContainer"></div>
+                </div>
         </div>
     </section>
 
 <script>
+    // Utilidades seguras
+    const safeStartsWith = (v, prefix) =>
+      typeof v === 'string' && v.startsWith(prefix);
+
+    const normalizeImage = (img) => {
+      if (typeof img === 'string') return { url: img, filename: img.split('/').pop() || 'image' };
+      if (img && typeof img.url === 'string') {
+        return {
+          url: img.url,
+          filename: img.filename || (img.url.split('/').pop() || 'image'),
+          size: img.size
+        };
+      }
+      return { url: '../Resource/Logo/logo.png', filename: 'default.png' };
+    };
+
+    // Sanea números: NaN/undefined/null -> 0
+    const nz = (n) => Number.isFinite(Number(n)) ? Number(n) : 0;
+
     document.addEventListener('DOMContentLoaded', function() {
         const cards = document.querySelectorAll('.project-card');
         cards.forEach((card, index) => {
             card.style.opacity = '0';
             card.style.transform = 'translateY(20px)';
-            
+
             setTimeout(() => {
                 anime({
                     targets: card,
@@ -970,21 +992,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const beachHouseData = {
-                name: document.getElementById('beachHouseName').value.trim(),
-                location: document.getElementById('beachHouseLocation').value.trim(),
-                bedrooms: parseInt(document.getElementById('beachHouseBedrooms').value),
-                bathrooms: parseInt(document.getElementById('beachHouseBathrooms').value),
-                parking: parseInt(document.getElementById('beachHouseParking').value),
-                area: parseFloat(document.getElementById('beachHouseArea').value),
-                garden: parseFloat(document.getElementById('beachHouseGarden').value) || 0,
-                pool: document.getElementById('beachHousePool').value === 'true',
-                terrace: parseFloat(document.getElementById('beachHouseTerrace').value) || 0,
-                services: document.getElementById('beachHouseServices').value.trim(),
-                greenAreas: parseFloat(document.getElementById('beachHouseGreenAreas').value) || 0,
+                name: (document.getElementById('beachHouseName').value || "").trim(),
+                location: (document.getElementById('beachHouseLocation').value || "").trim(),
+                bedrooms: nz(document.getElementById('beachHouseBedrooms').value),
+                bathrooms: nz(document.getElementById('beachHouseBathrooms').value),
+                parking: nz(document.getElementById('beachHouseParking').value),
+                area: nz(document.getElementById('beachHouseArea').value),
+                garden: nz(document.getElementById('beachHouseGarden').value),
+                pool: document.getElementById('beachHousePool').value === "true",
+                terrace: nz(document.getElementById('beachHouseTerrace').value),
+                services: (document.getElementById('beachHouseServices').value || "").trim(),
+                greenAreas: nz(document.getElementById('beachHouseGreenAreas').value),
                 floors: floors,
-                description: document.getElementById('beachHouseDescription').value.trim(),
-                status: document.getElementById('beachHouseStatus').value,
-                images: currentBeachHouseImages,
+                description: (document.getElementById('beachHouseDescription').value || "").trim(),
+                status: document.getElementById('beachHouseStatus').value || "available",
+                images: currentBeachHouseImages.map(normalizeImage),
                 type: 'beach-house',
                 updatedAt: serverTimestamp()
             };
@@ -1157,30 +1179,88 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Cargar proyectos dinámicos de Firebase
-    async function loadDynamicProjects() {
+   /*  async function loadDynamicProjects() {
         try {
+            console.log('Iniciando loadDynamicProjects...');
             const dynamicContainer = document.getElementById('dynamicProjectsContainer');
-            if (!dynamicContainer) return;
+            if (!dynamicContainer) {
+                console.log('dynamicProjectsContainer no encontrado');
+                return;
+            }
 
+            console.log('primer punto - Contenedor encontrado');
             const beachHousesQuery = query(collection(db, 'proyectoFormatoA'), orderBy('createdAt', 'desc'));
+            console.log('segundo punto - Query creado:', beachHousesQuery);
+
             const beachHousesSnapshot = await getDocs(beachHousesQuery);
+            console.log('tercero punto - Snapshot obtenido:', beachHousesSnapshot);
+
+            // Obtener userSession del localStorage
+            const userSession = JSON.parse(localStorage.getItem('userSession'));
+            console.log('cuarto punto - userSession:', userSession);
 
             if (!beachHousesSnapshot.empty) {
+                console.log('quinto punto - Hay documentos en el snapshot');
                 beachHousesSnapshot.forEach(doc => {
+                    console.log('sexto punto - Procesando documento:', doc.id);
                     const beachHouse = doc.data();
-                    const mainImage = beachHouse.images && beachHouse.images.length > 0 ? beachHouse.images[0].url : '../Resource/Logo/logo.png';
+                    console.log('séptimo punto - Datos del documento:', beachHouse);
+
+                    // imágenes: soporta arrays de strings o de objetos
+                    const imgs =
+                      (Array.isArray(beachHouse.galleryImages) && beachHouse.galleryImages.length ? beachHouse.galleryImages :
+                      (Array.isArray(beachHouse.images) && beachHouse.images.length ? beachHouse.images : []))
+                      .map(normalizeImage);
+
+                    const mainImage = imgs.length ? imgs[0].url : '../Resource/Logo/logo.png';
+                    console.log('octavo punto - Imagen principal:', mainImage);
+
+                    // Formatear el nombre para que sea consistente con las casas estáticas
+                    const rawName = beachHouse.name ?? ''; // puede venir vacío
+                    const displayName = safeStartsWith(rawName, 'Casa de Playa')
+                      ? rawName
+                      : `Casa de Playa - ${rawName || 'Sin nombre'}`;
+
+                    console.log('noveno punto - Nombre formateado:', displayName);
 
                     const projectCard = document.createElement('div');
                     projectCard.className = 'project-card';
                     projectCard.onclick = () => window.location.href = `beach-house-detail.html?id=${doc.id}`;
 
                     projectCard.innerHTML = `
-                        <img src="${mainImage}" alt="${beachHouse.name}" class="departamento-img">
-                        <h3 class="project-title" data-translate="${beachHouse.name}">${beachHouse.name}</h3>
+                        <img src="${mainImage}" alt="${beachHouse.name}">
+                        <h3 class="project-title" data-translate="${displayName}">${displayName}</h3>
+                        <div class="project-features">
+                            <div class="feature-item">
+                                <i class="fa fa-bed"></i>
+                                <span>${nz(beachHouse.bedrooms)} dorm</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fa fa-bath"></i>
+                                <span>${nz(beachHouse.bathrooms)} baños</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fa fa-car"></i>
+                                <span>${nz(beachHouse.parking)} estac</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fa fa-home"></i>
+                                <span>${nz(beachHouse.area)} m²</span>
+                            </div>
+                        </div>
+                        <div class="project-location">
+                            <i class="fa fa-map-marker-alt"></i>
+                            <span>${beachHouse.location || 'Ubicación no especificada'}</span>
+                        </div>
+                        <div class="project-status">
+                            <span class="status-badge status-${beachHouse.status || 'available'}">${beachHouse.status === 'available' ? 'Disponible' : beachHouse.status === 'reserved' ? 'Reservado' : beachHouse.status === 'sold' ? 'Vendido' : 'Disponible'}</span>
+                        </div>
                     `;
+                    console.log('décimo punto - Tarjeta HTML creada');
 
                     // Agregar controles de admin a las tarjetas dinámicas
                     if (userSession && userSession.isAdmin) {
+                        console.log('undécimo punto - Usuario es admin, agregando controles');
                         const adminControls = document.createElement('div');
                         adminControls.className = 'admin-controls';
                         adminControls.innerHTML = `
@@ -1194,22 +1274,198 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         `;
                         projectCard.appendChild(adminControls);
+                    } else {
+                        console.log('undécimo punto - Usuario no es admin o no hay sesión');
                     }
 
                     // Insertar al final del contenedor de proyectos para que aparezcan después de los hardcodeados
                     const projectsContainer = document.querySelector('.projects-container');
                     if (projectsContainer) {
-                        // Insertar justo antes del contenedor dinámico para mantener el orden correcto
-                        projectsContainer.insertBefore(projectCard, dynamicContainer);
+                        console.log('duodécimo punto - Insertando en projectsContainer');
+                        projectsContainer.appendChild(projectCard);
                     } else {
+                        console.log('duodécimo punto - Insertando en dynamicContainer');
                         dynamicContainer.appendChild(projectCard);
                     }
+                    console.log('decimotercer punto - Tarjeta insertada exitosamente');
                 });
+            } else {
+                console.log('quinto punto - No hay documentos en el snapshot');
             }
         } catch (error) {
             console.error('Error al cargar proyectos dinámicos:', error);
+            console.error('Detalles del error:', error.stack);
         }
+    } */
+
+/* async function loadDynamicProjects() {
+  try {
+    console.log('Iniciando loadDynamicProjects...');
+    const dynamicContainer = document.getElementById('dynamicProjectsContainer');
+    if (!dynamicContainer) {
+      console.log('dynamicProjectsContainer no encontrado');
+      return;
     }
+
+    console.log('primer punto - Contenedor encontrado');
+    const beachHousesQuery = query(collection(db, 'proyectoFormatoA'), orderBy('createdAt', 'desc'));
+    console.log('segundo punto - Query creado:', beachHousesQuery);
+
+    const beachHousesSnapshot = await getDocs(beachHousesQuery);
+    console.log('tercero punto - Snapshot obtenido:', beachHousesSnapshot);
+
+    const userSession = JSON.parse(localStorage.getItem('userSession'));
+    console.log('cuarto punto - userSession:', userSession);
+
+    if (beachHousesSnapshot.empty) {
+      console.log('quinto punto - No hay documentos en el snapshot');
+      return;
+    }
+
+    console.log('quinto punto - Hay documentos en el snapshot');
+
+    beachHousesSnapshot.forEach((docSnap) => {
+      console.log('sexto punto - Procesando documento:', docSnap.id);
+
+      // 👉 Saca los datos UNA sola vez y úsalos siempre a través de "data"
+      const data = docSnap.data() || {};
+      console.log('séptimo punto - Datos del documento:', data);
+
+      // 👉 Imágenes: usa galleryImages si existen, si no images, normalizadas
+      const imgs = (
+        Array.isArray(data.galleryImages) && data.galleryImages.length ? data.galleryImages :
+        (Array.isArray(data.images) ? data.images : [])
+      ).map(normalizeImage);
+
+      const mainImage = imgs.length
+        ? imgs[0].url
+        : (typeof data.imagePrincipal === 'string' ? data.imagePrincipal : '../Resource/Logo/logo.png');
+
+      console.log('octavo punto - Imagen principal:', mainImage);
+
+      // 👉 Nombre seguro
+      const rawName = data.name ?? '';
+      const displayName = safeStartsWith(rawName, 'Casa de Playa')
+        ? rawName
+        : `Casa de Playa - ${rawName || 'Sin nombre'}`;
+
+      console.log('noveno punto - Nombre formateado:', displayName);
+
+      // 👉 Card
+      const projectCard = document.createElement('div');
+      projectCard.className = 'project-card';
+      projectCard.onclick = () => window.location.href = `beach-house-detail.html?id=${docSnap.id}`;
+      projectCard.innerHTML = `
+        <img src="${mainImage}" alt="${rawName || 'Casa de Playa'}">
+        <h3 class="project-title" data-translate="${displayName}">${displayName}</h3>
+      `;
+      console.log('décimo punto - Tarjeta HTML creada');
+
+      // 👉 Controles admin (si corresponde)
+      if (userSession && userSession.isAdmin) {
+        console.log('undécimo punto - Usuario es admin, agregando controles');
+        const adminControls = document.createElement('div');
+        adminControls.className = 'admin-controls';
+        adminControls.innerHTML = `
+          <div class="admin-buttons">
+            <button class="admin-btn edit-btn" onclick="event.stopPropagation(); editBeachHouse('${docSnap.id}')" title="Editar casa de playa">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="admin-btn delete-btn" onclick="event.stopPropagation(); deleteBeachHouse('${docSnap.id}')" title="Eliminar casa de playa">
+              <i class="fas a fa-trash"></i>
+            </button>
+          </div>
+        `;
+        projectCard.appendChild(adminControls);
+      } else {
+        console.log('undécimo punto - Usuario no es admin o no hay sesión');
+      }
+
+      // 👉 Inserción
+      const projectsContainer = document.querySelector('.projects-container');
+      if (projectsContainer) {
+        console.log('duodécimo punto - Insertando en projectsContainer');
+        projectsContainer.appendChild(projectCard);
+      } else {
+        console.log('duodécimo punto - Insertando en dynamicContainer');
+        dynamicContainer.appendChild(projectCard);
+      }
+      console.log('decimotercer punto - Tarjeta insertada exitosamente');
+    });
+
+  } catch (error) {
+    console.error('Error al cargar proyectos dinámicos:', error);
+    console.error('Detalles del error:', error.stack);
+  }
+}
+
+ */
+
+
+
+// Reemplaza tu loadDynamicProjects por este
+async function loadDynamicProjects() {
+  try {
+    const dynamicContainer = document.getElementById('dynamicProjectsContainer');
+    if (!dynamicContainer) return;
+
+    const beachHousesQuery = query(collection(db, 'proyectoFormatoA'), orderBy('createdAt', 'desc'));
+    const beachHousesSnapshot = await getDocs(beachHousesQuery);
+
+    const userSession = JSON.parse(localStorage.getItem('userSession'));
+    if (beachHousesSnapshot.empty) return;
+
+    beachHousesSnapshot.forEach((docSnap) => {
+      const data = docSnap.data() || {};
+
+      const imgs = (
+        Array.isArray(data.galleryImages) && data.galleryImages.length ? data.galleryImages :
+        (Array.isArray(data.images) ? data.images : [])
+      ).map(normalizeImage);
+
+      const mainImage = imgs.length
+        ? imgs[0].url
+        : (typeof data.imagePrincipal === 'string' ? data.imagePrincipal : '../Resource/Logo/logo.png');
+
+      const rawName = data.name ?? '';
+      const displayName = (typeof rawName === 'string' && rawName.startsWith('Casa de Playa'))
+        ? rawName
+        : `Casa de Playa - ${rawName || 'Sin nombre'}`;
+
+      const projectCard = document.createElement('div');
+      projectCard.className = 'project-card';
+      projectCard.onclick = () => window.location.href = `beach-house-detail.html?id=${docSnap.id}`;
+      projectCard.innerHTML = `
+        <img src="${mainImage}" alt="${rawName || 'Casa de Playa'}">
+        <h3 class="project-title" data-translate="${displayName}">${displayName}</h3>
+      `;
+
+      if (userSession && userSession.isAdmin) {
+        const adminControls = document.createElement('div');
+        adminControls.className = 'admin-controls';
+        adminControls.innerHTML = `
+          <div class="admin-buttons">
+            <button class="admin-btn edit-btn" onclick="event.stopPropagation(); editBeachHouse('${docSnap.id}')" title="Editar casa de playa">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="admin-btn delete-btn" onclick="event.stopPropagation(); deleteBeachHouse('${docSnap.id}')" title="Eliminar casa de playa">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        `;
+        projectCard.appendChild(adminControls);
+      }
+
+      const projectsContainer = document.querySelector('.projects-container');
+      (projectsContainer || dynamicContainer).appendChild(projectCard);
+    });
+
+  } catch (error) {
+    console.error('Error al cargar proyectos dinámicos:', error);
+  }
+}
+
+
 
     // Cargar proyectos dinámicos cuando se carga la página
     document.addEventListener('DOMContentLoaded', () => {

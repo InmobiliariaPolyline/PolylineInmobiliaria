@@ -3,15 +3,17 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/fi
 import { STORAGE_KEYS, getBasePath } from './config.js';
 
 // Función para determinar la ruta base según la ubicación actual
-function getBasePath() {
+if (!window.getBasePath) {
+  window.getBasePath = function() {
     const currentPath = window.location.pathname;
     const isInPages = currentPath.includes('/pages/');
     const isInProyectos = currentPath.includes('/proyectos/');
     const isInContact = currentPath.includes('/contact/');
-    
+
     if (isInPages) return '../';
     if (isInProyectos || isInContact) return '../';
     return '';
+  };
 }
 
 // Verificar autenticación y redirigir si es necesario
@@ -22,11 +24,11 @@ onAuthStateChanged(auth, (user) => {
     const isLoginPage = currentPath.includes('login.html');
     
     if (!user && isProtectedPage) {
-        const basePath = getBasePath();
+        const basePath = window.getBasePath();
         window.location.href = basePath + 'pages/login.html';
     } else if (user && !user.emailVerified && !isLoginPage) {
         // Si el usuario no ha verificado su email y no está en la página de login
-        const basePath = getBasePath();
+        const basePath = window.getBasePath();
         window.location.href = basePath + 'pages/login.html';
     }
 });
@@ -38,7 +40,7 @@ export const checkAndUpdateUI = () => {
     const userProfile = document.getElementById('userProfile');
     const profileLink = document.getElementById('profileLink');
     const profileText = document.getElementById('profileText');
-    const basePath = getBasePath();
+    const basePath = window.getBasePath();
 
     if (userSession && userSession.emailVerified) {
         if (loginLink) loginLink.style.display = 'none';

@@ -112,12 +112,17 @@
                 detailsBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     const departmentNumber = this.getAttribute('data-department');
-                    const videoUrl = this.getAttribute('data-video');
+                    console.log('Botón detalles clickeado para departamento:', departmentNumber);
 
-                    if (videoUrl) {
-                        showDepartmentModal(departmentNumber, videoUrl, dept.imagen);
+                    // Usar videos del arreglo si existen
+                    const videoUrls = dept.videos && dept.videos.length > 0 ? dept.videos : [];
+                    console.log('Video URLs para modal:', videoUrls);
+
+                    if (videoUrls.length > 0) {
+                        showDepartmentModal(departmentNumber, videoUrls, dept.imagen);
                     } else {
-                        alert('Video no disponible para este departamento');
+                        console.log('No hay video disponible, redirigiendo a página de detalle');
+                        window.location.href = `department-detail.html?num=${encodeURIComponent(departmentNumber)}`;
                     }
                 });
             }
@@ -582,28 +587,71 @@
             }
         }
 
-        function showDepartmentModal(departmentNumber, videoUrl, imageUrl) {
+        function showDepartmentModal(departmentNumber, videoUrls, imageUrl) {
+            console.log('=== showDepartmentModal INICIADO ===');
+            console.log('departmentNumber:', departmentNumber);
+            console.log('videoUrls:', videoUrls);
+            console.log('imageUrl:', imageUrl);
+
+            // Asegurar que videoUrls sea un arreglo
+            const videos = Array.isArray(videoUrls) ? videoUrls : [videoUrls].filter(Boolean);
+            console.log('Videos procesados:', videos);
+
             // Create modal for new departments
             const modal = document.createElement('div');
             modal.className = 'modal dark-mode';
             modal.id = `detail-modal-${departmentNumber}`;
-            modal.innerHTML = `
-                <div class="modal-content dark-mode">
-                    <span class="close-btn" onclick="closeModal(${departmentNumber})">&times;</span>
-                    <div id="main-content-container" class="video-container dark-mode">
-                        <video id="main-content" controls autoplay muted>
+
+            // Crear contenido del carrusel con todos los videos
+            let carouselItems = '';
+
+            // Agregar imagen principal si existe
+            if (imageUrl) {
+                carouselItems += `
+                    <div class="carousel-item active" onclick="changeContent('${imageUrl}', false, '${departmentNumber}')">
+                        <img src="${imageUrl}" alt="Vista principal">
+                    </div>
+                `;
+            }
+
+            // Agregar todos los videos
+            videos.forEach((videoUrl, index) => {
+                const isFirstItem = index === 0 && !imageUrl;
+                carouselItems += `
+                    <div class="carousel-item ${isFirstItem ? 'active' : ''}" onclick="changeContent('${videoUrl}', true, '${departmentNumber}')">
+                        <video controls muted poster="${imageUrl || '../Resource/Logo/logo.png'}">
                             <source src="${videoUrl}" type="video/mp4">
                             Tu navegador no soporta el elemento de video.
                         </video>
+                        <div class="video-overlay">
+                            <i class="fa fa-play"></i>
+                            <span>Video ${index + 1}</span>
+                        </div>
                     </div>
+                `;
+            });
+
+            modal.innerHTML = `
+                <div class="modal-content dark-mode">
+                    <span class="close-btn" onclick="closeModal('${departmentNumber}')">&times;</span>
+                    <div id="main-content-container" class="video-container dark-mode">
+                        ${videos.length > 0 ? `
+                            <video id="main-content" controls autoplay muted>
+                                <source src="${videos[0]}" type="video/mp4">
+                                Tu navegador no soporta el elemento de video.
+                            </video>
+                        ` : `
+                            <img id="main-content" src="${imageUrl || '../Resource/Logo/logo.png'}" alt="Vista principal" style="width: 100%; height: auto;">
+                        `}
+                    </div>
+
+                    <!-- Carrusel de imágenes y videos -->
                     <div class="image-carousel">
                         <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
                             <i class="fa fa-chevron-left"></i>
                         </button>
                         <div class="carousel-track">
-                            <div class="carousel-item" onclick="changeContent('${videoUrl}', true, ${departmentNumber})">
-                                <img src="${imageUrl || '../Resource/Logo/logo.png'}" alt="Vista principal">
-                            </div>
+                            ${carouselItems}
                         </div>
                         <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
                             <i class="fa fa-chevron-right"></i>
@@ -614,6 +662,7 @@
 
             document.body.appendChild(modal);
             modal.style.display = 'block';
+            console.log('=== showDepartmentModal COMPLETADO ===');
         }
 
         function updateDepartmentCard(data, imageUrl = null) {
@@ -830,7 +879,7 @@
                     <a data-translate='Proyectos' href='proyectos.html' id='proyectos-link'>Proyectos</a>
                     <ul class="dropdown-menu">
                         <li><a data-translate='Casas de Playa en Venta / Alquiler' href='proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
-                        <li><a data-translate='Proyecto Benavides 1' href='pben1.html'>Proyecto Benavides 1</a></li>
+                     <!--    <li><a data-translate='Proyecto Benavides 1' href='pben1.html'>Proyecto Benavides 1</a></li> -->
                         <li><a data-translate='Proyecto Benavides 2' href='pben2.html'>Proyecto Benavides 2</a></li>
                         <li><a data-translate='Proyecto Sienna' href='ppl1.html'>Proyecto Sienna</a></li>
                         <li><a data-translate='Proyecto Varsovia' href='plin.html'>Proyecto Varsovia</a></li>
@@ -2213,19 +2262,24 @@
     import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     // Función para manejar el cierre de sesión
-    document.getElementById('logoutButton').addEventListener('click', async (e) => {
-        e.preventDefault();
-        const auth = getAuth();
-        try {
-            await signOut(auth);
-            console.log('Sesión cerrada exitosamente');
-            window.location.href = '../index.html'; // Redirige al inicio después de cerrar sesión
-        } catch (error) {
-            console.error('Error al cerrar sesión:', error);
+    document.addEventListener('DOMContentLoaded', () => {
+        const logoutButton = document.getElementById('logoutButton');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const auth = getAuth();
+                try {
+                    await signOut(auth);
+                    console.log('Sesión cerrada exitosamente');
+                    window.location.href = '../index.html'; // Redirige al inicio después de cerrar sesión
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                }
+            });
         }
     });
 </script>
-<script type="module" src="js/nav.html"></script>
+<!-- <script type="module" src="js/nav.html"></script> -->
 <script>
     // Funciones para el selector de idiomas
     function toggleLanguageOptions() {
