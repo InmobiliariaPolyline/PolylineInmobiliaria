@@ -35,7 +35,9 @@ onAuthStateChanged(auth, (user) => {
 
 // Función para verificar y actualizar la UI según el rol del usuario
 export const checkAndUpdateUI = () => {
-    const userSession = JSON.parse(localStorage.getItem(STORAGE_KEYS.userSession));
+    // No cargar sesión de localStorage en producción (Netlify) para evitar que la sesión del desarrollador se mantenga
+    const isProduction = window.location.hostname.includes('netlify.app');
+    const userSession = isProduction ? null : JSON.parse(localStorage.getItem(STORAGE_KEYS.userSession));
     const loginLink = document.getElementById('loginLink');
     const userProfile = document.getElementById('userProfile');
     const profileLink = document.getElementById('profileLink');
@@ -45,7 +47,7 @@ export const checkAndUpdateUI = () => {
     if (userSession && userSession.emailVerified) {
         if (loginLink) loginLink.style.display = 'none';
         if (userProfile) userProfile.style.display = 'flex';
-        
+
         if (profileLink && profileText) {
             // Verificación estricta de booleano
             if (userSession.isAdmin === true) {

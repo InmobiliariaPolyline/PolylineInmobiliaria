@@ -659,6 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const auth = getAuth();
         try {
             await signOut(auth);
+            localStorage.removeItem('userSession');
             console.log('Sesión cerrada exitosamente');
             window.location.href = 'index.html'; // Redirige al inicio después de cerrar sesión
         } catch (error) {
@@ -1086,7 +1087,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const userSession = JSON.parse(localStorage.getItem('userSession'));
+    // No cargar sesión de localStorage en producción (Netlify) para evitar que la sesión del desarrollador se mantenga
+    const isProduction = window.location.hostname.includes('netlify.app');
+    const userSession = isProduction ? null : JSON.parse(localStorage.getItem('userSession'));
     const loginLink = document.getElementById('loginLink');
     const userProfile = document.getElementById('userProfile');
     const profileLink = document.getElementById('profileLink');

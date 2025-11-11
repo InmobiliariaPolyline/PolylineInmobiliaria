@@ -2302,6 +2302,7 @@
                 const auth = getAuth();
                 try {
                     await signOut(auth);
+                    localStorage.removeItem('userSession');
                     console.log('Sesión cerrada exitosamente');
                     window.location.href = '../index.html'; // Redirige al inicio después de cerrar sesión
                 } catch (error) {

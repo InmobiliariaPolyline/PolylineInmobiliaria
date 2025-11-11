@@ -173,6 +173,7 @@ export const logoutUser = async () => {
     try {
         // Limpiar datos de sesión
         sessionStorage.clear();
+        localStorage.removeItem('userSession');
         await signOut(auth);
         return { success: true };
     } catch (error) {
