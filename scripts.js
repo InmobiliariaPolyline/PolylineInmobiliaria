@@ -89,6 +89,8 @@ function changeContent(src, isVideo, departmentNumber) {
 function openModal(departmentNumber) {
     const modal = document.getElementById('detail-modal-' + departmentNumber);
     modal.classList.remove('hidden');
+    // Inicializar el carousel para el departamento
+    initializeCarousel(departmentNumber);
 }
 
 // Función para cerrar el modal del departamento correspondiente

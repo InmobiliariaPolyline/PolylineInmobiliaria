@@ -361,18 +361,29 @@ document.addEventListener('DOMContentLoaded', () => {
     
 
     // Manejador del botón de cotización
-    document.querySelector('.cotizar-btn').addEventListener('click', () => {
+    document.querySelector('.cotizar-btn').addEventListener('click', async () => {
         const resultado = document.querySelector('.resultado-cotizacion');
-        
-        // Cálculo del presupuesto (ejemplo)
+
+        // Cálculo del presupuesto
         const metrosTerreno = parseFloat(document.getElementById('metros-terreno').value) || 0;
         const metrosConstruccion = parseFloat(document.getElementById('metros-construccion').value) || 0;
         const metrosExcavacion = parseFloat(document.getElementById('metros-excavacion').value) || 0;
         const niveles = parseFloat(document.getElementById('niveles').value) || 1;
+        const tipoInmueble = tipoSeleccionado;
+        const moneda = monedaSeleccionada;
 
-        const precioExcavacion = metrosExcavacion * 100;
-        const precioConstruccion = metrosConstruccion * 500 * niveles;
-        const precioAcabados = metrosConstruccion * 200 * niveles;
+        const costos = precios[tipoInmueble];
+        let precioExcavacion = metrosExcavacion * costos.excavacion;
+        let precioConstruccion = metrosConstruccion * costos.construccion * niveles;
+        let precioAcabados = metrosConstruccion * costos.acabados * niveles;
+
+        // Convertir precios si es necesario
+        if (moneda === 'USD') {
+            precioExcavacion = precioExcavacion * exchangeRate.PEN_TO_USD;
+            precioConstruccion = precioConstruccion * exchangeRate.PEN_TO_USD;
+            precioAcabados = precioAcabados * exchangeRate.PEN_TO_USD;
+        }
+
         const total = precioExcavacion + precioConstruccion + precioAcabados;
 
         // Animación del resultado
@@ -392,15 +403,59 @@ document.addEventListener('DOMContentLoaded', () => {
             duration: 2000,
             easing: 'easeOutExpo',
             update: function(anim) {
-                document.querySelector('.precio-total').innerHTML = 
-                    '$' + anim.progress.toFixed(2);
+                const currentValue = total * (anim.progress / 100);
+                document.querySelector('.precio-total').innerHTML = formatPrice(currentValue) + ' <span style="font-size: 0.5em; color: #aaa;">aproximados</span>';
             }
         });
 
         // Actualizar desglose
-        document.getElementById('precio-excavacion').textContent = `$${precioExcavacion.toFixed(2)}`;
-        document.getElementById('precio-construccion').textContent = `$${precioConstruccion.toFixed(2)}`;
-        document.getElementById('precio-acabados').textContent = `$${precioAcabados.toFixed(2)}`;
+        document.getElementById('precio-excavacion').textContent = formatPrice(precioExcavacion);
+        document.getElementById('precio-construccion').textContent = formatPrice(precioConstruccion);
+        document.getElementById('precio-acabados').textContent = formatPrice(precioAcabados);
+
+        // Guardar cotización en Firebase
+        try {
+            const { db } = await import('../js/firebase-config.js');
+            const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+
+            // Función para determinar la colección basada en la página actual
+            function getCollectionName() {
+                const currentPath = window.location.pathname.toLowerCase();
+                if (currentPath.includes('ppl1') || currentPath.includes('siena')) {
+                    return 'proyectoFormato2Siena';
+                }
+                if (currentPath.includes('plin') || currentPath.includes('varsovia')) {
+                    return 'formatoProyecto2Varsovia';
+                }
+                return 'proyectoFormato2';
+            }
+
+            const cotizacionData = {
+                tipoInmueble,
+                metrosTerreno,
+                metrosConstruccion,
+                metrosExcavacion,
+                niveles,
+                moneda,
+                precioExcavacion,
+                precioConstruccion,
+                precioAcabados,
+                total,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            };
+
+            const collectionName = getCollectionName();
+            const docRef = await addDoc(collection(db, collectionName), cotizacionData);
+            console.log('Cotización guardada en colección:', collectionName, 'con ID:', docRef.id);
+
+            // Mostrar mensaje de éxito
+            showSuccessMessage('Cotización guardada exitosamente');
+
+        } catch (error) {
+            console.error('Error al guardar cotización:', error);
+            alert('Error al guardar la cotización: ' + error.message);
+        }
     });
 
     // Add touch events for mobile

@@ -371,6 +371,14 @@
                                 </div>
                                 <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB</small>
                             </div>
+                            <div class="form-group">
+                                <label for="departmentVideos">Videos del Departamento:</label>
+                                <input type="file" id="departmentVideos" accept="video/*" multiple>
+                                <div id="videosPreview" style="display:none"></div>
+                                <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">
+                                  Formatos permitidos: MP4, AVI, MOV. Tamaño máximo por archivo: 100MB
+                                </small>
+                            </div>
                         </form>
                     </div>
                     <div class="admin-modal-footer">
@@ -387,8 +395,9 @@
             window.currentDeptData = deptData;
             window.isNewDepartment = isNew;
 
-            // Setup image preview functionality
+            // Setup image and video preview functionality
             setupImagePreview();
+            setupVideoPreview();
         }
 
         function setupImagePreview() {
@@ -432,6 +441,55 @@
             }
         }
 
+        function setupVideoPreview() {
+            const videoInput = document.getElementById('departmentVideos');
+            const previewContainer = document.getElementById('videosPreview');
+
+            if (videoInput) {
+                videoInput.addEventListener('change', function(e) {
+                    const files = Array.from(e.target.files);
+                    previewContainer.innerHTML = ''; // Clear previous previews
+
+                    if (files.length > 0) {
+                        files.forEach((file, index) => {
+                            // Validate file type
+                            if (!file.type.startsWith('video/')) {
+                                alert(`El archivo "${file.name}" no es un video válido (MP4, AVI, MOV)`);
+                                return;
+                            }
+
+                            // Validate file size (100MB max per file)
+                            if (file.size > 100 * 1024 * 1024) {
+                                alert(`El video "${file.name}" supera los 100MB`);
+                                return;
+                            }
+
+                            // Create preview element
+                            const videoPreview = document.createElement('div');
+                            videoPreview.className = 'video-preview-item';
+                            videoPreview.innerHTML = `
+                                <video controls style="max-width: 200px; max-height: 150px; margin: 0.5rem;">
+                                    <source src="${URL.createObjectURL(file)}" type="${file.type}">
+                                    Tu navegador no soporta el elemento de video.
+                                </video>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary, #666); margin: 0.25rem 0;">
+                                    ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)
+                                </p>
+                            `;
+
+                            previewContainer.appendChild(videoPreview);
+                        });
+
+                        previewContainer.style.display = 'block';
+                        window.selectedVideoFiles = files;
+                    } else {
+                        previewContainer.style.display = 'none';
+                        window.selectedVideoFiles = [];
+                    }
+                });
+            }
+        }
+
         window.closeAdminModal = function() {
             const modal = document.querySelector('.admin-modal');
             if (modal) {
@@ -470,6 +528,28 @@
                     submitBtn.disabled = false;
                 }
 
+                // Handle video uploads if files were selected
+                let videoUrls = [];
+                if (window.selectedVideoFiles && window.selectedVideoFiles.length > 0) {
+                    const submitBtn = document.querySelector('.btn-save');
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo videos...';
+                    submitBtn.disabled = true;
+
+                    // Upload each video to Cloudinary
+                    for (const videoFile of window.selectedVideoFiles) {
+                        try {
+                            const videoResult = await uploadVideoToCloudinary(videoFile);
+                            videoUrls.push(videoResult.secure_url);
+                        } catch (videoError) {
+                            console.error('Error uploading video:', videoError);
+                            alert(`Error al subir el video ${videoFile.name}: ${videoError.message}`);
+                        }
+                    }
+
+                    submitBtn.innerHTML = isNew ? 'Crear Departamento' : 'Guardar Departamento';
+                    submitBtn.disabled = false;
+                }
+
                 if (isNew) {
                     // Save to Firebase first
                     const { addDepartment } = await import('../js/add-department.js');
@@ -480,7 +560,8 @@
                         banos: formData.banos,
                         area: formData.area,
                         descripcion: formData.descripcion,
-                        imagen: imageUrl
+                        imagen: imageUrl,
+                        videos: videoUrls
                     };
 
                     console.log('Enviando datos a Firebase:', departmentData);
@@ -488,7 +569,7 @@
                     console.log('Departamento guardado en Firebase con ID:', docId);
 
                     // Add new department card to UI
-                    addNewDepartmentCard(formData, imageUrl);
+                    addNewDepartmentCard({ ...formData, videos: videoUrls }, imageUrl);
                     showSuccessMessage('Departamento creado exitosamente');
                 } else {
                     // Check if this is a hardcoded department that needs to be saved to Firebase
@@ -502,7 +583,8 @@
                             banos: formData.banos,
                             area: formData.area,
                             descripcion: formData.descripcion,
-                            imagen: imageUrl
+                            imagen: imageUrl,
+                            videos: videoUrls
                         };
 
                         console.log('Guardando departamento hardcodeado en Firebase:', departmentData);
@@ -522,7 +604,8 @@
                             banos: formData.banos,
                             area: formData.area,
                             descripcion: formData.descripcion,
-                            imagen: imageUrl
+                            imagen: imageUrl,
+                            videos: videoUrls
                         };
 
                         console.log('Actualizando departamento en Firebase:', departmentData);
@@ -574,14 +657,14 @@
                 detailsBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     const departmentNumber = this.getAttribute('data-department');
-                    const videoUrl = this.getAttribute('data-video');
 
-                    if (videoUrl) {
-                        // If video URL exists, show modal with video
-                        showDepartmentModal(departmentNumber, videoUrl, imageUrl);
+                    // Use videos from data (uploaded to Cloudinary)
+                    const videoUrls = data.videos && data.videos.length > 0 ? data.videos : [];
+
+                    if (videoUrls.length > 0 || imageUrl) {
+                        showDepartmentModal(departmentNumber, videoUrls, imageUrl);
                     } else {
-                        // If no video, show default modal or alert
-                        alert('Video no disponible para este departamento');
+                        alert('Contenido no disponible para este departamento');
                     }
                 });
             }
@@ -726,6 +809,34 @@
             } catch (error) {
                 console.error('Error detallado:', error);
                 throw new Error(`Error al subir la imagen: ${error.message}`);
+            }
+        }
+
+        // Función para subir video a Cloudinary
+        async function uploadVideoToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            try {
+                const response = await fetch(
+                    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`,
+                    {
+                        method: 'POST',
+                        body: formData
+                    }
+                );
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || 'Error al subir el video');
+                }
+
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error detallado:', error);
+                throw new Error(`Error al subir el video: ${error.message}`);
             }
         }
     </script>
@@ -2096,6 +2207,23 @@
                     transform: translateX(0);
                     opacity: 1;
                 }
+            }
+
+            /* Video preview styles */
+            .video-preview-item {
+                display: inline-block;
+                margin: 0.5rem;
+                text-align: center;
+                border: 1px solid var(--border-color, #ddd);
+                border-radius: 6px;
+                padding: 0.5rem;
+                background: var(--input-bg, #fff);
+            }
+
+            .video-preview-item video {
+                max-width: 150px;
+                max-height: 100px;
+                border-radius: 4px;
             }
 
             /* Responsive */

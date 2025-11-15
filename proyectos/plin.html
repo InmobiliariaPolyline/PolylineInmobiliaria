@@ -371,6 +371,14 @@
                                 </div>
                                 <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB</small>
                             </div>
+                            <div class="form-group">
+                                <label for="departmentVideos">Videos del Departamento:</label>
+                                <input type="file" id="departmentVideos" accept="video/*" multiple>
+                                <div id="videosPreview" style="display:none"></div>
+                                <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">
+                                  Formatos permitidos: MP4, AVI, MOV. Tamaño máximo por archivo: 100MB
+                                </small>
+                            </div>
                         </form>
                     </div>
                     <div class="admin-modal-footer">
@@ -392,44 +400,105 @@
         }
 
         function setupImagePreview() {
+            console.log('=== setupImagePreview INICIADO ===');
+
+            // Imagen
             const imageInput = document.getElementById('departmentImage');
             const previewContainer = document.getElementById('imagePreview');
             const previewImg = document.getElementById('previewImg');
 
+            console.log('Elementos de imagen encontrados:', {
+                imageInput: !!imageInput,
+                previewContainer: !!previewContainer,
+                previewImg: !!previewImg
+            });
+
             if (imageInput) {
-                imageInput.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (file) {
-                        // Validate file type
-                        if (!file.type.startsWith('image/')) {
-                            alert('Por favor, selecciona un archivo de imagen válido (JPG, PNG, GIF)');
-                            this.value = '';
+                imageInput.addEventListener('change', (e) => {
+                    console.log('Evento change en imagen:', e.target.files);
+                    const file = e.target.files?.[0];
+                    if (!file) {
+                        console.log('No hay archivo seleccionado');
+                        previewContainer.style.display='none';
+                        window.selectedImageFile=null;
+                        return;
+                    }
+                    if (!file.type.startsWith('image/')) {
+                        alert('Selecciona una imagen válida');
+                        imageInput.value='';
+                        return;
+                    }
+                    if (file.size > 5*1024*1024) {
+                        alert('La imagen no debe superar 5MB');
+                        imageInput.value='';
+                        return;
+                    }
+                    console.log('Imagen válida seleccionada:', file.name, file.size);
+                    const reader = new FileReader();
+                    reader.onload = ev => {
+                        previewImg.src = ev.target.result;
+                        previewContainer.style.display='block';
+                        console.log('Preview de imagen cargado');
+                    };
+                    reader.readAsDataURL(file);
+                    window.selectedImageFile = file;
+                });
+            }
+
+            // Videos múltiples
+            const videosInput = document.getElementById('departmentVideos');
+            const videosPreview = document.getElementById('videosPreview');
+            window.selectedVideoFiles = [];
+
+            console.log('Elementos de video encontrados:', {
+                videosInput: !!videosInput,
+                videosPreview: !!videosPreview
+            });
+
+            if (videosInput) {
+                videosInput.addEventListener('change', (e) => {
+                    console.log('Evento change en videos:', e.target.files);
+                    const files = Array.from(e.target.files || []);
+                    console.log('Archivos de video seleccionados:', files.length);
+
+                    for (const f of files) {
+                        if (!f.type.startsWith('video/')) {
+                            alert('Solo videos');
+                            videosInput.value='';
                             return;
                         }
-
-                        // Validate file size (5MB max)
-                        if (file.size > 5 * 1024 * 1024) {
-                            alert('La imagen no debe superar los 5MB');
-                            this.value = '';
+                        if (f.size > 100*1024*1024) {
+                            alert('Cada video máx 100MB');
+                            videosInput.value='';
                             return;
                         }
+                    }
 
-                        // Show preview
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            previewImg.src = e.target.result;
-                            previewContainer.style.display = 'block';
-                        };
-                        reader.readAsDataURL(file);
+                    window.selectedVideoFiles = files;
+                    console.log('selectedVideoFiles asignados:', files.map(f => ({name: f.name, size: f.size})));
 
-                        // Store file for upload
-                        window.selectedImageFile = file;
+                    // Preview simple
+                    videosPreview.innerHTML = '';
+                    if (files.length) {
+                        videosPreview.style.display = 'flex';
+                        videosPreview.style.gap = '.5rem';
+                        files.forEach((f, index) => {
+                            console.log(`Creando preview para video ${index + 1}:`, f.name);
+                            const v = document.createElement('video');
+                            v.controls = true;
+                            v.muted = true;
+                            v.style.cssText = 'max-width:160px;max-height:110px;border-radius:6px;';
+                            v.src = URL.createObjectURL(f);
+                            videosPreview.appendChild(v);
+                        });
+                        console.log('Previews de video creados');
                     } else {
-                        previewContainer.style.display = 'none';
-                        window.selectedImageFile = null;
+                        videosPreview.style.display = 'none';
                     }
                 });
             }
+
+            console.log('=== setupImagePreview COMPLETADO ===');
         }
 
         window.closeAdminModal = function() {
@@ -440,109 +509,125 @@
         };
 
         window.saveDepartment = async function(isNew) {
-            const formData = {
-                numero: document.getElementById('deptNumber').value.trim(),
-                titulo: document.getElementById('deptTitle').value.trim(),
-                dormitorios: parseInt(document.getElementById('bedrooms').value),
-                banos: parseInt(document.getElementById('bathrooms').value),
-                area: parseFloat(document.getElementById('area').value),
-                descripcion: document.getElementById('description').value.trim()
+          console.log('=== INICIANDO saveDepartment ===');
+          console.log('isNew:', isNew);
+
+          const formData = {
+            numero: document.getElementById('deptNumber').value.trim(),
+            titulo: document.getElementById('deptTitle').value.trim(),
+            dormitorios: parseInt(document.getElementById('bedrooms').value),
+            banos: parseInt(document.getElementById('bathrooms').value),
+            area: parseFloat(document.getElementById('area').value),
+            descripcion: document.getElementById('description').value.trim()
+          };
+
+          console.log('formData recopilado:', formData);
+
+          if (!formData.numero || !formData.titulo) {
+            alert('Por favor, completa todos los campos obligatorios');
+            return;
+          }
+
+          const submitBtn = document.querySelector('.btn-save');
+
+          try {
+            // 1) Imagen
+            let imageUrl = null;
+            console.log('window.selectedImageFile:', window.selectedImageFile);
+            if (window.selectedImageFile) {
+              console.log('Subiendo imagen...');
+              submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo imagen...';
+              submitBtn.disabled = true;
+              const imageResult = await uploadToCloudinary(window.selectedImageFile);
+              imageUrl = imageResult.secure_url;
+              console.log('Imagen subida exitosamente:', imageUrl);
+            } else {
+              console.log('No hay imagen seleccionada');
+            }
+
+            // 2) Videos (múltiples)
+            let videos = [];
+            console.log('window.selectedVideoFiles:', window.selectedVideoFiles);
+            if (Array.isArray(window.selectedVideoFiles) && window.selectedVideoFiles.length) {
+              console.log('Subiendo', window.selectedVideoFiles.length, 'videos...');
+              submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo videos...';
+              submitBtn.disabled = true;
+              for (let i = 0; i < window.selectedVideoFiles.length; i++) {
+                const f = window.selectedVideoFiles[i];
+                console.log(`Subiendo video ${i + 1}/${window.selectedVideoFiles.length}:`, f.name);
+                const up = await uploadToCloudinary(f);
+                videos.push(up.secure_url);
+                console.log(`Video ${i + 1} subido:`, up.secure_url);
+              }
+              console.log('Todos los videos subidos:', videos);
+            } else {
+              console.log('No hay videos seleccionados');
+            }
+
+            submitBtn.innerHTML = isNew ? 'Crear Departamento' : 'Guardar Departamento';
+            submitBtn.disabled = false;
+
+            // 3) Persistencia
+            const departmentData = {
+              numero: formData.numero,
+              titulo: formData.titulo,
+              dormitorios: formData.dormitorios,
+              banos: formData.banos,
+              area: formData.area,
+              descripcion: formData.descripcion,
+              imagen: imageUrl,
+              videos: videos
             };
 
-            if (!formData.numero || !formData.titulo) {
-                alert('Por favor, completa todos los campos obligatorios');
-                return;
+            console.log('Datos finales para guardar:', departmentData);
+
+            if (isNew) {
+              console.log('Creando nuevo departamento...');
+              const { addDepartment } = await import('../js/add-department.js');
+              const docId = await addDepartment(departmentData);
+              console.log('Departamento guardado con ID:', docId);
+
+              // 4) Reflejar en UI
+              addNewDepartmentCard({ ...formData, videos }, imageUrl);
+              showSuccessMessage('Departamento creado exitosamente');
+            } else {
+              console.log('Actualizando departamento existente...');
+              // Para actualización, necesitamos el ID del departamento existente
+              const { getAllDepartments, updateDepartment: updateFromFirebase } = await import('../js/add-department.js');
+              const allDepartments = await getAllDepartments();
+              const existingDept = allDepartments.find(dept => dept.numero === formData.numero);
+
+              if (existingDept) {
+                console.log('Departamento encontrado para actualizar:', existingDept.id);
+                const updateData = {
+                  titulo: formData.titulo,
+                  dormitorios: formData.dormitorios,
+                  banos: formData.banos,
+                  area: formData.area,
+                  descripcion: formData.descripcion,
+                  imagen: imageUrl,
+                  videos: videos
+                };
+
+                await updateFromFirebase(existingDept.id, updateData);
+                console.log('Departamento actualizado en Firebase');
+              } else {
+                console.log('No se encontró departamento existente para actualizar');
+              }
+
+              updateDepartmentCard(formData, imageUrl);
+              showSuccessMessage('Departamento actualizado exitosamente');
             }
 
-            try {
-                // Handle image upload if a file was selected
-                let imageUrl = null;
-                if (window.selectedImageFile) {
-                    const submitBtn = document.querySelector('.btn-save');
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo imagen...';
-                    submitBtn.disabled = true;
-
-                    // Upload to Cloudinary
-                    const cloudinaryResult = await uploadToCloudinary(window.selectedImageFile);
-                    imageUrl = cloudinaryResult.secure_url;
-
-                    submitBtn.innerHTML = isNew ? 'Crear Departamento' : 'Guardar Departamento';
-                    submitBtn.disabled = false;
-                }
-
-                if (isNew) {
-                    // Save to Firebase first
-                    const { addDepartment } = await import('../js/add-department.js');
-                    const departmentData = {
-                        numero: formData.numero,
-                        titulo: formData.titulo,
-                        dormitorios: formData.dormitorios,
-                        banos: formData.banos,
-                        area: formData.area,
-                        descripcion: formData.descripcion,
-                        imagen: imageUrl
-                    };
-
-                    console.log('Enviando datos a Firebase:', departmentData);
-                    const docId = await addDepartment(departmentData);
-                    console.log('Departamento guardado en Firebase con ID:', docId);
-
-                    // Add new department card to UI
-                    addNewDepartmentCard(formData, imageUrl);
-                    showSuccessMessage('Departamento creado exitosamente');
-                } else {
-                    // Check if this is a hardcoded department that needs to be saved to Firebase
-                    if (window.currentDeptData && window.currentDeptData.isHardcoded) {
-                        // Save hardcoded department to Firebase first
-                        const { addDepartment } = await import('../js/add-department.js');
-                        const departmentData = {
-                            numero: formData.numero,
-                            titulo: formData.titulo,
-                            dormitorios: formData.dormitorios,
-                            banos: formData.banos,
-                            area: formData.area,
-                            descripcion: formData.descripcion,
-                            imagen: imageUrl
-                        };
-
-                        console.log('Guardando departamento hardcodeado en Firebase:', departmentData);
-                        const docId = await addDepartment(departmentData);
-                        console.log('Departamento hardcodeado guardado en Firebase con ID:', docId);
-
-                        // Update the UI card
-                        updateDepartmentCard(formData, imageUrl);
-                        showSuccessMessage('Departamento actualizado y guardado en base de datos exitosamente');
-                    } else if (window.currentDeptData && window.currentDeptData.id) {
-                        // Update existing Firebase department
-                        const { updateDepartment } = await import('../js/add-department.js');
-                        const departmentData = {
-                            numero: formData.numero,
-                            titulo: formData.titulo,
-                            dormitorios: formData.dormitorios,
-                            banos: formData.banos,
-                            area: formData.area,
-                            descripcion: formData.descripcion,
-                            imagen: imageUrl
-                        };
-
-                        console.log('Actualizando departamento en Firebase:', departmentData);
-                        await updateDepartment(window.currentDeptData.id, departmentData);
-
-                        // Update the UI card
-                        updateDepartmentCard(formData, imageUrl);
-                        showSuccessMessage('Departamento actualizado exitosamente');
-                    } else {
-                        // Fallback: just update the UI card
-                        updateDepartmentCard(formData, imageUrl);
-                        showSuccessMessage('Departamento actualizado exitosamente');
-                    }
-                }
-
-                closeAdminModal();
-            } catch (error) {
-                console.error('Error completo:', error);
-                alert('Error al guardar departamento: ' + error.message);
-            }
+            closeAdminModal();
+            console.log('=== saveDepartment COMPLETADO ===');
+          } catch (error) {
+            console.error('Error completo en saveDepartment:', error);
+            console.error('Stack trace:', error.stack);
+            alert('Error al guardar departamento: ' + error.message);
+            submitBtn.innerHTML = isNew ? 'Crear Departamento' : 'Guardar Departamento';
+            submitBtn.disabled = false;
+          }
         };
 
         function addNewDepartmentCard(data, imageUrl = null) {
@@ -608,7 +693,7 @@
             // Agregar imagen principal si existe
             if (imageUrl) {
                 carouselItems += `
-                    <div class="carousel-item active" onclick="changeContent('${imageUrl}', false, '${departmentNumber}')">
+                    <div class="carousel-item active" onclick="changeContentCarousel('${imageUrl}', false, '${departmentNumber}')">
                         <img src="${imageUrl}" alt="Vista principal">
                     </div>
                 `;
@@ -618,7 +703,7 @@
             videos.forEach((videoUrl, index) => {
                 const isFirstItem = index === 0 && !imageUrl;
                 carouselItems += `
-                    <div class="carousel-item ${isFirstItem ? 'active' : ''}" onclick="changeContent('${videoUrl}', true, '${departmentNumber}')">
+                    <div class="carousel-item ${isFirstItem ? 'active' : ''}" onclick="changeContentCarousel('${videoUrl}', true, '${departmentNumber}')">
                         <video controls muted poster="${imageUrl || '../Resource/Logo/logo.png'}">
                             <source src="${videoUrl}" type="video/mp4">
                             Tu navegador no soporta el elemento de video.
@@ -662,6 +747,8 @@
 
             document.body.appendChild(modal);
             modal.style.display = 'block';
+            // Inicializar el carousel para el modal dinámico
+            initializeCarousel(departmentNumber);
             console.log('=== showDepartmentModal COMPLETADO ===');
         }
 
@@ -701,32 +788,35 @@
         const CLOUDINARY_API_KEY = '142722212461979';
         const CLOUDINARY_UPLOAD_PRESET = 'PolylineIMG';
 
-        // Función para subir imagen a Cloudinary
-        async function uploadToCloudinary(file) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            async function uploadToCloudinary(file) {
+        console.log('=== uploadToCloudinary INICIADO ===');
+        console.log('Archivo a subir:', file.name, 'Tipo:', file.type, 'Tamaño:', file.size);
 
-            try {
-                const response = await fetch(
-                    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-                    {
-                        method: 'POST',
-                        body: formData
-                    }
-                );
+        // Detectar si es video o imagen y usar endpoint específico
+        const isVideo = file.type.startsWith('video/');
+        const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${isVideo ? 'video' : 'image'}/upload`;
+        console.log('URL de subida:', url);
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error?.message || 'Error al subir la imagen');
-                }
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        formData.append('folder', 'departamentos'); // opcional
 
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error('Error detallado:', error);
-                throw new Error(`Error al subir la imagen: ${error.message}`);
-            }
+        console.log('Enviando petición a Cloudinary...');
+        const res = await fetch(url, { method: 'POST', body: formData });
+        const data = await res.json();
+
+        console.log('Respuesta de Cloudinary - Status:', res.status);
+        console.log('Respuesta de Cloudinary - Data:', data);
+
+        if (!res.ok || data.error) {
+            console.error('Error en subida a Cloudinary:', data.error);
+            throw new Error(data.error?.message || 'Falla subiendo a Cloudinary');
+        }
+
+        console.log('Subida exitosa. URL segura:', data.secure_url);
+        console.log('=== uploadToCloudinary COMPLETADO ===');
+        return data; // trae secure_url y resource_type
         }
     </script>
     <style>
@@ -1011,43 +1101,43 @@
                             </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1201/video cocina depa 1201.mp4', true, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA 1201/video cocina depa 1201.mp4', true, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1201/video dormitorio depa 1201.mp4', true, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA 1201/video dormitorio depa 1201.mp4', true, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/2.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201-%2014.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201-%2014.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201-%2014.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%201.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%201.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%201.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%209.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%209.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%209.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%207.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%207.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%207.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%206.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%206.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%206.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%2010.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%2010.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%2010.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 8 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%202.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%202.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%202.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%2012.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%2012.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%2012.jpg" alt="Vista 4">
                                 </div>
                             </div>
@@ -1092,43 +1182,43 @@
                             </button>    
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1202/video depa 1202.mp4', true, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA 1202/video depa 1202.mp4', true, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%201.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%201.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%201.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2013.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2013.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2013.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2012.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2012.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2012.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%204.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%204.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%204.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2016.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2016.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2016.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%202.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%202.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%202.jpg" alt="Vista 6">
                                 </div>
                                 <!-- Ítem 8 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2020.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2020.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2020.jpg" alt="Vista 7">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2021.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2021.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2021.jpg" alt="Vista 8">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20%20-%2010.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20%20-%2010.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20%20-%2010.jpg" alt="Vista 9">
                                 </div>
                             </div>
@@ -1169,43 +1259,43 @@
                             </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%204.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%204.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%204.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%206.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%206.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%206.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2014.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2014.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2014.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-25.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-25.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-25.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 8 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%202.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%202.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%202.jpg" alt="Vista 7">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2013.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2013.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2013.jpg" alt="Vista 8">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2021.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2021.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2021.jpg"alt="Vista 9">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2019.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2019.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2019.jpg"alt="Vista 9">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%20%201301%20-%2029.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%20%201301%20-%2029.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%20%201301%20-%2029.jpg"alt="Vista 9">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2030.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2030.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2030.jpg"alt="Vista 9">
                                 </div>
                             </div>
@@ -1251,41 +1341,41 @@
                             </button>    
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1302/video depa 1302 1.mp4', true, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA 1302/video depa 1302 1.mp4', true, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/1.jpg" alt="Vista 0">
                                 </div>
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1302/video depa 1302 2.mp4', true, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA 1302/video depa 1302 2.mp4', true, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/2.jpg" alt="Vista 0">
                                 </div>
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1302/video depa 1302 3.mp4', true, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA 1302/video depa 1302 3.mp4', true, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/3.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%204.jpg', false, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%204.jpg', false, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%204.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%208.jpg', false, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%208.jpg', false, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%208.jpg" alt="Vista 3">
                                 </div>                                
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2010.jpg', false, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2010.jpg', false, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%2010.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%203.jpg', false, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%203.jpg', false, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%203.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2014.jpg', false, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2014.jpg', false, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%2014.jpg" alt="Vista 6">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2015.jpg', false, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2015.jpg', false, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%2015.jpg" alt="Vista 7">
                                 </div>
                                 <!-- Ítem 8 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2027.jpg', false, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2027.jpg', false, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%2027.jpg" alt="Vista 8">
                                 </div>
                             </div>
@@ -1443,15 +1533,11 @@
             .admin-controls {
                 position: absolute;
                 top: 10px;
-                right: 10px;
+                left: 10px;
                 display: flex;
                 gap: 5px;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            }
-
-            .departamento-card:hover .admin-controls {
                 opacity: 1;
+                transition: opacity 0.3s ease;
             }
 
             .admin-buttons {

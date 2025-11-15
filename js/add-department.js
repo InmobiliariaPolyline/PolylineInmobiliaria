@@ -1,5 +1,5 @@
 // Función para agregar un nuevo departamento a Firebase
-// Colección: 'proyectoFormato2'
+// Colección: dinámica (proyectoFormato2 o proyectoFormato2Siena según el proyecto)
 // Campos: numero de departamento, titulo, dormitorios, baños, área, descripción, imagen, video
 
 // import { db } from './firebase-config.js';
@@ -16,7 +16,7 @@
 // } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // /**
-//  * Agrega un nuevo departamento a la colección 'proyectoFormato2' en Firebase
+//  * Agrega un nuevo departamento a la colección 'proyectoFormato2Siena' en Firebase
 //  * @param {Object} departmentData - Datos del departamento
 //  * @param {string} departmentData.numero - Número del departamento (obligatorio)
 //  * @param {string} departmentData.titulo - Título del departamento (obligatorio)
@@ -75,8 +75,8 @@
 //             dataToSave.status = departmentData.status;
 //         }
 
-//         // Agregar documento a la colección 'proyectoFormato2'
-//         const docRef = await addDoc(collection(db, 'proyectoFormato2'), dataToSave);
+//         // Agregar documento a la colección 'proyectoFormato2Siena'
+//         const docRef = await addDoc(collection(db, 'proyectoFormato2Siena'), dataToSave);
 
 //         console.log('Departamento agregado exitosamente con ID:', docRef.id);
 //         return docRef.id;
@@ -129,7 +129,7 @@
 //             dataToUpdate.status = departmentData.status;
 //         }
 
-//         await updateDoc(doc(db, 'proyectoFormato2', departmentId), dataToUpdate);
+//         await updateDoc(doc(db, 'proyectoFormato2Siena', departmentId), dataToUpdate);
 //         console.log('Departamento actualizado exitosamente');
 
 //     } catch (error) {
@@ -145,7 +145,7 @@
 //  */
 // export async function deleteDepartment(departmentId) {
 //     try {
-//         await deleteDoc(doc(db, 'proyectoFormato2', departmentId));
+//         await deleteDoc(doc(db, 'proyectoFormato2Siena', departmentId));
 //         console.log('Departamento eliminado exitosamente');
 //     } catch (error) {
 //         console.error('Error al eliminar departamento:', error);
@@ -159,7 +159,7 @@
 //  */
 // export async function getAllDepartments() {
 //     try {
-//         const q = query(collection(db, 'proyectoFormato2'), orderBy('createdAt', 'desc'));
+//         const q = query(collection(db, 'proyectoFormato2Siena'), orderBy('createdAt', 'desc'));
 //         const querySnapshot = await getDocs(q);
 
 //         const departments = [];
@@ -215,7 +215,7 @@ getAllDepartments()
 
 
 // js/add-department.js
-// Colección: 'proyectoFormato2'
+// Colección: dinámica según proyecto
 
 import { db } from './firebase-config.js';
 import {
@@ -233,6 +233,20 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /**
+ * Determina la colección a usar basada en la página actual
+ */
+function getCollectionName() {
+  const currentPath = window.location.pathname.toLowerCase();
+  if (currentPath.includes('ppl1') || currentPath.includes('siena')) {
+    return 'proyectoFormato2Siena';
+  }
+  if (currentPath.includes('plin') || currentPath.includes('varsovia')) {
+    return 'formatoProyecto2Varsovia';
+  }
+  return 'proyectoFormato2';
+}
+
+/**
  * Normaliza el número de depto a string (acepta number o string)
  */
 function normNum(n) {
@@ -242,7 +256,7 @@ function normNum(n) {
 }
 
 /**
- * Agrega un nuevo departamento a la colección 'proyectoFormato2'
+ * Agrega un nuevo departamento a la colección dinámica según proyecto
  * Campos soportados: numero (string), titulo, dormitorios, banos, area, descripcion?, imagen?, videos?: string[], status?
  * También acepta legacy: video (string) y lo convierte a videos[0]
  * @returns {Promise<string>} ID del documento creado
@@ -300,7 +314,7 @@ export async function addDepartment(departmentData) {
       dataToSave.status = departmentData.status; // 'available' | 'reserved' | 'sold'
     }
 
-    const docRef = await addDoc(collection(db, 'proyectoFormato2'), dataToSave);
+    const docRef = await addDoc(collection(db, getCollectionName()), dataToSave);
     console.log('Departamento agregado exitosamente con ID:', docRef.id);
     return docRef.id;
   } catch (error) {
@@ -351,7 +365,7 @@ export async function updateDepartment(departmentId, departmentData) {
       dataToUpdate.status = departmentData.status;
     }
 
-    await updateDoc(doc(db, 'proyectoFormato2', departmentId), dataToUpdate);
+    await updateDoc(doc(db, getCollectionName(), departmentId), dataToUpdate);
     console.log('Departamento actualizado exitosamente');
   } catch (error) {
     console.error('Error al actualizar departamento:', error);
@@ -368,7 +382,7 @@ export async function appendDepartmentVideos(departmentId, videoUrls = []) {
   try {
     const clean = (videoUrls || []).filter(Boolean);
     if (!clean.length) return;
-    const ref = doc(db, 'proyectoFormato2', departmentId);
+    const ref = doc(db, getCollectionName(), departmentId);
 
     // Cloud Firestore no acepta arrayUnion([]) vacío; iteramos
     for (const u of clean) {
@@ -390,7 +404,7 @@ export async function removeDepartmentVideos(departmentId, videoUrls = []) {
   try {
     const clean = (videoUrls || []).filter(Boolean);
     if (!clean.length) return;
-    const ref = doc(db, 'proyectoFormato2', departmentId);
+    const ref = doc(db, getCollectionName(), departmentId);
 
     for (const u of clean) {
       await updateDoc(ref, { videos: arrayRemove(u), updatedAt: serverTimestamp() });
@@ -407,7 +421,7 @@ export async function removeDepartmentVideos(departmentId, videoUrls = []) {
  */
 export async function deleteDepartment(departmentId) {
   try {
-    await deleteDoc(doc(db, 'proyectoFormato2', departmentId));
+    await deleteDoc(doc(db, getCollectionName(), departmentId));
   } catch (error) {
     console.error('Error al eliminar departamento:', error);
     throw new Error(`Error al eliminar departamento: ${error.message}`);
@@ -420,7 +434,7 @@ export async function deleteDepartment(departmentId) {
  */
 export async function getAllDepartments() {
   try {
-    const q = query(collection(db, 'proyectoFormato2'), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, getCollectionName()), orderBy('createdAt', 'desc'));
     const snap = await getDocs(q);
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch (error) {

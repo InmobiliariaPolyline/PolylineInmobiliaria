@@ -881,7 +881,7 @@
             // Agregar imagen principal si existe
             if (imageUrl) {
                 carouselItems += `
-                    <div class="carousel-item active" onclick="changeContent('${imageUrl}', false, '${departmentNumber}')">
+                    <div class="carousel-item active" onclick="changeContentCarousel('${imageUrl}', false, '${departmentNumber}')">
                         <img src="${imageUrl}" alt="Vista principal">
                     </div>
                 `;
@@ -891,7 +891,7 @@
             videos.forEach((videoUrl, index) => {
                 const isFirstItem = index === 0 && !imageUrl;
                 carouselItems += `
-                    <div class="carousel-item ${isFirstItem ? 'active' : ''}" onclick="changeContent('${videoUrl}', true, '${departmentNumber}')">
+                    <div class="carousel-item ${isFirstItem ? 'active' : ''}" onclick="changeContentCarousel('${videoUrl}', true, '${departmentNumber}')">
                         <video controls muted poster="${imageUrl || '../Resource/Logo/logo.png'}">
                             <source src="${videoUrl}" type="video/mp4">
                             Tu navegador no soporta el elemento de video.
@@ -907,7 +907,7 @@
             // Si no hay videos, agregar imagen como primer item
             if (videos.length === 0 && imageUrl) {
                 carouselItems += `
-                    <div class="carousel-item active" onclick="changeContent('${imageUrl}', false, '${departmentNumber}')">
+                    <div class="carousel-item active" onclick="changeContentCarousel('${imageUrl}', false, '${departmentNumber}')">
                         <img src="${imageUrl}" alt="Vista principal">
                     </div>
                 `;
@@ -959,6 +959,8 @@
 
             document.body.appendChild(modal);
             modal.style.display = 'block';
+            // Inicializar el carousel para el modal dinámico
+            initializeCarousel(departmentNumber);
             console.log('=== showDepartmentModal COMPLETADO ===');
         }
 
@@ -1034,15 +1036,11 @@
         .admin-controls {
             position: absolute;
             top: 10px;
-            right: 10px;
+            left: 10px;
             display: flex;
             gap: 5px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .departamento-card:hover .admin-controls {
             opacity: 1;
+            transition: opacity 0.3s ease;
         }
 
         .admin-buttons {
@@ -1476,23 +1474,23 @@
                             </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP101/101_VID.mp4', true, '101a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP101/101_VID.mp4', true, '101a')">
                                     <img src="../Resource/PBEN2/DEP101/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP101/1.jpg', false, '101a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP101/1.jpg', false, '101a')">
                                     <img src="../Resource/PBEN2/DEP101/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP101/2.jpg', false, '101a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP101/2.jpg', false, '101a')">
                                     <img src="../Resource/PBEN2/DEP101/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP101/3.jpg', false, '101a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP101/3.jpg', false, '101a')">
                                     <img src="../Resource/PBEN2/DEP101/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP101/4.jpg', false, '101a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP101/4.jpg', false, '101a')">
                                     <img src="../Resource/PBEN2/DEP101/4.jpg" alt="Vista 4">
                                 </div>
                             </div>
@@ -1538,35 +1536,35 @@
                             </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/202_VID.mp4', true, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/202_VID.mp4', true, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/1.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/1.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/2.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/2.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/3.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/3.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/4.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/4.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/5.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/5.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/5.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/6.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/6.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/6.jpg" alt="Vista 6">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/7.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/7.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/7.jpg" alt="Vista 7">
                                 </div>
                             </div>
@@ -1610,35 +1608,35 @@
                             </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/203_VID.mp4', true, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/203_VID.mp4', true, '203')">
                                     <img src="../Resource/PBEN2/DEP203/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/1.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/1.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/2.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/2.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/3.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/3.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/4.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/4.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/5.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/5.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/5.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/6.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/6.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/6.jpg" alt="Vista 6">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/7.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/7.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/7.jpg" alt="Vista 7">
                                 </div>
                             </div>
@@ -1683,35 +1681,35 @@
                             </button>    
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/401_VID.mp4', true, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/401_VID.mp4', true, '401')">
                                     <img src="../Resource/PBEN2/DEP401/5.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/1.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/1.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/2.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/2.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/3.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/3.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/4.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/4.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/5.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/5.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/5.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/6.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/6.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/6.jpg" alt="Vista 6">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/7.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/7.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/7.jpg" alt="Vista 7">
                                 </div>
                             </div>
@@ -1756,35 +1754,35 @@
                         </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/402_VID.mp4', true, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/402_VID.mp4', true, '402')">
                                     <img src="../Resource/PBEN2/DEP402/5.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/1.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/1.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/2.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/2.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/3.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/3.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/4.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/4.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/5.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/5.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/5.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/6.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/6.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/6.jpg" alt="Vista 6">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/7.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/7.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/7.jpg" alt="Vista 7">
                                 </div>
                             </div>
@@ -1832,31 +1830,31 @@
 
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/501_VID.mp4', true, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/501_VID.mp4', true, '501')">
                                     <img src="../Resource/PBEN2/DEP501/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/1.jpg', false, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/1.jpg', false, '501')">
                                     <img src="../Resource/PBEN2/DEP501/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/2.jpg', false, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/2.jpg', false, '501')">
                                     <img src="../Resource/PBEN2/DEP501/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/3.jpg', false, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/3.jpg', false, '501')">
                                     <img src="../Resource/PBEN2/DEP501/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/4.jpg', false, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/4.jpg', false, '501')">
                                     <img src="../Resource/PBEN2/DEP501/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/5.jpg', false, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/5.jpg', false, '501')">
                                     <img src="../Resource/PBEN2/DEP501/5.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/6.jpg', false, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/6.jpg', false, '501')">
                                     <img src="../Resource/PBEN2/DEP501/6.jpg" alt="Vista 6">
                                 </div>                            
                             </div>
@@ -1902,27 +1900,27 @@
                         </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP502/502_VID.mp4', true, '502')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP502/502_VID.mp4', true, '502')">
                                     <img src="../Resource/PBEN2/DEP502/5.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP502/1.jpg', false, '502')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP502/1.jpg', false, '502')">
                                     <img src="../Resource/PBEN2/DEP502/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP502/2.jpg', false, '502')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP502/2.jpg', false, '502')">
                                     <img src="../Resource/PBEN2/DEP502/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP502/3.jpg', false, '502')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP502/3.jpg', false, '502')">
                                     <img src="../Resource/PBEN2/DEP502/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP502/4.jpg', false, '502')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP502/4.jpg', false, '502')">
                                     <img src="../Resource/PBEN2/DEP502/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP502/5.jpg', false, '502')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP502/5.jpg', false, '502')">
                                     <img src="../Resource/PBEN2/DEP502/5.jpg" alt="Vista 5">
                                 </div>                                
                             </div>
@@ -1967,31 +1965,31 @@
                             </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/503_VID.mp4', true, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/503_VID.mp4', true, '503')">
                                     <img src="../Resource/PBEN2/DEP503/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/1.jpg', false, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/1.jpg', false, '503')">
                                     <img src="../Resource/PBEN2/DEP503/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/2.jpg', false, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/2.jpg', false, '503')">
                                     <img src="../Resource/PBEN2/DEP503/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/3.jpg', false, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/3.jpg', false, '503')">
                                     <img src="../Resource/PBEN2/DEP503/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/4.jpg', false, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/4.jpg', false, '503')">
                                     <img src="../Resource/PBEN2/DEP503/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/5.jpg', false, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/5.jpg', false, '503')">
                                     <img src="../Resource/PBEN2/DEP503/5.jpg" alt="Vista 5">
                                 </div>  
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/6.jpg', false, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/6.jpg', false, '503')">
                                     <img src="../Resource/PBEN2/DEP503/6.jpg" alt="Vista 6">                              
                                 </div>
                             </div>
