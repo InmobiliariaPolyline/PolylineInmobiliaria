@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>POLYLINE - Constructora</title>
@@ -16,8 +17,16 @@
     <link rel="stylesheet" href="../css/idiomas.css">
     <link rel="stylesheet" href="../css/departamentos.css">
     <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/contact-form.css">
     <!-- Add Anime.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        (function() {
+            emailjs.init("At9dqPbCCCXcMSTls");
+        })();
+    </script>
     <style>
         .animated-title {
             position: relative;
@@ -64,11 +73,50 @@
         }
 
         .btn-details, .btn-separate {
-            transition: all 0.3s;
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 400;
+            font-size: 14px;
+            text-align: center;
+            white-space: nowrap;
+            width: auto;
+            min-width: fit-content;
         }
 
-        .btn-details:hover, .btn-separate:hover, .btn-obra:hover {
-            transform: scale(1.05);
+        .btn-details {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-separate {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-details:hover {
+            background: #e67e22;
+            transform: translateY(-1px);
+        }
+
+        .btn-separate:hover {
+            background: #229954;
+            transform: translateY(-1px);
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            justify-content: flex-start;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            align-items: flex-start;
         }
 
         .btn-obra {
@@ -96,77 +144,150 @@
             transform: translateY(-2px);
         }
 
-        /* Estilos para el modal de cita en obra */
-        .obra-modal-body {
-            padding: 2rem;
-            text-align: center;
+        /* Estilos mejorados para el modal de cita en obra */
+        .obra-modal .modal-content {
+            background: var(--card-bg, #fff);
         }
 
-        .obra-modal-body h2 {
-            color: var(--text-color, #333);
-            margin-bottom: 1rem;
+        .obra-modal .property-preview {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
         }
 
-        .obra-modal-body p {
-            color: var(--text-secondary, #666);
-            margin-bottom: 2rem;
+        body.dark-mode .obra-modal .property-preview {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
         }
 
-        .obra-form {
+        .obra-modal .preview-features {
             display: grid;
-            gap: 1rem;
-            max-width: 400px;
-            margin: 0 auto;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
         }
 
-        .obra-form .form-group {
-            text-align: left;
+        .obra-modal .preview-features span {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
         }
 
-        .obra-form label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-color, #333);
+        body.dark-mode .obra-modal .preview-features span {
+            background: rgba(0, 0, 0, 0.2);
         }
 
-        .obra-form input,
-        .obra-form select,
-        .obra-form textarea {
+        .obra-modal .preview-features i {
+            color: #ff6b2c;
+        }
+
+        /* Estilos específicos para inputs del modal de obra */
+        .obra-modal .form-group {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .obra-modal .form-group input,
+        .obra-modal .form-group select {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color, #ddd);
-            border-radius: 6px;
-            font-size: 1rem;
-            background: var(--input-bg, #fff);
-            color: var(--text-color, #333);
-        }
-
-        .obra-form input:focus,
-        .obra-form select:focus,
-        .obra-form textarea:focus {
-            outline: none;
-            border-color: var(--accent-color, #007bff);
-        }
-
-        .btn-obra-submit {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
+            padding: 12px 12px 12px 0;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            margin-top: 1rem;
+            border-bottom: 2px solid #ddd;
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-color);
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            outline: none;
         }
 
-        .btn-obra-submit:hover {
-            background: linear-gradient(135deg, #218838, #1aa085);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-            transform: translateY(-2px);
+        .obra-modal .form-group input:focus,
+        .obra-modal .form-group select:focus {
+            border-color: #ff6b2c;
+        }
+
+        .obra-modal .form-group label {
+            position: absolute;
+            left: 0;
+            top: 12px;
+            font-size: 16px;
+            color: #999;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        /* Labels flotantes cuando el input tiene focus o valor */
+        .obra-modal .form-group input:focus + label,
+        .obra-modal .form-group input:valid + label,
+        .obra-modal .form-group input:not(:placeholder-shown) + label,
+        .obra-modal .form-group select:focus + label,
+        .obra-modal .form-group select:valid + label {
+            top: -20px;
+            font-size: 12px;
+            color: #ff6b2c;
+        }
+
+        /* Para select, mover label siempre arriba cuando tenga valor */
+        .obra-modal .form-group select:not([value=""]) + label,
+        .obra-modal .form-group select option:checked + label {
+            top: -20px;
+            font-size: 12px;
+            color: #ff6b2c;
+        }
+
+        .obra-modal .form-group select {
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding-right: 30px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 5px center;
+        }
+
+        .obra-modal .form-group select option {
+            background: var(--card-bg, #fff);
+            color: var(--text-color);
+            padding: 10px;
+        }
+
+        /* Input de fecha y hora */
+        .obra-modal .form-group input[type="date"],
+        .obra-modal .form-group input[type="time"] {
+            cursor: pointer;
+        }
+
+        /* Placeholder invisible para activar :placeholder-shown */
+        .obra-modal .form-group input::placeholder {
+            color: transparent;
+        }
+
+        body.dark-mode .obra-modal .form-group input,
+        body.dark-mode .obra-modal .form-group select {
+            border-bottom-color: #555;
+            color: #fff;
+        }
+
+        body.dark-mode .obra-modal .form-group label {
+            color: #aaa;
+        }
+
+        .obra-modal .submit-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .obra-modal .submit-btn:hover i {
+            transform: scale(1.2);
+        }
+
+        @media (max-width: 768px) {
+            .obra-modal .preview-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .obra-modal .modal-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
     <!-- Firebase SDK for admin controls -->
@@ -174,6 +295,9 @@
         import { auth, db } from '../js/firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Hacer db disponible globalmente para la función de citas
+        window.firestoreDB = db;
 
         // Check if user is admin and show/hide CRUD controls
         window.addEventListener('DOMContentLoaded', () => {
@@ -1446,10 +1570,10 @@
                         <h3 data-translate="Departamento 101">Departamento 101</h3>
                         <p data-translate="Haz clic para ver más detalles">Haz clic para ver más detalles</p>
                         <div class="button-container">
-                            <a href="#" class="btn-details" data-department="101a" data-translate="Ver detalles">Ver detalles</a>
+                            <button class="btn-details" data-department="101a" data-translate="Ver detalles">Ver detalles</button>
                             <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
                         </div>
-                        <button class="btn-obra" onclick="agendarCitaObra('101')">Cita en Obra</button>
+                        <button class="btn-obra" onclick="agendarCitaObra('101')" data-translate="Cita en Obra">Cita en Obra</button>
                     </div>
                 </div>
                 
@@ -1508,10 +1632,10 @@
                         <h3 data-translate="Departamento 202">Departamento 202</h3>
                         <p data-translate="Haz clic para ver más detalles">Haz clic para ver más detalles</p>
                         <div class="button-container">
-                            <a href="#" class="btn-details" data-department="202a" data-translate="Ver detalles">Ver detalles</a>
+                            <button class="btn-details" data-department="202a" data-translate="Ver detalles">Ver detalles</button>
                             <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
                         </div>
-                        <button class="btn-obra" onclick="agendarCitaObra('202')">Cita en Obra</button>
+                        <button class="btn-obra" onclick="agendarCitaObra('202')" data-translate="Cita en Obra">Cita en Obra</button>
                     </div>
                 </div>
                 
@@ -2241,6 +2365,31 @@
             buttons.forEach(button => {
                 button.addEventListener('click', createParticles);
             });
+
+            // Agregar event listeners a los botones estáticos de "Ver detalles"
+            const staticDetailButtons = document.querySelectorAll('.btn-details');
+            staticDetailButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const departmentNumber = this.getAttribute('data-department');
+                    console.log('Botón Ver detalles clickeado para departamento estático:', departmentNumber);
+                    
+                    const modal = document.getElementById(`detail-modal-${departmentNumber}`);
+                    if (modal) {
+                        modal.classList.remove('hidden');
+                        modal.style.display = 'flex';
+                        console.log('Modal abierto para departamento:', departmentNumber);
+                        
+                        // Reproducir video automáticamente si existe
+                        const video = modal.querySelector('video');
+                        if (video) {
+                            video.play().catch(err => console.log('Error al reproducir video:', err));
+                        }
+                    } else {
+                        console.error('Modal no encontrado para departamento:', departmentNumber);
+                    }
+                });
+            });
         });
     </script>
 
@@ -2369,7 +2518,19 @@
             'Haz clic para ver más detalles': 'Haz clic para ver más detalles',
             'Ver detalles': 'Ver detalles',
             'Separar': 'Separar',
-            'Anuncios': 'Anuncios'
+            'Anuncios': 'Anuncios',
+            'Solicitar visita a obra': 'Solicitar visita a obra',
+            'visita-obra-desc': 'Agenda una cita para visitar la obra en construcción y conocer tu futuro departamento. Nuestro equipo te mostrará los avances y responderá todas tus consultas.',
+            'en-construccion': 'En construcción',
+            'visitas-programadas': 'Visitas programadas',
+            'asesor-especializado': 'Asesor especializado',
+            'protocolo-seguridad': 'Protocolo de seguridad',
+            'Nombre completo': 'Nombre completo',
+            'Correo electrónico': 'Correo electrónico',
+            'Teléfono': 'Teléfono',
+            'Fecha preferida': 'Fecha preferida',
+            'Hora preferida': 'Hora preferida',
+            'Agendar visita': 'Agendar visita'
         },
         'en': {
             'Inicio': 'Home',
@@ -2399,6 +2560,7 @@
             'Haz clic para ver más detalles': 'Click to see more details',
             'Ver detalles': 'View details',
             'Separar': 'Reserve',
+            'Cita en Obra': 'Site Visit',
             'Departamento 202': 'Apartment 202',
             'Departamento 203': 'Apartment 203', 
             'Departamento 401': 'Apartment 401',
@@ -2417,7 +2579,18 @@
             'Haga clic para descargar la tipología': 'Click to download typology',
             'Descargar Plano': 'Download Plan',
             'PRÓXIMO INICIO, NO TE LO PIERDAS': 'NEXT START, DONT MISS IT',
-            
+            'Solicitar visita a obra': 'Request site visit',
+            'visita-obra-desc': 'Schedule an appointment to visit the construction site and see your future apartment. Our team will show you the progress and answer all your questions.',
+            'en-construccion': 'Under construction',
+            'visitas-programadas': 'Scheduled visits',
+            'asesor-especializado': 'Specialized advisor',
+            'protocolo-seguridad': 'Safety protocol',
+            'Nombre completo': 'Full name',
+            'Correo electrónico': 'Email',
+            'Teléfono': 'Phone',
+            'Fecha preferida': 'Preferred date',
+            'Hora preferida': 'Preferred time',
+            'Agendar visita': 'Schedule visit'
         },
         'pt': {
             'Inicio': 'Início',
@@ -2447,6 +2620,7 @@
             'Haz clic para ver más detalles': 'Clique para ver mais detalhes',
             'Ver detalles': 'Ver detalhes',
             'Separar': 'Reservar',
+            'Cita en Obra': 'Visita ao Canteiro',
             'Departamento 202': 'Apartamento 202',
             'Departamento 203': 'Apartamento 203',
             'Departamento 401': 'Apartamento 401', 
@@ -2464,7 +2638,19 @@
             'Proyecto Benavides 2': 'Projeto Benavides 2', 
             'Haga clic para descargar la tipología': 'Clique para baixar a tipologia',
             'Descargar Plano': 'Baixar Planta',
-            'PRÓXIMO INICIO, NO TE LO PIERDAS': 'PRÓXIMA PARTIDA, NÃO PERCA'
+            'PRÓXIMO INICIO, NO TE LO PIERDAS': 'PRÓXIMA PARTIDA, NÃO PERCA',
+            'Solicitar visita a obra': 'Solicitar visita à obra',
+            'visita-obra-desc': 'Agende uma consulta para visitar a obra e conhecer seu futuro apartamento. Nossa equipe mostrará o progresso e responderá todas as suas perguntas.',
+            'en-construccion': 'Em construção',
+            'visitas-programadas': 'Visitas agendadas',
+            'asesor-especializado': 'Consultor especializado',
+            'protocolo-seguridad': 'Protocolo de segurança',
+            'Nombre completo': 'Nome completo',
+            'Correo electrónico': 'E-mail',
+            'Teléfono': 'Telefone',
+            'Fecha preferida': 'Data preferida',
+            'Hora preferida': 'Hora preferida',
+            'Agendar visita': 'Agendar visita'
         },
         'zh': {
             'Inicio': '首页',
@@ -2494,6 +2680,7 @@
             'Haz clic para ver más detalles': '点击查看更多详情',
             'Ver detalles': '查看详情',
             'Separar': '预订',
+            'Cita en Obra': '工地参观',
             'Departamento 202': '202号公寓',
             'Departamento 203': '203号公寓',
             'Departamento 401': '401号公寓',
@@ -2511,7 +2698,19 @@
             'Proyecto Benavides 2': '贝纳维德斯2号项目',
             'Haga clic para descargar la tipología': '点击下载户型图',
             'Descargar Plano': '下载平面图',
-            'PRÓXIMO INICIO, NO TE LO PIERDAS': '即将开始，不要错过'
+            'PRÓXIMO INICIO, NO TE LO PIERDAS': '即将开始，不要错过',
+            'Solicitar visita a obra': '申请工地参观',
+            'visita-obra-desc': '预约参观施工现场，了解您未来的公寓。我们的团队将向您展示进展情况并回答所有问题。',
+            'en-construccion': '建设中',
+            'visitas-programadas': '预约参观',
+            'asesor-especializado': '专业顾问',
+            'protocolo-seguridad': '安全协议',
+            'Nombre completo': '全名',
+            'Correo electrónico': '电子邮件',
+            'Teléfono': '电话',
+            'Fecha preferida': '首选日期',
+            'Hora preferida': '首选时间',
+            'Agendar visita': '预约参观'
         },
         'ja': {
             'Inicio': 'ホーム',
@@ -2541,6 +2740,7 @@
             'Haz clic para ver más detalles': '詳細を見るにはクリックしてください',
             'Ver detalles': '詳細を見る',
             'Separar': '予約する',
+            'Cita en Obra': '工事現場見学',
             'Departamento 202': '202号室',
             'Departamento 203': '203号室',
             'Departamento 401': '401号室',
@@ -2558,7 +2758,19 @@
             'Proyecto Benavides 2': 'ベナビデス2プロジェクト',
             'Haga clic para descargar la tipología': '間取り図をダウンロードする',
             'Descargar Plano': '図面をダウンロード',
-            'PRÓXIMO INICIO, NO TE LO PIERDAS': '次回開始、お見逃しなく'
+            'PRÓXIMO INICIO, NO TE LO PIERDAS': '次回開始、お見逃しなく',
+            'Solicitar visita a obra': '工事現場見学の申込',
+            'visita-obra-desc': '建設現場を訪問し、将来のアパートメントをご覧ください。私たちのチームが進捗状況を説明し、すべての質問にお答えします。',
+            'en-construccion': '建設中',
+            'visitas-programadas': '予約見学',
+            'asesor-especializado': '専門アドバイザー',
+            'protocolo-seguridad': '安全プロトコル',
+            'Nombre completo': '氏名',
+            'Correo electrónico': 'メールアドレス',
+            'Teléfono': '電話番号',
+            'Fecha preferida': '希望日',
+            'Hora preferida': '希望時間',
+            'Agendar visita': '見学予約'
         },
         'it': {
             'Inicio': 'Inizio',
@@ -2588,6 +2800,7 @@
             'Haz clic para ver más detalles': 'Clicca per vedere più dettagli',
             'Ver detalles': 'Vedi dettagli',
             'Separar': 'Prenota',
+            'Cita en Obra': 'Visita al Cantiere',
             'Departamento 202': 'Appartamento 202',
             'Departamento 203': 'Appartamento 203',
             'Departamento 401': 'Appartamento 401',
@@ -2605,7 +2818,19 @@
             'Proyecto Benavides 2': 'Progetto Benavides 2',
             'Haga clic para descargar la tipología': 'Clicca per scaricare la tipologia',
             'Descargar Plano': 'Scarica Planimetria',
-            'PRÓXIMO INICIO, NO TE LO PIERDAS': 'PROSSIMO INIZIO, NON PERDERLO'
+            'PRÓXIMO INICIO, NO TE LO PIERDAS': 'PROSSIMO INIZIO, NON PERDERLO',
+            'Solicitar visita a obra': 'Richiedi visita al cantiere',
+            'visita-obra-desc': 'Prenota un appuntamento per visitare il cantiere e conoscere il tuo futuro appartamento. Il nostro team ti mostrerà i progressi e risponderà a tutte le tue domande.',
+            'en-construccion': 'In costruzione',
+            'visitas-programadas': 'Visite programmate',
+            'asesor-especializado': 'Consulente specializzato',
+            'protocolo-seguridad': 'Protocollo di sicurezza',
+            'Nombre completo': 'Nome completo',
+            'Correo electrónico': 'Email',
+            'Teléfono': 'Telefono',
+            'Fecha preferida': 'Data preferita',
+            'Hora preferida': 'Ora preferita',
+            'Agendar visita': 'Prenota visita'
         }
     };
 
@@ -2628,6 +2853,10 @@
 
     document.querySelectorAll('.btn-separate').forEach(el => {
         el.setAttribute('data-translate', 'Separar');
+    });
+
+    document.querySelectorAll('.btn-obra').forEach(el => {
+        el.setAttribute('data-translate', 'Cita en Obra');
     });
 
     function translatePage(lang) {
@@ -2744,37 +2973,65 @@
 
     // Función para agendar cita en obra
     function agendarCitaObra(deptNumber) {
-        // Crear modal de cita en obra
+        // Obtener información del departamento
+        const deptImages = {
+            '101': '../Resource/PBEN2/DEP101/1.jpg',
+            '202': '../Resource/PBEN2/DEP202/1.jpg',
+            '203': '../Resource/PBEN2/DEP203/1.jpg',
+            '401': '../Resource/PBEN2/DEP401/1.jpg',
+            '402': '../Resource/PBEN2/DEP402/2.jpg',
+            '501': '../Resource/PBEN2/DEP501/1.jpg',
+            '502': '../Resource/PBEN2/DEP502/1.jpg',
+            '503': '../Resource/PBEN2/DEP503/2.jpg'
+        };
+
+        // Crear modal de cita en obra con el mismo diseño que casas de playa
         const modal = document.createElement('div');
-        modal.className = 'modal dark-mode';
+        modal.className = 'modal obra-modal';
         modal.id = `obra-modal-${deptNumber}`;
+        modal.style.display = 'block';
         modal.innerHTML = `
-            <div class="modal-content dark-mode">
-                <span class="close-btn" onclick="closeModal('obra-${deptNumber}')">&times;</span>
-                <div class="obra-modal-body">
-                    <h2>Agendar Cita en Obra - Departamento ${deptNumber}</h2>
-                    <p>¿Te gustaría agendar una cita para visitar la obra en construcción?</p>
-                    <div class="obra-form">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeObraModal('${deptNumber}')">&times;</span>
+                <div class="modal-grid">
+                    <!-- Preview Section -->
+                    <div class="property-preview">
+                        <img src="${deptImages[deptNumber] || '../Resource/Logo/logo.png'}" alt="Departamento ${deptNumber}">
+                        <div class="preview-details">
+                            <h3 data-translate="Departamento ${deptNumber}">Departamento ${deptNumber}</h3>
+                            <p data-translate="visita-obra-desc">Agenda una cita para visitar la obra en construcción y conocer tu futuro departamento. Nuestro equipo te mostrará los avances y responderá todas tus consultas.</p>
+                            <div class="preview-features">
+                                <span><i class="fa fa-hard-hat"></i> <span data-translate="en-construccion">En construcción</span></span>
+                                <span><i class="fa fa-calendar-check"></i> <span data-translate="visitas-programadas">Visitas programadas</span></span>
+                                <span><i class="fa fa-user-tie"></i> <span data-translate="asesor-especializado">Asesor especializado</span></span>
+                                <span><i class="fa fa-shield-alt"></i> <span data-translate="protocolo-seguridad">Protocolo de seguridad</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Contact Form -->
+                    <form id="obraForm-${deptNumber}" class="contact-form" onsubmit="enviarCitaObra(event, '${deptNumber}')">
+                        <h2 data-translate="Solicitar visita a obra">Solicitar visita a obra</h2>
+                        <input type="hidden" name="to_name" value="Polyline">
+                        <input type="hidden" name="property_title" value="Departamento ${deptNumber} - Proyecto Benavides 2">
                         <div class="form-group">
-                            <label for="obra-nombre">Nombre completo:</label>
-                            <input type="text" id="obra-nombre" required>
+                            <input type="text" id="obra-nombre-${deptNumber}" name="from_name" placeholder=" " required>
+                            <label for="obra-nombre-${deptNumber}" data-translate="Nombre completo">Nombre completo</label>
                         </div>
                         <div class="form-group">
-                            <label for="obra-email">Correo electrónico:</label>
-                            <input type="email" id="obra-email" required>
+                            <input type="email" id="obra-email-${deptNumber}" name="from_email" placeholder=" " required>
+                            <label for="obra-email-${deptNumber}" data-translate="Correo electrónico">Correo electrónico</label>
                         </div>
                         <div class="form-group">
-                            <label for="obra-telefono">Teléfono:</label>
-                            <input type="tel" id="obra-telefono" required>
+                            <input type="tel" id="obra-telefono-${deptNumber}" name="from_phone" placeholder=" " required>
+                            <label for="obra-telefono-${deptNumber}" data-translate="Teléfono">Teléfono</label>
                         </div>
                         <div class="form-group">
-                            <label for="obra-fecha">Fecha preferida:</label>
-                            <input type="date" id="obra-fecha" required>
+                            <input type="date" id="obra-fecha-${deptNumber}" name="preferred_date" placeholder=" " required>
+                            <label for="obra-fecha-${deptNumber}" data-translate="Fecha preferida">Fecha preferida</label>
                         </div>
                         <div class="form-group">
-                            <label for="obra-hora">Hora preferida:</label>
-                            <select id="obra-hora" required>
-                                <option value="">Seleccionar hora</option>
+                            <select id="obra-hora-${deptNumber}" name="preferred_time" required>
+                                <option value="" disabled selected></option>
                                 <option value="09:00">9:00 AM</option>
                                 <option value="10:00">10:00 AM</option>
                                 <option value="11:00">11:00 AM</option>
@@ -2782,22 +3039,70 @@
                                 <option value="15:00">3:00 PM</option>
                                 <option value="16:00">4:00 PM</option>
                             </select>
+                            <label for="obra-hora-${deptNumber}" data-translate="Hora preferida">Hora preferida</label>
                         </div>
-                        <div class="form-group">
-                            <label for="obra-mensaje">Mensaje adicional:</label>
-                            <textarea id="obra-mensaje" rows="3" placeholder="Comentarios adicionales..."></textarea>
-                        </div>
-                        <button class="btn-obra-submit" onclick="enviarCitaObra('${deptNumber}')">Agendar Cita</button>
-                    </div>
+                        <button type="submit" class="submit-btn">
+                            <span data-translate="Agendar visita">Agendar visita</span>
+                            <i class="fas fa-calendar-check"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
         `;
 
         document.body.appendChild(modal);
-        modal.style.display = 'block';
+        
+        // Cerrar modal al hacer clic fuera
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closeObraModal(deptNumber);
+            }
+        });
+
+        // Manejar el label del select cuando cambia
+        const selectElement = document.getElementById(`obra-hora-${deptNumber}`);
+        if (selectElement) {
+            selectElement.addEventListener('change', function() {
+                const label = this.nextElementSibling;
+                if (this.value && label) {
+                    label.style.top = '-20px';
+                    label.style.fontSize = '12px';
+                    label.style.color = '#ff6b2c';
+                }
+            });
+        }
+
+        // Manejar inputs de fecha y hora para que el label suba inmediatamente
+        const dateInput = document.getElementById(`obra-fecha-${deptNumber}`);
+        if (dateInput) {
+            dateInput.addEventListener('focus', function() {
+                const label = this.nextElementSibling;
+                if (label) {
+                    label.style.top = '-20px';
+                    label.style.fontSize = '12px';
+                    label.style.color = '#ff6b2c';
+                }
+            });
+            dateInput.addEventListener('change', function() {
+                const label = this.nextElementSibling;
+                if (this.value && label) {
+                    label.style.top = '-20px';
+                    label.style.fontSize = '12px';
+                    label.style.color = '#ff6b2c';
+                }
+            });
+        }
     }
 
     // Función para cerrar modal de obra
+    function closeObraModal(deptNumber) {
+        const modal = document.getElementById(`obra-modal-${deptNumber}`);
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    // Función para cerrar modal (tanto de obra como de detalle)
     window.closeModal = function(modalId) {
         // Primero intentar cerrar modal de obra
         let modal = document.getElementById(`obra-modal-${modalId.replace('obra-', '')}`);
@@ -2813,43 +3118,107 @@
         }
     };
 
-    // Función para enviar cita de obra
-    window.enviarCitaObra = async function(deptNumber) {
-        const nombre = document.getElementById('obra-nombre').value;
-        const email = document.getElementById('obra-email').value;
-        const telefono = document.getElementById('obra-telefono').value;
-        const fecha = document.getElementById('obra-fecha').value;
-        const hora = document.getElementById('obra-hora').value;
-        const mensaje = document.getElementById('obra-mensaje').value;
+    // Función para enviar cita de obra con EmailJS
+    window.enviarCitaObra = function(event, deptNumber) {
+        event.preventDefault();
+        
+        const nombre = document.getElementById(`obra-nombre-${deptNumber}`).value;
+        const email = document.getElementById(`obra-email-${deptNumber}`).value;
+        const telefono = document.getElementById(`obra-telefono-${deptNumber}`).value;
+        const fecha = document.getElementById(`obra-fecha-${deptNumber}`).value;
+        const hora = document.getElementById(`obra-hora-${deptNumber}`).value;
 
         if (!nombre || !email || !telefono || !fecha || !hora) {
             alert('Por favor, completa todos los campos obligatorios');
-            return;
+            return false;
         }
 
-        try {
-            // Enviar email usando EmailJS
-            const templateParams = {
-                to_name: 'Polyline',
-                from_name: nombre,
-                from_email: email,
-                from_phone: telefono,
-                department: `Departamento ${deptNumber}`,
-                preferred_date: fecha,
-                preferred_time: hora,
-                message: mensaje || 'Sin mensaje adicional',
-                subject: `Cita en Obra - Departamento ${deptNumber}`
-            };
+        const propertyTitle = `Departamento ${deptNumber} - Proyecto Benavides 2`;
+        
+        const templateParams = {
+            to_name: 'Polyline',
+            property_title: propertyTitle,
+            from_name: nombre,
+            from_email: email,
+            from_phone: telefono,
+            preferred_date: fecha,
+            preferred_time: hora,
+            message: `Solicitud de visita a obra para ${propertyTitle}. Fecha preferida: ${fecha} a las ${hora}.`
+        };
 
-            // Aquí iría la lógica para enviar el email
-            console.log('Enviando cita de obra:', templateParams);
-            alert('Cita agendada exitosamente. Nos pondremos en contacto contigo pronto.');
-            closeModal(`obra-${deptNumber}`);
+        const btn = event.target.querySelector('.submit-btn');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span>Enviando...</span><i class="fas fa-spinner fa-spin"></i>';
+        
+        emailjs.send('service_nmqdl9u', 'template_xzgzp8p', templateParams)
+            .then(function(response) {
+                console.log('SUCCESS!', response.status, response.text);
+                alert('¡Cita agendada exitosamente! Nos pondremos en contacto contigo pronto.');
+                closeObraModal(deptNumber);
+            })
+            .catch(function(error) {
+                console.error('FAILED...', error);
+                console.error('Error details:', {
+                    status: error.status,
+                    text: error.text,
+                    message: error.message
+                });
+                
+                // Guardar en Firebase como respaldo si EmailJS falla
+                if (window.firestoreDB) {
+                    const citaData = {
+                        proyecto: 'Benavides 2',
+                        departamento: deptNumber,
+                        nombre: nombre,
+                        email: email,
+                        telefono: telefono,
+                        fechaPreferida: fecha,
+                        horaPreferida: hora,
+                        estado: 'pendiente',
+                        createdAt: new Date().toISOString(),
+                        emailEnviado: false,
+                        errorEmail: error.message || 'Error desconocido'
+                    };
+                    
+                    window.firestoreDB.collection('citasObra').add(citaData)
+                        .then(() => {
+                            console.log('Cita guardada en Firebase como respaldo');
+                            alert('Tu solicitud ha sido registrada exitosamente. Nos pondremos en contacto contigo pronto.\n\nNota: El envío por email falló, pero tu información está guardada.');
+                            closeObraModal(deptNumber);
+                        })
+                        .catch(dbError => {
+                            console.error('Error al guardar en Firebase:', dbError);
+                            let errorMessage = 'Error al procesar tu solicitud. ';
+                            if (error.status === 412) {
+                                errorMessage += 'El servicio de email no está disponible temporalmente.';
+                            } else if (error.status === 400) {
+                                errorMessage += 'Los datos enviados no son válidos.';
+                            } else if (error.status === 401) {
+                                errorMessage += 'Servicio de email no configurado.';
+                            }
+                            errorMessage += '\n\nPor favor, contáctanos directamente por WhatsApp: +51 943 812 536';
+                            alert(errorMessage);
+                        });
+                } else {
+                    let errorMessage = 'Error al enviar la solicitud. ';
+                    if (error.status === 412) {
+                        errorMessage += 'El servicio de email no está disponible temporalmente.';
+                    } else if (error.status === 400) {
+                        errorMessage += 'Los datos enviados no son válidos.';
+                    } else if (error.status === 401) {
+                        errorMessage += 'Servicio de email no configurado.';
+                    }
+                    errorMessage += '\n\nPor favor, contáctanos directamente por WhatsApp: +51 943 812 536';
+                    alert(errorMessage);
+                }
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            });
 
-        } catch (error) {
-            console.error('Error al agendar cita:', error);
-            alert('Error al agendar la cita. Por favor, intenta nuevamente.');
-        }
+        return false;
     };
 </script>
 

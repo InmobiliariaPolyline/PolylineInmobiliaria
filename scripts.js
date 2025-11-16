@@ -16,7 +16,9 @@ closeButtons.forEach(button => {
     button.addEventListener('click', function() {
         // Cerrar el submenú
         const submenu = this.closest('.submenu');
-        submenu.classList.remove('open');
+        if (submenu) {
+            submenu.classList.remove('open');
+        }
     });
 });
 
