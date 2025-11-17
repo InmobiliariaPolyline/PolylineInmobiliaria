@@ -294,10 +294,22 @@
     <script type="module">
         import { auth, db } from '../js/firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // Hacer db disponible globalmente para la función de citas
         window.firestoreDB = db;
+        
+        // Función global para guardar citas en Firebase
+        window.guardarCitaEnFirebase = async (citaData) => {
+            try {
+                const docRef = await addDoc(collection(db, 'citasObra'), citaData);
+                console.log('Cita guardada en Firebase con ID:', docRef.id);
+                return { success: true, id: docRef.id };
+            } catch (error) {
+                console.error('Error al guardar en Firebase:', error);
+                return { success: false, error };
+            }
+        };
 
         // Check if user is admin and show/hide CRUD controls
         window.addEventListener('DOMContentLoaded', () => {
@@ -3151,56 +3163,59 @@
         btn.disabled = true;
         btn.innerHTML = '<span>Enviando...</span><i class="fas fa-spinner fa-spin"></i>';
         
-        emailjs.send('service_nmqdl9u', 'template_xzgzp8p', templateParams)
-            .then(function(response) {
-                console.log('SUCCESS!', response.status, response.text);
-                alert('¡Cita agendada exitosamente! Nos pondremos en contacto contigo pronto.');
-                closeObraModal(deptNumber);
-            })
-            .catch(function(error) {
-                console.error('FAILED...', error);
-                console.error('Error details:', {
-                    status: error.status,
-                    text: error.text,
-                    message: error.message
-                });
-                
-                // Guardar en Firebase como respaldo si EmailJS falla
-                if (window.firestoreDB) {
-                    const citaData = {
-                        proyecto: 'Benavides 2',
-                        departamento: deptNumber,
-                        nombre: nombre,
-                        email: email,
-                        telefono: telefono,
-                        fechaPreferida: fecha,
-                        horaPreferida: hora,
-                        estado: 'pendiente',
-                        createdAt: new Date().toISOString(),
-                        emailEnviado: false,
-                        errorEmail: error.message || 'Error desconocido'
-                    };
-                    
-                    window.firestoreDB.collection('citasObra').add(citaData)
-                        .then(() => {
-                            console.log('Cita guardada en Firebase como respaldo');
-                            alert('Tu solicitud ha sido registrada exitosamente. Nos pondremos en contacto contigo pronto.\n\nNota: El envío por email falló, pero tu información está guardada.');
-                            closeObraModal(deptNumber);
-                        })
-                        .catch(dbError => {
-                            console.error('Error al guardar en Firebase:', dbError);
-                            let errorMessage = 'Error al procesar tu solicitud. ';
-                            if (error.status === 412) {
-                                errorMessage += 'El servicio de email no está disponible temporalmente.';
-                            } else if (error.status === 400) {
-                                errorMessage += 'Los datos enviados no son válidos.';
-                            } else if (error.status === 401) {
-                                errorMessage += 'Servicio de email no configurado.';
-                            }
-                            errorMessage += '\n\nPor favor, contáctanos directamente por WhatsApp: +51 943 812 536';
-                            alert(errorMessage);
-                        });
-                } else {
+        // Preparar datos para guardar en Firebase
+        const citaData = {
+            proyecto: 'Benavides 2',
+            departamento: deptNumber,
+            nombre: nombre,
+            email: email,
+            telefono: telefono,
+            fechaPreferida: fecha,
+            horaPreferida: hora,
+            estado: 'pendiente',
+            createdAt: new Date().toISOString(),
+            emailEnviado: false
+        };
+
+        // Primero guardar en Firebase usando la función helper
+        if (window.guardarCitaEnFirebase) {
+            window.guardarCitaEnFirebase(citaData)
+                .then((result) => {
+                    if (result.success) {
+                        console.log('Cita guardada en Firebase con ID:', result.id);
+                        citaData.emailEnviado = true;
+                        
+                        // Luego intentar enviar email
+                        return emailjs.send('service_nmqdl9u', 'template_xzgzp8p', templateParams);
+                    } else {
+                        throw new Error('Error al guardar en Firebase');
+                    }
+                })
+                .then(function(response) {
+                    console.log('Email enviado exitosamente:', response.status);
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    alert('¡Cita agendada exitosamente! Nos pondremos en contacto contigo pronto.');
+                    closeObraModal(deptNumber);
+                })
+                .catch(function(error) {
+                    console.error('Error al enviar email:', error);
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    // Los datos YA están guardados en Firebase, solo falló el email
+                    alert('✅ Tu solicitud ha sido registrada exitosamente.\n\nNos pondremos en contacto contigo pronto.\n\n📱 También puedes contactarnos por WhatsApp: +51 943 812 536');
+                    closeObraModal(deptNumber);
+                })
+        } else {
+            // Si no hay Firebase disponible, solo intentar con EmailJS
+            emailjs.send('service_nmqdl9u', 'template_xzgzp8p', templateParams)
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    alert('¡Cita agendada exitosamente! Nos pondremos en contacto contigo pronto.');
+                    closeObraModal(deptNumber);
+                })
+                .catch(function(error) {
+                    console.error('FAILED...', error);
                     let errorMessage = 'Error al enviar la solicitud. ';
                     if (error.status === 412) {
                         errorMessage += 'El servicio de email no está disponible temporalmente.';
@@ -3211,12 +3226,12 @@
                     }
                     errorMessage += '\n\nPor favor, contáctanos directamente por WhatsApp: +51 943 812 536';
                     alert(errorMessage);
-                }
-            })
-            .finally(() => {
-                btn.disabled = false;
-                btn.innerHTML = originalText;
-            });
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                });
+        }
 
         return false;
     };
