@@ -155,7 +155,7 @@ export const loginWithGoogle = async () => {
         // Guardar datos en sessionStorage
         saveUserData(user, {
             userName: user.displayName || 'Usuario',
-            isAdmin: 'false'
+            isAdmin: false
         });
         
         return { 

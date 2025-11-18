@@ -320,16 +320,24 @@
         // Check if user is admin and show/hide CRUD controls
         window.addEventListener('DOMContentLoaded', () => {
             onAuthStateChanged(auth, async (user) => {
+                console.log('Auth state changed, user:', user ? user.email : 'null');
                 if (user) {
                     try {
                         const userDoc = await getDoc(doc(db, 'users', user.uid));
                         const userData = userDoc.data() || {};
+                        console.log('User data:', userData);
                         if (userData.isAdmin) {
+                            console.log('User is admin, loading departments and showing controls');
                             await loadDepartmentsFromFirebase();
                             showAdminControls();
+                        } else {
+                            console.log('User is not admin');
                         }
-                        console.error('Error checking admin status:', err);
+                    } catch (error) {
+                        console.error('Error checking admin status:', error);
                     }
+                } else {
+                    console.log('No user logged in');
                 }
             });
         });
