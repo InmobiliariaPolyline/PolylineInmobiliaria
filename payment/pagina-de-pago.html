@@ -79,7 +79,7 @@
                     <a data-translate='Proyectos' href='../proyectos/proyectos.html' id='proyectos-link'>Proyectos</a>
                     <ul class="dropdown-menu">
                         <li><a data-translate='Casas de Playa en Venta / Alquiler' href='../proyectos/proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
-                        <li><a data-translate='Proyecto Benavides 1' href='../proyectos/pben1.html'>Proyecto Benavides 1</a></li>
+                        <!-- <li><a data-translate='Proyecto Benavides 1' href='../proyectos/pben1.html'>Proyecto Benavides 1</a></li> -->
                         <li><a data-translate='Proyecto Benavides 2' href='../proyectos/pben2.html'>Proyecto Benavides 2</a></li>
                         <li><a data-translate='Proyecto Sienna' href='../proyectos/ppl1.html'>Proyecto Sienna</a></li>
                         <li><a data-translate='Proyecto Varsovia' href='../proyectos/plin.html'>Proyecto Varsovia </a></li>
@@ -299,6 +299,7 @@
             e.preventDefault();
             try {
                 await signOut(auth);
+                localStorage.removeItem('userSession');
                 console.log('Usuario cerró sesión');
                 window.location.href = '../index.html';
             } catch (error) {

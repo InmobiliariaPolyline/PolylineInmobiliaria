@@ -2052,6 +2052,8 @@ body.dark-mode .section-title {
     align-items: center;
     z-index: 1000;
     transition: all 0.3s ease;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 body.dark-mode .modal {
@@ -2062,15 +2064,18 @@ body.dark-mode .modal {
 
 .modal-content {
     background: var(--background-color);
-    padding: 50px;
+    padding: 20px;
     border-radius: 8px;
     text-align: center;
     width: 90%;
     max-width: 800px;
-    height: 70%;
+    height: auto;
+    max-height: 90vh;
     position: relative;
     color: var(--text-color);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    margin: 0 auto;
 }
 
 body.dark-mode .modal-content {
@@ -4522,6 +4527,92 @@ body.dark-mode .mas-proyecto-info p {
 }
 body.dark-mode .mas-proyecto-img {
     filter: brightness(0.85);
+}
+
+/* Estilos para el contenedor de proyectos */
+.projects-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 40px;
+}
+
+.project-card {
+    width: 45%;
+    background-color: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 15px;
+}
+
+.project-card:hover {
+    transform: scale(1.05);
+}
+
+.project-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    display: block;
+    margin: 0 auto;
+}
+
+.project-card:hover img {
+    transform: scale(1.1);
+    filter: brightness(0.7) contrast(1.2) blur(3px);
+}
+
+.project-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2f2f2f;
+    margin-top: -2px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    text-align: center;
+    position: relative;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.project-title::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    width: 0;
+    height: 3px;
+    background-color: #ff6b00;
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+}
+
+.project-card:hover .project-title::after {
+    width: 50%;
+}
+
+body.dark-mode .project-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #e8e8e8;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .project-card {
+    background-color: #222;
+    color: white;
+}
+
+body.dark-mode .project-card:hover {
+    background-color: #333;
 }
 
 /* Estilos para la sección de anuncios */

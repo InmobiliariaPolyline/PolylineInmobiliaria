@@ -225,7 +225,7 @@
                     <a data-translate='Proyectos' href='#' id='proyectos-link' onclick="return false;">Proyectos</a>
                     <ul class="dropdown-menu">
                         <li><a data-translate='Casas de Playa en Venta / Alquiler' href='proyectos/proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
-                        <li><a data-translate='Proyecto Benavides 1' href='proyectos/pben1.html'>Proyecto Benavides 1</a></li>
+                        <!-- <li><a data-translate='Proyecto Benavides 1' href='proyectos/pben1.html'>Proyecto Benavides 1</a></li> -->
                         <li><a data-translate='Proyecto Benavides 2' href='proyectos/pben2.html'>Proyecto Benavides 2</a></li>
                         <li><a data-translate='Proyecto Sienna' href='proyectos/ppl1.html'>Proyecto Sienna</a></li>
                         <li><a data-translate='Proyecto Varsovia' href='proyectos/plin.html'>Proyecto Varsovia </a></li>
@@ -252,9 +252,13 @@
                         <li><a href="noticias/otros.html" data-translate="Otros">Otros</a></li>
                     </ul>
                 </li>
+              <!-- index.html (raíz) -->
                 <li>
-                    <a href="proyectos/construccion.html" data-translate="construcción">Construcción</a>
+                <a href="../proyectos/construccion.html" data-translate="Construcción">
+                    Construcción
+                </a>
                 </li>
+
                 <!-- ...existing code... -->
 
                 <li id="translateContainer" class="translate-container">
@@ -525,7 +529,7 @@
                 </div>
             </div>
             
-            <a href="proyectos/referir.html" class="referral-button" ">
+            <a href="proyectos/referir.html" class="referral-button" >
                 <span data-translate="Referir Ahora">Referir Ahora</span>
             </button>
             </a>
@@ -655,6 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const auth = getAuth();
         try {
             await signOut(auth);
+            localStorage.removeItem('userSession');
             console.log('Sesión cerrada exitosamente');
             window.location.href = 'index.html'; // Redirige al inicio después de cerrar sesión
         } catch (error) {
@@ -663,7 +668,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 </script>
 <script type="module" src="js/nav.js"></script>
-<news-sidebar endpoint="/.netlify/functions/Otross" pagesize="10" title="Noticias"></news-sidebar>
+<news-sidebar
+  style="--fab-bg: linear-gradient(135deg,#f6b219,#e67e22); --fab-icon:#fff; --fab-ring:#ffe6b3;"
+  endpoint="/.netlify/functions/Otross"
+  pagesize="10"
+  title="Noticias"
+  initial-open-ms="800"
+  autoclose-ms="12000"
+  logo-src="/Resource/Logo/logo.png">
+</news-sidebar>
+
+
+
+
 
 </body>
 
@@ -1070,7 +1087,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const userSession = JSON.parse(localStorage.getItem('userSession'));
+    // No cargar sesión de localStorage en producción (Netlify) para evitar que la sesión del desarrollador se mantenga
+    const isProduction = window.location.hostname.includes('netlify.app');
+    const userSession = isProduction ? null : JSON.parse(localStorage.getItem('userSession'));
     const loginLink = document.getElementById('loginLink');
     const userProfile = document.getElementById('userProfile');
     const profileLink = document.getElementById('profileLink');
