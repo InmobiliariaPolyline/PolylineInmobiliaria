@@ -205,33 +205,11 @@
         }
 
         .obra-modal .form-group label {
-            position: absolute;
-            left: 0;
-            top: 12px;
-            font-size: 16px;
-            color: #999;
-            pointer-events: none;
-            transition: all 0.3s ease;
-            background: transparent;
-        }
-
-        /* Labels flotantes cuando el input tiene focus o valor */
-        .obra-modal .form-group input:focus + label,
-        .obra-modal .form-group input:valid + label,
-        .obra-modal .form-group input:not(:placeholder-shown) + label,
-        .obra-modal .form-group select:focus + label,
-        .obra-modal .form-group select:valid + label {
-            top: -20px;
-            font-size: 12px;
-            color: #ff6b2c;
-        }
-
-        /* Para select, mover label siempre arriba cuando tenga valor */
-        .obra-modal .form-group select:not([value=""]) + label,
-        .obra-modal .form-group select option:checked + label {
-            top: -20px;
-            font-size: 12px;
-            color: #ff6b2c;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
         }
 
         .obra-modal .form-group select {
@@ -289,6 +267,34 @@
                 grid-template-columns: 1fr;
             }
         }
+
+
+        /* Estilos para arregla el crud*/
+
+                        .admin-modal .form-group {
+                    display: flex;
+                    flex-direction: column;   /* label arriba, input abajo */
+                }
+
+                .admin-modal .form-group label {
+                    position: static !important;
+                    top: auto !important;
+                    transform: none !important;
+                    margin-bottom: 6px;       /* separación entre label y input */
+                    font-size: 12px;
+                    color: #666;
+                }
+
+                .admin-modal .form-group input,
+                .admin-modal .form-group select,
+                .admin-modal .form-group textarea {
+                    padding: 8px 10px;        /* quitar padding superior grande */
+                }
+
+
+        /* fin */
+
+
     </style>
     <!-- Firebase SDK for admin controls -->
     <script type="module">
@@ -322,7 +328,6 @@
                             await loadDepartmentsFromFirebase();
                             showAdminControls();
                         }
-                    } catch (err) {
                         console.error('Error checking admin status:', err);
                     }
                 }
@@ -1281,6 +1286,73 @@
             max-width: 500px;
             width: 90%;
             max-height: 90vh;
+            overflow-y: visible;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .admin-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color, #ddd);
+        }
+
+        .admin-modal-header h3 {
+            margin: 0;
+            color: var(--text-color, #333);
+        }
+
+        .close-modal-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary, #666);
+        }
+
+        .admin-modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color, #333);
+        }
+
+        /* Admin Modal Styles */
+        .admin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .admin-modal-content {
+            background: var(--card-bg, #fff);
+            border-radius: 10px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
@@ -1322,9 +1394,127 @@
 
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
             font-weight: 500;
             color: var(--text-color, #333);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color, #ddd);
+            border-radius: 6px;
+            font-size: 1rem;
+            background: var(--input-bg, #fff);
+            color: var(--text-color, #333);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color, #007bff);
+        }
+
+        .admin-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color, #ddd);
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .btn-save {
+            background: var(--accent-color, #007bff);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-save:hover {
+            background: var(--accent-color-dark, #0056b3);
+        }
+
+        .admin-success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 10001;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Video preview styles */
+        .video-preview-item {
+            display: inline-block;
+            margin: 0.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color, #ddd);
+            border-radius: 6px;
+            padding: 0.5rem;
+            background: var(--input-bg, #fff);
+        }
+
+        .video-preview-item video {
+            max-width: 150px;
+            max-height: 100px;
+            border-radius: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .admin-modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+
+            .admin-modal-footer {
+                flex-direction: column;
+            }
+
+            .btn-cancel,
+            .btn-save {
+                width: 100%;
+            }
         }
 
         .form-group input,
@@ -3026,22 +3216,23 @@
                         <input type="hidden" name="to_name" value="Polyline">
                         <input type="hidden" name="property_title" value="Departamento ${deptNumber} - Proyecto Benavides 2">
                         <div class="form-group">
-                            <input type="text" id="obra-nombre-${deptNumber}" name="from_name" placeholder=" " required>
                             <label for="obra-nombre-${deptNumber}" data-translate="Nombre completo">Nombre completo</label>
+                            <input type="text" id="obra-nombre-${deptNumber}" name="from_name" placeholder=" " pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" required>
                         </div>
                         <div class="form-group">
-                            <input type="email" id="obra-email-${deptNumber}" name="from_email" placeholder=" " required>
                             <label for="obra-email-${deptNumber}" data-translate="Correo electrónico">Correo electrónico</label>
+                            <input type="email" id="obra-email-${deptNumber}" name="from_email" placeholder=" " required>
                         </div>
                         <div class="form-group">
-                            <input type="tel" id="obra-telefono-${deptNumber}" name="from_phone" placeholder=" " required>
                             <label for="obra-telefono-${deptNumber}" data-translate="Teléfono">Teléfono</label>
+                            <input type="tel" id="obra-telefono-${deptNumber}" name="from_phone" placeholder=" " maxlength="9" inputmode="numeric" pattern="[0-9]{1,9}" required>
                         </div>
                         <div class="form-group">
-                            <input type="date" id="obra-fecha-${deptNumber}" name="preferred_date" placeholder=" " required>
                             <label for="obra-fecha-${deptNumber}" data-translate="Fecha preferida">Fecha preferida</label>
+                            <input type="date" id="obra-fecha-${deptNumber}" name="preferred_date" placeholder=" " required>
                         </div>
                         <div class="form-group">
+                            <label for="obra-hora-${deptNumber}" data-translate="Hora preferida">Hora preferida</label>
                             <select id="obra-hora-${deptNumber}" name="preferred_time" required>
                                 <option value="" disabled selected></option>
                                 <option value="09:00">9:00 AM</option>
@@ -3051,7 +3242,6 @@
                                 <option value="15:00">3:00 PM</option>
                                 <option value="16:00">4:00 PM</option>
                             </select>
-                            <label for="obra-hora-${deptNumber}" data-translate="Hora preferida">Hora preferida</label>
                         </div>
                         <button type="submit" class="submit-btn">
                             <span data-translate="Agendar visita">Agendar visita</span>
@@ -3063,47 +3253,25 @@
         `;
 
         document.body.appendChild(modal);
-        
+
+        // Filtrar entrada para solo números en teléfono
+        const telefonoInput = document.getElementById(`obra-telefono-${deptNumber}`);
+        telefonoInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        // Filtrar entrada para solo letras y espacios en nombre
+        const nombreInput = document.getElementById(`obra-nombre-${deptNumber}`);
+        nombreInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+        });
+
         // Cerrar modal al hacer clic fuera
         modal.addEventListener('click', function(event) {
             if (event.target === modal) {
                 closeObraModal(deptNumber);
             }
         });
-
-        // Manejar el label del select cuando cambia
-        const selectElement = document.getElementById(`obra-hora-${deptNumber}`);
-        if (selectElement) {
-            selectElement.addEventListener('change', function() {
-                const label = this.nextElementSibling;
-                if (this.value && label) {
-                    label.style.top = '-20px';
-                    label.style.fontSize = '12px';
-                    label.style.color = '#ff6b2c';
-                }
-            });
-        }
-
-        // Manejar inputs de fecha y hora para que el label suba inmediatamente
-        const dateInput = document.getElementById(`obra-fecha-${deptNumber}`);
-        if (dateInput) {
-            dateInput.addEventListener('focus', function() {
-                const label = this.nextElementSibling;
-                if (label) {
-                    label.style.top = '-20px';
-                    label.style.fontSize = '12px';
-                    label.style.color = '#ff6b2c';
-                }
-            });
-            dateInput.addEventListener('change', function() {
-                const label = this.nextElementSibling;
-                if (this.value && label) {
-                    label.style.top = '-20px';
-                    label.style.fontSize = '12px';
-                    label.style.color = '#ff6b2c';
-                }
-            });
-        }
     }
 
     // Función para cerrar modal de obra
