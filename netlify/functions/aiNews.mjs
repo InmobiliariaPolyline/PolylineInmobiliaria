@@ -77,7 +77,7 @@ const normalizeItem = async (item, sourceName) => {
     "";
   const summary = decodeHtml(rawDesc.replace(/<[^>]+>/g, "")).slice(0, 240);
 
-  // Imagen por RSS
+  // Imagen por RSS (sin fetch adicional para optimizar velocidad)
   let image =
     tryGet(item, "media:content.@_url") ||
     tryGet(item, "media:thumbnail.@_url") ||
@@ -87,8 +87,9 @@ const normalizeItem = async (item, sourceName) => {
     tryGet(item, "image.url") ||
     null;
 
-  if (!image && link) {
-    image = await getOgImage(link);
+  // Si no hay imagen, usar imagen de respaldo local
+  if (!image) {
+    image = "/Resource/Logo/logo.png";
   }
 
   if (image && CLOUDINARY_FETCH_PREFIX) {

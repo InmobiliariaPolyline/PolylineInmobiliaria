@@ -1,5 +1,6 @@
-import { auth } from './firebase-config.js';
+import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { STORAGE_KEYS, getBasePath } from './config.js';
 
 // Función para determinar la ruta base según la ubicación actual
@@ -17,10 +18,11 @@ if (!window.getBasePath) {
 }
 
 // Verificar autenticación y redirigir si es necesario
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     // Solo redirigir si estamos en una página protegida
     const currentPath = window.location.pathname;
     const isProtectedPage = currentPath.includes('perfil.html') || currentPath.includes('perfilAdmin.html');
+    const isAdminPage = currentPath.includes('perfilAdmin.html');
     const isLoginPage = currentPath.includes('login.html');
     
     if (!user && isProtectedPage) {
@@ -30,6 +32,22 @@ onAuthStateChanged(auth, (user) => {
         // Si el usuario no ha verificado su email y no está en la página de login
         const basePath = window.getBasePath();
         window.location.href = basePath + 'pages/login.html';
+    } else if (user && isAdminPage) {
+        // Verificar si el usuario tiene permisos de administrador
+        try {
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            const userData = userDoc.data() || {};
+            
+            if (userData.isAdmin !== true) {
+                // Si no es admin, redirigir al perfil normal
+                const basePath = window.getBasePath();
+                window.location.href = basePath + 'pages/perfil.html';
+            }
+        } catch (error) {
+            console.error('Error al verificar permisos:', error);
+            const basePath = window.getBasePath();
+            window.location.href = basePath + 'pages/perfil.html';
+        }
     }
 });
 

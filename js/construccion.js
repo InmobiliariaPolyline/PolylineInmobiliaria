@@ -307,7 +307,9 @@
     loadConstructionNews();
   });
 
-  // Menú móvil + overlay (seguro, por si nav.js no está aún)
+  // Menú móvil + overlay - DESHABILITADO (lo maneja scripts.js)
+  // El menú ahora es manejado globalmente por scripts.js
+  /*
   document.addEventListener('DOMContentLoaded', () => {
     const btn = document.querySelector('.mobile-menu-button');
     const menu = document.querySelector('.nav-menu');
@@ -322,16 +324,16 @@
 
     const open = () => {
       menu.classList.add('active');
-      overlay.classList.add('show');
+      overlay.classList.add('active');
       document.body.classList.add('menu-open');
       btn.classList.add('active');
     };
     const close = () => {
       menu.classList.remove('active');
-      overlay.classList.remove('show');
+      overlay.classList.remove('active');
       document.body.classList.remove('menu-open');
       btn.classList.remove('active');
-      document.querySelectorAll('.dropdown .dropdown-menu').forEach((m) => m.classList.remove('open'));
+      document.querySelectorAll('.dropdown').forEach((d) => d.classList.remove('active'));
     };
     const toggle = () => (menu.classList.contains('active') ? close() : open());
 
@@ -340,11 +342,15 @@
       toggle();
     });
     overlay.addEventListener('click', close);
+    
+    // Cerrar menú al hacer clic fuera
     document.addEventListener('click', (e) => {
       if (window.matchMedia('(max-width:768px)').matches) {
         if (!e.target.closest('header')) close();
       }
     });
+    
+    // Cerrar menú al cambiar a desktop
     window.addEventListener('resize', () => {
       if (window.matchMedia('(min-width:769px)').matches) close();
     });
@@ -355,12 +361,22 @@
       a.addEventListener('click', (e) => {
         if (!isMobile()) return;
         e.preventDefault();
-        const menu = a.nextElementSibling;
-        document.querySelectorAll('.dropdown .dropdown-menu').forEach((m) => {
-          if (m !== menu) m.classList.remove('open');
+        e.stopPropagation();
+        
+        const dropdown = a.closest('.dropdown');
+        const isActive = dropdown.classList.contains('active');
+        
+        // Cerrar todos los dropdowns
+        document.querySelectorAll('.dropdown').forEach((d) => {
+          d.classList.remove('active');
         });
-        menu?.classList.toggle('open');
+        
+        // Si no estaba activo, abrirlo
+        if (!isActive) {
+          dropdown.classList.add('active');
+        }
       });
     });
   });
+  */
 })();

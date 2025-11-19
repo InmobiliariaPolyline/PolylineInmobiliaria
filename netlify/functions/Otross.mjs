@@ -118,7 +118,9 @@ const normalizeItem = async (item, sourceName, categoryHint) => {
     tryGet(item, "image.url") ||
     null;
 
-  if (!image && link) image = await getOgImage(link);
+  if (!image) {
+    image = "/Resource/Logo/logo.png";
+  }
   if (image && CLOUDINARY_FETCH_PREFIX) {
     image = CLOUDINARY_FETCH_PREFIX + encodeURIComponent(image);
   }
@@ -170,7 +172,7 @@ const parseFeedOrPage = async (url, categoryHint) => {
     }
   }
   for (const a of anchors.slice(0, 12)) {
-    const image = await getOgImage(a.link);
+    const image = "/Resource/Logo/logo.png"; // Usar imagen de respaldo local
     out.push({
       title: a.title,
       url: a.link,

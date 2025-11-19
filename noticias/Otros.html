@@ -7,13 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#ffffff">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Noticias de Construcción - POLYLINE</title>
     <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navbar-noticias.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="../css/assistant.css">
     <link rel="stylesheet" href="../css/idiomas.css">
@@ -29,113 +30,89 @@
 <body>
     
     <header>
-        <!-- Botón de menú móvil -->
-        <button class="mobile-menu-button" aria-label="Menú">
-            <div class="hamburger"></div>
-        </button>
-        <div id="loading-screen" class="loading-screen">
-            <div class="logo-container">
-                <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
-                <h1 class="company-name">POLYLINE</h1>
-                <p class="slogan">CONSTRUCTORA</p>
-            </div>
-        </div>
-        <div class="logo-container">
-            <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
-            <h1 class="company-name">POLYLINE</h1>
-            <p class="slogan"> CONSTRUCTORA</p>
-        </div>
-        <nav>
-            <ul class="nav-menu">
-                <li class="language-selector">
-                    <button class="language-btn" onclick="toggleLanguageOptions()">
-                        <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
-                        <span id="currentLanguage">Español</span>
-                    </button>
-                    <div class="language-options" id="languageOptions">
-                        <div class="language-option" onclick="changeLanguage('es')">
-                            <img src="../Resource/flags/es.png" alt="Español">
-                            <span>Español</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('en')">
-                            <img src="../Resource/flags/en.png" alt="English">
-                            <span>English</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('pt')">
-                            <img src="../Resource/flags/pt.png" alt="Português">
-                            <span>Português</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('zh')">
-                            <img src="../Resource/flags/zh.png" alt="中文">
-                            <span>中文</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('ja')">
-                            <img src="../Resource/flags/ja.png" alt="日本語">
-                            <span>日本語</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('it')">
-                            <img src="../Resource/flags/it.png" alt="Italiano">
-                            <span>Italiano</span>
-                        </div>
+    <!-- Botón de menú móvil -->
+    <button class="mobile-menu-button" aria-label="Menú">
+        <div class="hamburger"></div>
+    </button>
+    <div class="logo-container">
+        <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+        <h1 class="company-name">POLYLINE</h1>
+        <p class="slogan">CONSTRUCTORA</p>
+    </div>
+    <nav>
+        <ul class="nav-menu">
+            <li class="language-selector">
+                <button class="language-btn" onclick="toggleLanguageOptions()">
+                    <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
+                    <span id="currentLanguage">Español</span>
+                </button>
+                <div class="language-options" id="languageOptions">
+                    <div class="language-option" onclick="changeLanguage('es')">
+                        <img src="../Resource/flags/es.png" alt="Español">
+                        <span>Español</span>
                     </div>
-                </li>
-                <li><a data-translate='Inicio' href='../index.html'>Inicio</a></li>
-                <li><a href="../index.html#para-ti" data-translate="Para Tí">Para Tí</a></li>
-                <li class="dropdown">
-                    <a data-translate='Proyectos' href='#' id='proyectos-link' onclick="return false;">Proyectos</a>
-                    <ul class="dropdown-menu">
-                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='../proyectos/proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
-                     <!--    <li><a data-translate='Proyecto Benavides 1' href='../proyectos/pben1.html'>Proyecto Benavides 1</a></li> -->
-                        <li><a data-translate='Proyecto Benavides 2' href='../proyectos/pben2.html'>Proyecto Benavides 2</a></li>
-                        <li><a data-translate='Proyecto Sienna' href='../proyectos/ppl1.html'>Proyecto Sienna</a></li>
-                        <li><a data-translate='Proyecto Varsovia' href='../proyectos/plin.html'>Proyecto Varsovia </a></li>
-                        <li><a data-translate='Mas Proyectos' href='../proyectos/mas-proyectos.html'>Mas Proyectos</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="#" id="contacto-link" data-translate="Contacto" onclick="return false;">Contacto</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="../contact/informaci%c3%b3n.html" data-translate="Información">Información</a></li>
-                        <li><a href="../contact/agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
-                    </ul>
-                </li>
-                <li><a data-translate='Cotizar Proyecto' href='../proyectos/cotizar.html'>Cotizar Proyecto</a></li>
-                <li><a data-translate='Anuncios' href='../proyectos/Anuncios.html'>Anuncios</a></li>
-
-                <li class="dropdown">
-                    <a href="#" id="noticias-link" data-translate="Noticias" onclick="return false;">Noticias</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="ia.html" data-translate="IA">IA</a></li>
-                        <li><a href="bitcoin.html" data-translate="Bitcoin">Bitcoin</a></li>
-                        <li><a href="otros.html" data-translate="Otros">Otros</a></li>
-                        
-                    </ul>
-                </li>
-                <li><a href="../proyectos/construccion.html" data-translate="Construcción">Construcción</a></li>
-
-                <li id="translateContainer" class="translate-container">
-                    <div id="google_translate_element" title="Seleccionar idioma"></div>
-                </li>
-                <li id="loginContainer" class="mobile-login">
-                    <a class='login-link' href='../pages/login.html' id='loginLink'>
-                        <i class="fas fa-sign-in-alt"></i> 
-                        <span data-translate="Login">Login</span>
-                    </a>
-                    <div id="userProfile" style="display: none;">
-                        <div class="profile-header">
-                            <a id="profileLink" href='../pages/perfil.html' style='text-decoration: none; color: inherit;'>
-                                <i class="fas fa-user"></i>
-                                <span id="profileText" data-translate="Perfil">Perfil</span>
-                            </a>
-                        </div>
+                    <div class="language-option" onclick="changeLanguage('en')">
+                        <img src="../Resource/flags/en.png" alt="English">
+                        <span>English</span>
                     </div>
-                </li>
-            </ul>
-        </nav>
-    </header>
+                    <div class="language-option" onclick="changeLanguage('pt')">
+                        <img src="../Resource/flags/pt.png" alt="Português">
+                        <span>Português</span>
+                    </div>
+                    <div class="language-option" onclick="changeLanguage('zh')">
+                        <img src="../Resource/flags/zh.png" alt="中文">
+                        <span>中文</span>
+                    </div>
+                    <div class="language-option" onclick="changeLanguage('ja')">
+                        <img src="../Resource/flags/ja.png" alt="日本語">
+                        <span>日本語</span>
+                    </div>
+                    <div class="language-option" onclick="changeLanguage('it')">
+                        <img src="../Resource/flags/it.png" alt="Italiano">
+                        <span>Italiano</span>
+                    </div>
+                </div>
+            </li>
+            <li><a href='../index.html'>Inicio</a></li>
+            <li><a href="../index.html#para-ti">Para Tí</a></li>
+            <li class="dropdown">
+                <a href='#' onclick="return false;">Proyectos <span class="dropdown-arrow">▼</span></a>
+                <ul class="dropdown-menu">
+                    <li><a href='../proyectos/proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
+                    <li><a href='../proyectos/pben2.html'>Proyecto Benavides 2</a></li>
+                    <li><a href='../proyectos/ppl1.html'>Proyecto Sienna</a></li>
+                    <li><a href='../proyectos/plin.html'>Proyecto Varsovia</a></li>
+                    <li><a href='../proyectos/mas-proyectos.html'>Mas Proyectos</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" onclick="return false;">Contacto <span class="dropdown-arrow">▼</span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="../contact/informaci%c3%b3n.html">Información</a></li>
+                    <li><a href="../contact/agenda%20una%20reuni%c3%b3n.html">Agenda una Reunión con Nosotros</a></li>
+                </ul>
+            </li>
+            <li><a href='../proyectos/cotizar.html'>Cotizar Proyecto</a></li>
+            <li><a href='../proyectos/Anuncios.html'>Anuncios</a></li>
+            <li class="dropdown">
+                <a href="#" class="active" onclick="return false;">Noticias <span class="dropdown-arrow">▼</span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="ia.html">IA</a></li>
+                    <li><a href="bitcoin.html">Bitcoin</a></li>
+                    <li><a href="otros.html">Otros</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../proyectos/construccion.html">
+                    Construcción
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
 
-    <!-- Overlay para el menú móvil -->
-    <div class="menu-overlay"></div>
+<!-- Overlay para el menú móvil -->
+<div class="menu-overlay"></div>
 
     <div class="news-container">
         <div class="news-header">
@@ -289,6 +266,7 @@
 
     <script src="../scripts.js"></script>
     <script src="../js/assistant.js"></script>
+    <script src="../js/navbar-noticias.js"></script>
     
     <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px;">
         <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
@@ -308,12 +286,8 @@
         </button>
     </div>
 
-    <script type="module" src="../js/nav.js"></script>
     <script type="module" src="../js/auth-check.js"></script>
-
-    
-   
-  <script defer src="../js/otros.js"></script>
+    <script defer src="../js/otros.js"></script>
 </body>
 
 </html>
