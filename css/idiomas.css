@@ -11,6 +11,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
+    z-index: auto;
   }
   
   .language-btn {
@@ -51,7 +52,7 @@
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     display: none;
-    z-index: 1000;
+    z-index: 10;
     min-width: 180px;
     margin-top: 10px;
     padding: 8px 0;
@@ -131,18 +132,51 @@ body.dark-mode .language-option span {
 /* Estilos responsivos */
 @media screen and (max-width: 768px) {
     .language-selector {
-        margin: 10px 0;
+        margin: 0;
         width: 100%;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        z-index: auto;
     }
 
     .language-btn {
         width: 100%;
-        justify-content: center;
+        justify-content: space-between;
+        padding: 15px 20px;
+        margin-top: 0;
+        z-index: 2;
+        position: relative;
     }
 
     .language-options {
-        width: calc(100% - 40px);
-        left: 20px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        position: static !important;
+        width: 100% !important;
+        left: auto !important;
+        right: auto !important;
+        box-shadow: none !important;
+        background: rgba(0, 0, 0, 0.03) !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        z-index: 3 !important;
+    }
+
+    body.dark-mode .language-options {
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .language-option {
+        padding: 12px 20px 12px 40px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+        z-index: 4;
+        position: relative;
+        background: rgba(0, 0, 0, 0.03);
+    }
+
+    body.dark-mode .language-option {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .language-option:last-child {
+        border-bottom: none;
     }
 }

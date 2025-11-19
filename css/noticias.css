@@ -26,6 +26,11 @@ body.dark-mode{
 .ia-header h1{ font-family:Roboto, sans-serif; font-weight:700; margin:0 0 8px; color:var(--text); }
 .ia-subtitle{ margin:0 0 20px; color:var(--muted); }
 
+/* Espaciado móvil para evitar sobreposición con navbar sticky */
+@media (max-width:768px){
+  .ia-section{ margin-top: 100px; padding-top: 20px; }
+}
+
 /* GRID */
 .ia-grid{ display:grid; grid-template-columns:repeat(12,1fr); gap:20px; }
 @media (max-width:1024px){ .ia-grid{ grid-template-columns:repeat(8,1fr); } }
@@ -117,119 +122,12 @@ body.dark-mode .social-btn{ box-shadow:0 6px 16px rgba(0,0,0,.4); }
    Navegación responsive
    ================================ */
 
-/* Botón hamburguesa (derecha) */
-header{ position:relative; }
-.mobile-menu-button{
-  position: fixed !important;
-  right: 12px; top: 12px;
-  left: auto !important;
-  width: 44px; height: 44px;
-  display: none;                          /* visible solo en móvil */
-  align-items:center; justify-content:center;
-  background: transparent; border: 0;
-  z-index: 2000; cursor: pointer; pointer-events:auto;
-}
-.mobile-menu-button .hamburger,
-.mobile-menu-button .hamburger::before,
-.mobile-menu-button .hamburger::after{
-  content:""; display:block;
-  width:26px; height:2px; background:#111;
-  position:relative; border-radius:2px;
-}
-.mobile-menu-button .hamburger::before{ position:absolute; top:-7px; left:0; }
-.mobile-menu-button .hamburger::after { position:absolute; top: 7px; left:0; }
-body.dark-mode .mobile-menu-button .hamburger,
-body.dark-mode .mobile-menu-button .hamburger::before,
-body.dark-mode .mobile-menu-button .hamburger::after{ background:#fff; }
-
-/* Overlay del menú */
-.menu-overlay{
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.35);
-  opacity: 0; visibility: hidden;
-  transition: opacity .2s ease, visibility .2s ease;
-  z-index: 1500;
-}
-.menu-overlay.show{ opacity:1; visibility:visible; }
-
-/* Panel lateral (móvil) */
-@media (max-width:768px){
-  .mobile-menu-button{ display:flex !important; }
-
-  nav .nav-menu{
-    position: fixed !important;
-    top:0 !important; right:-100% !important;       /* oculto */
-    width:80% !important; max-width:360px !important;
-    height:100vh !important;
-    background:rgba(255,255,255,.96) !important;
-    backdrop-filter:blur(10px) !important;
-    padding:80px 16px 16px !important;
-    overflow-y:auto !important;
-    transition:right .3s ease-in-out !important;
-    z-index:1600 !important;
-    display:block !important;
-  }
-  nav .nav-menu.active{ right:0 !important; }
-
-  /* Submenús móviles */
-  .dropdown .dropdown-menu{
-    position:static !important;
-    display:none !important;
-    width:100% !important;
-    background:transparent !important;
-    box-shadow:none !important;
-    padding-left:16px !important;
-  }
-  .dropdown .dropdown-menu.open{ display:block !important; }
-}
-
-/* Submenús desktop */
-@media (min-width:769px){
-  .dropdown-menu{
-    position:absolute; top:100%; right:0; min-width:150px;
-    background:#f0f0f0; border:1px solid #ddd; border-radius:4px;
-    list-style:none; padding:15px 0; margin:0; display:none; z-index:1000;
-  }
-  .dropdown:hover .dropdown-menu{ display:block; }
-  .dropdown-menu li{ margin-bottom:25px; }
-  .dropdown-menu li:last-child{ margin-bottom:0; }
-  .dropdown-menu li a{ display:block; padding:8px 10px; color:#333; text-decoration:none; }
-  .dropdown-menu li a:hover{ background:rgba(51,51,51,.1); }
-}
+/* Estos estilos están ahora manejados por style.css y navbar-loader.js */
+/* Se eliminaron para evitar conflictos con el navbar dinámico */
 
 /* ================================
-   Idiomas (dropdown)
+   Estilos de idiomas manejados por idiomas.css
    ================================ */
-
-/* base */
-.language-selector{ position:relative; }
-.language-selector .language-options{
-  display:none !important;              /* base oculto; lo abre .active/.show */
-  position:absolute;
-  top:100%; right:0;
-  min-width:180px;
-  background:#fff;
-  border:1px solid #e5e5e5;
-  border-radius:10px;
-  padding:6px 0;
-  box-shadow:0 12px 30px rgba(0,0,0,.12);
-  z-index:1700;                         /* por encima del panel */
-}
-/* abrir */
-.language-selector.active .language-options,
-.language-options.show{ display:block !important; }
-
-/* versión móvil (dentro del panel) */
-@media (max-width:768px){
-  .language-selector .language-options{
-    position:static;
-    width:100%;
-    border:0;
-    border-radius:0;
-    box-shadow:none;
-    background:transparent;
-  }
-}
 
 /* ================================
    (Opcional) estilos “news-*”
@@ -259,7 +157,7 @@ body.dark-mode .news-header h1{ color:#ff9f4a; }
 body.dark-mode .news-header p{ color:#e0e0e0; }
 
 @media (max-width:768px){
-  .news-container{ padding:20px 15px; }
+  .news-container{ padding:20px 15px; margin-top: 100px; padding-top: 20px; }
   .news-header h1{ font-size:2.5rem; }
   .news-header p{ font-size:1.1rem; }
 }

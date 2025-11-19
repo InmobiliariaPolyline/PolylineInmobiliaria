@@ -66,6 +66,9 @@
             background: rgba(0, 0, 0, 0.1);
             width: 150px;
         }
+        .dropdown-menu.open {
+            display: block !important;
+        }
 
         .dropdown-menu li {
             margin-bottom: 30px;

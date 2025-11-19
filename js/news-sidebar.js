@@ -73,7 +73,7 @@ class NewsSidebar extends HTMLElement {
   background: rgba(0,0,0,.35);
   opacity: 0; pointer-events: none;
   transition: opacity .25s ease;
-  z-index: 99997;
+  z-index: 1000;
 }
 .backdrop.open{ opacity:1; pointer-events: auto; }
 
@@ -85,7 +85,7 @@ class NewsSidebar extends HTMLElement {
   background: var(--fab-bg, var(--accent)) !important;
   color: var(--fab-icon, #fff);
   box-shadow: 0 14px 40px rgba(0,0,0,.35);
-  z-index: 100000;
+  z-index: 850;
   transition: transform .15s ease, box-shadow .2s ease;
 }
 
@@ -105,10 +105,11 @@ class NewsSidebar extends HTMLElement {
 .news-sidebar{
   position: fixed; inset: 0 auto 0 0; width: min(560px, 96vw);
   background: var(--bg); color: var(--fg); transform: translateX(-100%);
-  transition: transform .28s ease; z-index: 99999; display: flex; flex-direction: column;
+  transition: transform .28s ease; z-index: 1001; display: flex; flex-direction: column;
   border-right: 3px solid color-mix(in oklab, var(--accent), white 10%);
   box-shadow: var(--elev);
   border-top-right-radius: 14px; border-bottom-right-radius: 14px;
+  padding-top: 80px;
 }
 .news-sidebar.open{ transform: translateX(0); }
 
@@ -123,6 +124,7 @@ class NewsSidebar extends HTMLElement {
     border-bottom-right-radius: 0;
     border-top-left-radius: 14px;
     border-bottom-left-radius: 14px;
+    padding-top: 80px;
   }
 }
 
@@ -254,8 +256,20 @@ class NewsSidebar extends HTMLElement {
     this.retryBtn    = $(".retry-btn");
 
 
-    const open  = ()=>{ this.sidebar.classList.add("open"); this.backdrop.classList.add("open"); this.sidebar.setAttribute("aria-hidden","false"); };
-    const close = ()=>{ this.sidebar.classList.remove("open"); this.backdrop.classList.remove("open"); this.sidebar.setAttribute("aria-hidden","true"); };
+    const open  = ()=>{ 
+      this.sidebar.classList.add("open"); 
+      this.backdrop.classList.add("open"); 
+      this.sidebar.setAttribute("aria-hidden","false"); 
+    };
+    const close = ()=>{ 
+      this.sidebar.classList.remove("open"); 
+      this.backdrop.classList.remove("open"); 
+      this.sidebar.setAttribute("aria-hidden","true"); 
+      // Remover el foco de cualquier elemento dentro del sidebar
+      if (this.shadowRoot.activeElement) {
+        this.shadowRoot.activeElement.blur();
+      }
+    };
 
     this.open = open; this.close = close;
 

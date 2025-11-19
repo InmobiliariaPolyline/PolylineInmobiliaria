@@ -511,6 +511,8 @@
             will-change: background-color, color;
         }
     </style>
+    <!-- Navbar Loader - Carga el menú dinámicamente -->
+    <script src="../js/navbar-loader.js"></script>
 </head>
 
 <body>
@@ -748,8 +750,8 @@
         const profileText = document.getElementById('profileText');
 
         if (userSession && userSession.emailVerified) {
-            loginLink.style.display = 'none';
-            userProfile.style.display = 'flex';
+            if (loginLink) loginLink.style.display = 'none';
+            if (userProfile) userProfile.style.display = 'flex';
             if (profileLink && profileText) {
                 if (userSession.isAdmin) {
                     profileLink.href = '../pages/perfilAdmin.html';

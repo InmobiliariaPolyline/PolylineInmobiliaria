@@ -35,9 +35,10 @@ function getBasePath() {
     const isInPages = currentPath.includes('/pages/');
     const isInProyectos = currentPath.includes('/proyectos/');
     const isInContact = currentPath.includes('/contact/');
+    const isInNoticias = currentPath.includes('/noticias/');
     
     if (isInPages) return '../';
-    if (isInProyectos || isInContact) return '../';
+    if (isInProyectos || isInContact || isInNoticias) return '../';
     return '';
 }
 

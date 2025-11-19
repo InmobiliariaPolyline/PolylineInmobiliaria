@@ -1,22 +1,5 @@
 /* Ajustes base para la navegación móvil */
 @media screen and (max-width: 768px) {
-    .nav-menu {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 80%;
-        height: 100vh;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        transition: 0.3s ease-in-out;
-        overflow-y: auto;
-        z-index: 1000;
-    }
-
-    .nav-menu.active {  
-        right: 0;
-    }
-
     .mobile-menu-button {
         display: block;
     }
@@ -55,29 +38,6 @@
     }
 }
 
-/* Ajustes generales de navegación móvil */
-@media screen and (max-width: 768px) {
-    .dropdown-menu {
-        position: static;
-        width: 100%;
-        background: transparent;
-        box-shadow: none;
-    }
-    
-    .language-selector {
-        position: static;
-        width: 100%;
-    }
-    
-    .language-options {
-        position: static;
-        width: 100%;
-        box-shadow: none;
-    }
-}
-
-
-
 /* Overlay para cerrar tocando fuera */
 .menu-overlay{
   position: fixed;
@@ -88,15 +48,14 @@
   transition: opacity .2s ease;
   z-index: 999; /* debajo del menú (que tiene 1000) */
 }
-.menu-overlay.show{ opacity: 1; pointer-events: auto; }
+.menu-overlay.show, .menu-overlay.active{ 
+  opacity: 1; 
+  pointer-events: auto; 
+}
 
 /* Bloqueo de scroll cuando el menú está abierto */
-body.menu-open{ overflow: hidden; }
-
-/* Submenús en móvil: se abren con .open */
-@media (max-width:768px){
-  .dropdown-menu{ display: none; }
-  .dropdown-menu.open{ display: block; }
+body.menu-open{ 
+  overflow: hidden; 
 }
 
 

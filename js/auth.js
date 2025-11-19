@@ -55,7 +55,7 @@ export const registerUser = async (name, email, password) => {
             email,
             createdAt: new Date().toISOString(),
             displayName: name,
-            isAdmin: true,
+            isAdmin: false,
             emailVerified: false
         });
 

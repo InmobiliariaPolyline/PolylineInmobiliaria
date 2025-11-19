@@ -1608,10 +1608,14 @@
         window.addEventListener('DOMContentLoaded', () => {
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
+                    console.log('Usuario autenticado:', user.email);
                     try {
                         const userDoc = await getDoc(doc(db, 'users', user.uid));
                         const userData = userDoc.data() || {};
-                        if (userData.isAdmin) {
+                        console.log('Datos del usuario:', userData);
+                        console.log('¿Es admin?:', userData.isAdmin);
+                        
+                        if (userData.isAdmin === true) {
                             // Foto de perfil: priorizar Firestore, luego Auth, luego por defecto
                             let photoURL = userData.photoURL;
                             if (!photoURL || photoURL === '') {
@@ -1628,13 +1632,14 @@
                             if (emailEl) emailEl.textContent = user.email;
                         } else {
                             alert('No tienes permisos de administrador');
-                            window.location.href = '/pages/perfil.html';
+                            window.location.href = '../pages/perfil.html';
                         }
                     } catch (err) {
+                        console.error('Error al cargar datos del usuario:', err);
                         alert('Error al cargar datos del usuario administrador');
                     }
                 } else {
-                    window.location.href = '/pages/login.html';
+                    window.location.href = '../pages/login.html';
                 }
             });
         });
@@ -3638,8 +3643,8 @@
         const profileText = document.getElementById('profileText');
 
         if (userSession && userSession.emailVerified) {
-            loginLink.style.display = 'none';
-            userProfile.style.display = 'flex';
+            if (loginLink) loginLink.style.display = 'none';
+            if (userProfile) userProfile.style.display = 'flex';
             if (profileLink && profileText) {
                 if (userSession.isAdmin) {
                     profileLink.href = '../pages/perfilAdmin.html';

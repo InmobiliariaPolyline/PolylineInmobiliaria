@@ -14,282 +14,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="preload" as="video" href="Resource/background1.mp4">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="css/assistant.css">
     <link rel="stylesheet" href="css/idiomas.css">
-    <link rel="stylesheet" href="css/gallery.html">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="css/property-viewer.html">
     <!-- Firebase SDK -->
-    <link rel="preload" as="video" href="Resource/background1.mp4" type="video/mp4">
+    <!-- Navbar Loader - Carga el menú dinámicamente -->
+   <script src="js/navbar-loader.js"></script>
     <script type="module" src="js/Login_Perfil.js"></script>
 
-<style>
-    /* Animación para el menú desplegable en móvil */
-    @media screen and (max-width: 768px) {
-        .user-dropdown {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
 
-        .user-dropdown.show {
-            max-height: 300px;
-        }
-    }
-
-    @media screen and (max-width: 768px) {
-        #loginContainer {
-            width: 100%;
-            padding: 10px 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        #loginLink {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            padding: 10px 0;
-        }
-
-        #userProfile {
-            width: 100%;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px 0;
-        }
-
-        .user-dropdown {
-            position: static;
-            width: 100%;
-            background: transparent;
-            box-shadow: none;
-            padding: 0;
-            margin-top: 10px;
-        }
-
-        .user-dropdown a {
-            padding: 10px 15px;
-            color: white;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        #userName {
-            margin: 10px 0;
-            font-size: 1em;
-            color: white;
-        }
-    }
-
-    @media screen and (max-width: 768px) {
-        .nav-menu {
-            max-height: 100vh;
-            overflow-y: auto;
-        }
-
-        .dropdown-menu {
-            display: none;
-            padding-left: 20px;
-            background: rgba(0, 0, 0, 0.1);
-            width: 150px;
-        }
-
-        .dropdown-menu li {
-            margin-bottom: 30px;
-        }
-
-        .dropdown-menu li a {
-            padding: 8px 10px;
-        }
-
-        .nav-menu::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .nav-menu::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-menu::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-        }
-
-        .nav-menu::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-    }
-
-    /* Estilos para pantallas grandes */
-    @media screen and (min-width: 769px) {
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            min-width: 150px;
-            background-color: #f0f0f0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            list-style: none;
-            padding: 15px 0;
-            margin: 0;
-            display: none;
-            z-index: 1000;
-        }
-
-        .dropdown:hover .dropdown-menu {
-            display: block;
-        }
-
-        .dropdown-menu li {
-            margin-bottom: 25px;
-        }
-
-        .dropdown-menu li:last-child {
-            margin-bottom: 0;
-        }
-
-        .dropdown-menu li a {
-            display: block;
-            padding: 8px 10px;
-            color: #333;
-            text-decoration: none;
-        }
-
-        .dropdown-menu li a:hover {
-            background-color: rgba(51, 51, 51, 0.1);
-        }
-    }
-</style>
 </head>
 
 <body>
     
-    <header>
-        <!-- Botón de menú móvil -->
-        <button class="mobile-menu-button" aria-label="Menú">
-            <div class="hamburger"></div>
-            
-        </button>
-        <div id="loading-screen" class="loading-screen">
-            <div class="logo-container">
-                <img src="Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
-                <h1 class="company-name">POLYLINE</h1>
-                <p class="slogan">CONSTRUCTORA</p>
-            </div>
-        </div>
-        <div class="logo-container">
-            <img src="Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
-            <h1 class="company-name">POLYLINE</h1>
-            <p class="slogan"> CONSTRUCTORA</p>
-        </div>
-        <nav>
-            <ul class="nav-menu">
-                <li class="language-selector">
-                    <button class="language-btn" onclick="toggleLanguageOptions()">
-                        <img src="Resource/flags/es.png" alt="Español" id="currentFlag">
-                        <span id="currentLanguage">Español</span>
-                    </button>
-                    <div class="language-options" id="languageOptions">
-                        <div class="language-option" onclick="changeLanguage('es')">
-                            <img src="Resource/flags/es.png" alt="Español">
-                            <span>Español</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('en')">
-                            <img src="Resource/flags/en.png" alt="English">
-                            <span>English</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('pt')">
-                            <img src="Resource/flags/pt.png" alt="Português">
-                            <span>Português</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('zh')">
-                            <img src="Resource/flags/zh.png" alt="中文">
-                            <span>中文</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('ja')">
-                            <img src="Resource/flags/ja.png" alt="日本語">
-                            <span>日本語</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('it')">
-                            <img src="Resource/flags/it.png" alt="Italiano">
-                            <span>Italiano</span>
-                        </div>
-                    </div>
-                </li>
-                <li><a class='active' data-translate='Inicio' href='index.html'>Inicio</a></li>
-                <li><a href="#para-ti" data-translate="Para Tí">Para Tí</a></li>
-                <li class="dropdown">
-                    <a data-translate='Proyectos' href='#' id='proyectos-link' onclick="return false;">Proyectos</a>
-                    <ul class="dropdown-menu">
-                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='proyectos/proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
-                        <!-- <li><a data-translate='Proyecto Benavides 1' href='proyectos/pben1.html'>Proyecto Benavides 1</a></li> -->
-                        <li><a data-translate='Proyecto Benavides 2' href='proyectos/pben2.html'>Proyecto Benavides 2</a></li>
-                        <li><a data-translate='Proyecto Sienna' href='proyectos/ppl1.html'>Proyecto Sienna</a></li>
-                        <li><a data-translate='Proyecto Varsovia' href='proyectos/plin.html'>Proyecto Varsovia </a></li>
-                        <li><a data-translate='Mas Proyectos' href='proyectos/mas-proyectos.html'>Mas Proyectos</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="#" id="contacto-link" data-translate="Contacto" onclick="return false;">Contacto</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="contact/informaci%c3%b3n.html" data-translate="Información">Información</a></li>
-                        <li><a href="contact/agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
-                    </ul>
-                </li>
-                <li><a data-translate='Cotizar Proyecto' href='proyectos/cotizar.html'>Cotizar Proyecto</a></li>
-                <li><a data-translate='Anuncios' href='proyectos/Anuncios.html'>Anuncios</a></li>
-
-                <!-- ...existing code... -->
-
-                <li class="dropdown">
-                    <a href="#" id="noticias-link" data-translate="Noticias" onclick="return false;">Noticias</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="noticias/ia.html" data-translate="IA">IA</a></li>
-                        <li><a href="noticias/bitcoin.html" data-translate="Bitcoin">Bitcoin</a></li>
-                        <li><a href="noticias/otros.html" data-translate="Otros">Otros</a></li>
-                    </ul>
-                </li>
-              <!-- index.html (raíz) -->
-                <li>
-                <a href="../proyectos/construccion.html" data-translate="Construcción">
-                    Construcción
-                </a>
-                </li>
-
-                <!-- ...existing code... -->
-
-                <li id="translateContainer" class="translate-container">
-                    <div id="google_translate_element" title="Seleccionar idioma"></div>
-                </li>
-                <li id="loginContainer" class="mobile-login">
-                    <a class='login-link' href='pages/login.html' id='loginLink'>
-                        <i class="fas fa-sign-in-alt"></i> 
-                        <span data-translate="Login">Login</span>
-                    </a>
-                    <div id="userProfile" style="display: none;">
-                        <div class="profile-header">
-                            <a id="profileLink" href='pages/perfil.html' style='text-decoration: none; color: inherit;'>
-                                <i class="fas fa-user"></i>
-                                <span id="profileText" data-translate="Perfil">Perfil</span>
-                            </a>
-                        </div>
-                    </div>
-                </li>
-
-               
-
-
-
-
-            </ul>
-        </nav>
-    </header>
-
-    <!-- Overlay para el menú móvil -->
-    <div class="menu-overlay"></div>
+    <!-- El navbar se cargará dinámicamente aquí desde components/navbar.html -->
 
     <!--audio de ambiente-->
     <audio id="ambient-sound" autoplay loop volume="0.0">
@@ -632,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <script src="js/news-sidebar.js"></script>
 
     
-    <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px;">
+    <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px; z-index: 998;">
         <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
             <i class="fab fa-facebook-f"></i>
         </button>
@@ -654,22 +394,25 @@ document.addEventListener('DOMContentLoaded', () => {
     import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     // Función para manejar el cierre de sesión
-    document.getElementById('logoutButton').addEventListener('click', async (e) => {
-        e.preventDefault();
-        const auth = getAuth();
-        try {
-            await signOut(auth);
-            localStorage.removeItem('userSession');
-            console.log('Sesión cerrada exitosamente');
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const auth = getAuth();
+            try {
+                await signOut(auth);
+                localStorage.removeItem('userSession');
+                console.log('Sesión cerrada exitosamente');
             window.location.href = 'index.html'; // Redirige al inicio después de cerrar sesión
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
         }
-    });
+        });
+    }
 </script>
 <script type="module" src="js/nav.js"></script>
 <news-sidebar
-  style="--fab-bg: linear-gradient(135deg,#f6b219,#e67e22); --fab-icon:#fff; --fab-ring:#ffe6b3;"
+  style="--fab-bg: linear-gradient(135deg,#f6b219,#e67e22); --fab-icon:#fff; --fab-ring:#ffe6b3; z-index: 998;"
   endpoint="/.netlify/functions/Otross"
   pagesize="10"
   title="Noticias"
@@ -1082,7 +825,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     </script>
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-<script type="module" src="js/property-viewer.js"></script>
 <script type="module" src="js/auth-check.js"></script>
 
 <script>

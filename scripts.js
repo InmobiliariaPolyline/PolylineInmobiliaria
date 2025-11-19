@@ -474,13 +474,70 @@ function closeModal(departmentId) {
 
 // Función para el menú móvil
 document.addEventListener('DOMContentLoaded', function() {
+    // Solo inicializar si el navbar ya está en el DOM (no se carga dinámicamente)
+    // Si se usa navbar-loader.js, este manejará la inicialización
+    const isNavbarDynamic = document.querySelector('script[src*="navbar-loader.js"]');
+    
+    if (isNavbarDynamic) {
+        // Esperar a que el navbar se cargue dinámicamente
+        return;
+    }
+    
     const mobileMenuButton = document.querySelector('.mobile-menu-button');
     const navMenu = document.querySelector('.nav-menu');
+    const menuOverlay = document.querySelector('.menu-overlay');
     
+    // Función para toggle del menú principal
+    function toggleMenu() {
+        mobileMenuButton.classList.toggle('active');
+        navMenu.classList.toggle('active');
+        if (menuOverlay) {
+            menuOverlay.classList.toggle('active');
+        }
+        document.body.classList.toggle('menu-open');
+    }
+    
+    // Click en el botón hamburguesa
     if (mobileMenuButton && navMenu) {
-        mobileMenuButton.addEventListener('click', function() {
-            this.classList.toggle('active');
-            navMenu.classList.toggle('active');
+        mobileMenuButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleMenu();
+        });
+
+        // Cerrar menú al hacer clic en el overlay
+        if (menuOverlay) {
+            menuOverlay.addEventListener('click', function() {
+                toggleMenu();
+                // Cerrar todos los dropdowns abiertos
+                document.querySelectorAll('.dropdown.active').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            });
+        }
+
+        // Cerrar menú al hacer clic en enlaces de submenú
+        navMenu.querySelectorAll('.dropdown-menu a').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    setTimeout(() => {
+                        toggleMenu();
+                        document.querySelectorAll('.dropdown.active').forEach(dropdown => {
+                            dropdown.classList.remove('active');
+                        });
+                    }, 200);
+                }
+            });
+        });
+
+        // Cerrar menú al hacer clic en enlaces simples (no dropdown)
+        navMenu.querySelectorAll('li:not(.dropdown):not(.language-selector) > a').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    setTimeout(() => {
+                        toggleMenu();
+                    }, 200);
+                }
+            });
         });
     }
 });
@@ -509,6 +566,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Función para manejar los dropdowns
+let dropdownsInitialized = false;
+
 function setupDropdown() {
     const dropdowns = document.querySelectorAll('.dropdown');
     
@@ -516,37 +575,38 @@ function setupDropdown() {
         const link = dropdown.querySelector('a');
         const menu = dropdown.querySelector('.dropdown-menu');
         
-        if (window.innerWidth <= 768) {
-            menu.style.display = 'none';
-        }
+        if (!link || !menu) return;
         
-        link.addEventListener('click', function(e) {
-            if (window.innerWidth <= 768) {
-                e.preventDefault();
-                
-                // Cerrar todos los otros menús primero
-                dropdowns.forEach(otherDropdown => {
-                    if (otherDropdown !== dropdown) {
-                        const otherMenu = otherDropdown.querySelector('.dropdown-menu');
-                        otherMenu.style.display = 'none';
+        // Solo agregar el listener si no está ya inicializado
+        if (!link.hasAttribute('data-dropdown-initialized')) {
+            link.setAttribute('data-dropdown-initialized', 'true');
+            
+            link.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Toggle del menú actual
+                    const isActive = dropdown.classList.contains('active');
+                    
+                    // Cerrar todos los dropdowns primero
+                    document.querySelectorAll('.dropdown').forEach(d => {
+                        d.classList.remove('active');
+                    });
+                    
+                    // Si no estaba activo, abrirlo
+                    if (!isActive) {
+                        dropdown.classList.add('active');
                     }
-                });
-                
-                // Toggle del menú actual
-                if (menu.style.display === 'none' || menu.style.display === '') {
-                    menu.style.display = 'block';
-                } else {
-                    menu.style.display = 'none';
                 }
-            }
-        });
+            });
+        }
     });
 }
 
 // Inicializar los dropdowns cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
     setupDropdown();
-    window.addEventListener('resize', setupDropdown);
 });
 
 // Cargar botones de noticias
