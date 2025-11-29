@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Detalles del Departamento - POLYLINE</title>
+    <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/idiomas.css">
+    <link rel="stylesheet" href="../css/departamentos.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <!-- Navbar Loader - Carga el menú dinámicamente -->
+    <script src="../js/navbar-loader.js"></script>
+</head>
+<body>
+    <!-- El navbar se cargará dinámicamente aquí desde components/navbar.html -->
+
+    <!-- Contenedor principal para el detalle del departamento -->
+    <div id="dept-root" class="dept-detail" style="min-height: 80vh; padding: 2rem; background: var(--bg-color, #f8f9fa);">
+        <!-- El contenido se carga dinámicamente -->
+    </div>
+
+    <!-- Botón de modo oscuro -->
+    <button id="dark-mode-toggle" class="dark-mode-button" style="position: fixed; right: 30px;"></button>
+
+    <footer class="seccion-footer">
+        <div class="contenedor-footer">
+            <div class="bloque-logo">
+                <img src="../Resource/Logo/logo.png" alt="Polyline">
+                <div class="texto-copyright" style="color: black;">
+                    <p>&copy; 2025 POLYLINE. Todos los derechos reservados.</p>
+                </div>
+            </div>
+            <div class="bloque-contacto" style="color: black;">
+                <h3>CONTACTOS:</h3>
+                <p>WhatsApp: <a href="https://wa.link/lkvfnb">+51 943 812 536</a></p>
+                <p>Email: <a href="mailto:polylinesac@yahoo.com">polylinesac@yahoo.com</a></p>
+                <p>Dirección: Av. Benavides 3008. Lima</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px;">
+        <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')">
+            <i class="fab fa-facebook-f"></i>
+        </button>
+        <button class="social-btn whatsapp" onclick="window.open('https://wa.link/lkvfnb')">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+        <button class="social-btn instagram" onclick="window.open('https://www.instagram.com/arquitectosalasperu/')">
+            <i class="fab fa-instagram"></i>
+        </button>
+        <button class="social-btn linkedin" onclick="window.open('https://www.linkedin.com/in/arquitectosalas')">
+            <i class="fab fa-linkedin-in"></i>
+        </button>
+        <button class="social-btn youtube" onclick="window.open('https://www.youtube.com/channel/UC9wMT7_zsq7yE0MMCSxiVMw')">
+            <i class="fab fa-youtube"></i>
+        </button>
+    </div>
+
+    <script src="../scripts.js"></script>
+    <script src="../js/assistant.js"></script>
+
+    <script type="module">
+        import { db } from '../js/firebase-config.js';
+        import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        function getQueryParam(name) {
+            const url = new URL(window.location.href);
+            return url.searchParams.get(name);
+        }
+
+        async function loadDepartmentDetail() {
+            const num = getQueryParam('num');
+            if (!num) {
+                document.getElementById('dept-root').innerText = 'Departamento no especificado.';
+                return;
+            }
+
+            // Puedes reusar tu getAllDepartments()
+            const { getAllDepartments } = await import('../js/add-department.js');
+            const all = await getAllDepartments();
+            const dept = all.find(d => String(d.numero) === String(num));
+
+            if (!dept) {
+                document.getElementById('dept-root').innerText = 'Departamento no encontrado.';
+                return;
+            }
+
+            const videos = Array.isArray(dept.videos) ? dept.videos : (dept.video ? [dept.video] : []);
+            const image = dept.imagen || '../Resource/Logo/logo.png';
+
+            // Render básico: player principal + carrusel debajo
+            const root = document.getElementById('dept-root');
+            root.innerHTML = `
+                <h2 style="text-align: center; margin-bottom: 2rem; color: var(--text-color, #333);">${dept.titulo}</h2>
+                <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+                    <div style="background: var(--card-bg, #fff); padding: 1rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <p style="margin: 0; text-align: center; color: var(--text-color, #333);">
+                            <strong>${dept.dormitorios} Dormitorios · ${dept.banos} Baños · ${dept.area} m²</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="detail-main" style="max-width:900px;margin:auto;">
+                    <div id="main-content-container" class="video-container" style="margin-bottom: 2rem;">
+                        ${videos.length ? `
+                            <video id="main-content" controls autoplay muted style="width:100%;max-height:520px;border-radius:10px;">
+                                <source src="${videos[0]}" type="video/mp4">
+                            </video>
+                        ` : `
+                            <img id="main-content" src="${image}" alt="${dept.titulo}" style="width:100%;max-height:520px;object-fit:cover;border-radius:10px;" />
+                        `}
+                    </div>
+
+                    <div class="image-carousel" style="display:flex;gap:.75rem;overflow:auto;margin-top:12px;padding:1rem;background:var(--card-bg,#fff);border-radius:10px;">
+                        <div class="carousel-item" data-type="image" data-src="${image}" style="cursor:pointer;border-radius:6px;overflow:hidden;">
+                            <img src="${image}" style="height:90px;width:120px;object-fit:cover;" />
+                        </div>
+                        ${videos.map(v => `
+                            <div class="carousel-item" data-type="video" data-src="${v}" style="cursor:pointer;border-radius:6px;overflow:hidden;">
+                                <video src="${v}" muted style="height:90px;width:120px;object-fit:cover;"></video>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    ${dept.descripcion ? `
+                        <div style="margin-top: 2rem; padding: 1.5rem; background: var(--card-bg, #fff); border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <h3 style="margin-top: 0; color: var(--text-color, #333);">Descripción</h3>
+                            <p style="color: var(--text-secondary, #666); line-height: 1.6;">${dept.descripcion}</p>
+                        </div>
+                    ` : ''}
+
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html' style="display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, #28a745, #20c997); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; transition: all 0.3s ease;">
+                            Separar Departamento
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            // Comportamiento del carrusel
+            root.querySelectorAll('.carousel-item').forEach(item=>{
+                item.addEventListener('click', ()=>{
+                    const type = item.getAttribute('data-type');
+                    const src = item.getAttribute('data-src');
+                    const container = document.getElementById('main-content-container');
+                    if (type === 'video') {
+                        container.innerHTML = `<video id="main-content" controls autoplay style="width:100%;max-height:520px;border-radius:10px;"><source src="${src}" type="video/mp4"></video>`;
+                    } else {
+                        container.innerHTML = `<img id="main-content" src="${src}" alt="${dept.titulo}" style="width:100%;max-height:520px;object-fit:cover;border-radius:10px;" />`;
+                    }
+                });
+            });
+        }
+
+        loadDepartmentDetail();
+    </script>
+
+    <script>
+        // Funciones para el selector de idiomas
+        function toggleLanguageOptions() {
+            const selector = document.querySelector('.language-selector');
+            const options = document.getElementById('languageOptions');
+            selector.classList.toggle('active');
+            options.classList.toggle('show');
+        }
+
+        function changeLanguage(lang) {
+            const currentFlag = document.getElementById('currentFlag');
+            const currentLanguage = document.getElementById('currentLanguage');
+            const options = document.getElementById('languageOptions');
+
+            // Actualizar el botón con el idioma seleccionado
+            currentFlag.src = `../Resource/flags/${lang}.png`;
+            currentLanguage.textContent = {
+                'es': 'Español',
+                'en': 'English',
+                'pt': 'Português',
+                'zh': '中文',
+                'ja': '日本語',
+                'it': 'Italiano'
+            }[lang];
+
+            // Ocultar las opciones
+            options.classList.remove('show');
+
+            // Traducir el contenido
+            translatePage(lang);
+        }
+
+        // Objeto con las traducciones
+        const translations = {
+            'es': {
+                'Inicio': 'Inicio',
+                'Para Tí': 'Para Tí',
+                'Proyectos': 'Proyectos',
+                'Contacto': 'Contacto',
+                'Información': 'Información',
+                'Agenda Una Reunión': 'Agenda Una Reunión',
+                'Cotizar Proyecto': 'Cotizar Proyecto',
+                'Login': 'Login',
+                'Perfil': 'Perfil',
+                'Separar': 'Separar'
+            },
+            'en': {
+                'Inicio': 'Home',
+                'Para Tí': 'For You',
+                'Proyectos': 'Projects',
+                'Contacto': 'Contact',
+                'Información': 'Information',
+                'Agenda Una Reunión': 'Schedule Meeting',
+                'Cotizar Proyecto': 'Quote Project',
+                'Login': 'Login',
+                'Perfil': 'Profile',
+                'Separar': 'Reserve'
+            }
+        };
+
+        function translatePage(lang) {
+            if (lang === 'es') {
+                location.reload();
+                return;
+            }
+
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang]?.[key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+        }
+
+        // Cerrar el menú de idiomas cuando se hace clic fuera
+        document.addEventListener('click', function(event) {
+            const languageSelector = document.querySelector('.language-selector');
+            const languageOptions = document.getElementById('languageOptions');
+
+            if (!languageSelector.contains(event.target)) {
+                languageOptions.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

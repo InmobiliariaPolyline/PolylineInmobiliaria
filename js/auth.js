@@ -82,30 +82,30 @@ export const loginUser = async (email, password) => {
         if (!userCredential.user.emailVerified) {
             // Reenviar correo de verificación
             await sendEmailVerification(userCredential.user);
-            return { 
-                success: false, 
+            return {
+                success: false,
                 error: 'Debe verificar su correo electrónico antes de continuar. Se ha enviado un nuevo correo de verificación.',
-                requiresVerification: true 
+                requiresVerification: true
             };
         }
-        
-        // Verificar si es admin
-        const isAdmin = email === 'admin@polyline.com';
-        
+
         // Obtener datos adicionales del usuario desde Firestore
         const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
         let userData = {};
-        
+
         if (userDoc.exists()) {
             userData = userDoc.data();
         }
-        
+
+        // Verificar si es admin desde Firestore (no hardcodeado)
+        const isAdmin = userData.isAdmin === true;
+
         // Guardar datos en sessionStorage
-        saveUserData(userCredential.user, { 
+        saveUserData(userCredential.user, {
             userName: userData.name || userCredential.user.displayName || 'Usuario',
             isAdmin: isAdmin
         });
-        
+
         // Guardar en localStorage para persistencia
         const userSession = {
             email: userCredential.user.email,
@@ -115,9 +115,9 @@ export const loginUser = async (email, password) => {
             isAdmin: isAdmin
         };
         localStorage.setItem('userSession', JSON.stringify(userSession));
-        
-        return { 
-            success: true, 
+
+        return {
+            success: true,
             user: userCredential.user,
             userData,
             isAdmin
@@ -155,7 +155,7 @@ export const loginWithGoogle = async () => {
         // Guardar datos en sessionStorage
         saveUserData(user, {
             userName: user.displayName || 'Usuario',
-            isAdmin: 'false'
+            isAdmin: false
         });
         
         return { 
@@ -173,6 +173,7 @@ export const logoutUser = async () => {
     try {
         // Limpiar datos de sesión
         sessionStorage.clear();
+        localStorage.removeItem('userSession');
         await signOut(auth);
         return { success: true };
     } catch (error) {

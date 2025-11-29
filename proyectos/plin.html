@@ -14,13 +14,828 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/departamentos.css">
     <link rel="stylesheet" href="../css/idiomas.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <!-- Firebase SDK -->
     <script type="module" src="../js/firebase-config.js"></script>
     <script type="module" src="../js/auth-check.js"></script>
     <script type="module" src="../js/Login_Perfil.js"></script>
     <!-- Add Anime.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <!-- Firebase SDK for admin controls -->
+    <script type="module">
+        import { auth, db } from '../js/firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Hacer db disponible globalmente para la función de citas
+        window.firestoreDB = db;
+
+        // Función global para guardar citas en Firebase
+        window.guardarCitaEnFirebase = async (citaData) => {
+            try {
+                const docRef = await addDoc(collection(db, 'citasObra'), citaData);
+                console.log('Cita guardada en Firebase con ID:', docRef.id);
+                return { success: true, id: docRef.id };
+            } catch (error) {
+                console.error('Error al guardar en Firebase:', error);
+                return { success: false, error };
+            }
+        };
+
+        // Check if user is admin and show/hide CRUD controls
+        window.addEventListener('DOMContentLoaded', () => {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    try {
+                        const userDoc = await getDoc(doc(db, 'users', user.uid));
+                        const userData = userDoc.data() || {};
+                        if (userData.isAdmin) {
+                            await loadDepartmentsFromFirebase();
+                            showAdminControls();
+                        }
+                    } catch (err) {
+                        console.error('Error checking admin status:', err);
+                    }
+                }
+            });
+        });
+
+        async function loadDepartmentsFromFirebase() {
+            try {
+                const { getAllDepartments } = await import('../js/add-department.js');
+                const departments = await getAllDepartments();
+
+                // Add Firebase departments to the grid
+                departments.forEach(dept => {
+                    // Check if department card already exists
+                    const existingCards = document.querySelectorAll('.departamento-card');
+                    let cardExists = false;
+
+                    existingCards.forEach(card => {
+                        if (!card.classList.contains('add-new-card')) {
+                            const title = card.querySelector('h3');
+                            if (title && title.textContent.includes(dept.numero)) {
+                                cardExists = true;
+                            }
+                        }
+                    });
+
+                    // Only add if card doesn't exist
+                    if (!cardExists) {
+                        addDepartmentCardFromFirebase(dept);
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading departments from Firebase:', error);
+            }
+        }
+
+        function addDepartmentCardFromFirebase(dept) {
+            const grid = document.querySelector('.departamentos-grid');
+            const newCard = document.createElement('div');
+            newCard.className = 'departamento-card';
+            newCard.innerHTML = `
+                <img src="${dept.imagen || '../Resource/Logo/logo.png'}" alt="Departamento ${dept.numero}" class="departamento-img">
+                <div class="card-details">
+                    <h3 data-translate="Departamento ${dept.numero}">${dept.titulo}</h3>
+                    <p data-translate="${dept.dormitorios} Dormitorios, ${dept.banos} Baños, ${dept.area} m²">${dept.dormitorios} Dormitorios, ${dept.banos} Baños, ${dept.area} m²</p>
+                    <div class="button-container">
+                        <button class="btn-details" data-department="${dept.numero}" data-video="${dept.video || ''}" data-translate="Ver detalles">Ver detalles</button>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                    <button class="btn-obra" onclick="agendarCitaObra('${dept.numero}')">Cita en obra</button>
+                </div>
+            `;
+
+            // Insert before the "Add New" card if it exists, otherwise at the end
+            const addCard = grid.querySelector('.add-new-card');
+            if (addCard) {
+                grid.insertBefore(newCard, addCard);
+            } else {
+                grid.appendChild(newCard);
+            }
+
+            // Add admin controls to the Firebase-loaded card
+            addAdminControlsToCard(newCard, dept.numero);
+
+            // Add event listener for the "Ver detalles" button
+            const detailsBtn = newCard.querySelector('.btn-details');
+            if (detailsBtn) {
+                detailsBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const departmentNumber = this.getAttribute('data-department');
+                    console.log('Botón detalles clickeado para departamento:', departmentNumber);
+
+                    // Usar videos del arreglo si existen
+                    const videoUrls = dept.videos && dept.videos.length > 0 ? dept.videos : [];
+                    console.log('Video URLs para modal:', videoUrls);
+
+                    if (videoUrls.length > 0) {
+                        showDepartmentModal(departmentNumber, videoUrls, dept.imagen);
+                    } else {
+                        console.log('No hay video disponible, redirigiendo a página de detalle');
+                        window.location.href = `department-detail.html?num=${encodeURIComponent(departmentNumber)}`;
+                    }
+                });
+            }
+        }
+
+        function showAdminControls() {
+            // Add admin controls to each department card
+            const departmentCards = document.querySelectorAll('.departamento-card');
+            departmentCards.forEach(card => {
+                // Skip if already has admin controls or is the add-new-card
+                if (card.querySelector('.admin-controls') || card.classList.contains('add-new-card')) {
+                    return;
+                }
+
+                // Extract department number from title (handle different formats)
+                const titleElement = card.querySelector('h3');
+                let departmentNumber = '';
+
+                if (titleElement) {
+                    const titleText = titleElement.textContent.trim();
+                    // Handle formats like "Departamento 101", "Departamento 101 - DUPLEX", etc.
+                    const match = titleText.match(/(\d+)/);
+                    if (match) {
+                        departmentNumber = match[1];
+                    }
+                }
+
+                // Skip if we couldn't extract the number
+                if (!departmentNumber) {
+                    return;
+                }
+
+                // Create admin controls container
+                const adminControls = document.createElement('div');
+                adminControls.className = 'admin-controls';
+                adminControls.innerHTML = `
+                    <div class="admin-buttons">
+                        <button class="admin-btn edit-btn" onclick="editDepartment('${departmentNumber}')" title="Editar departamento">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="admin-btn delete-btn" onclick="deleteDepartment('${departmentNumber}')" title="Eliminar departamento">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+
+                // Add controls to card
+                card.appendChild(adminControls);
+            });
+
+            // Add "Add New Department" button only if it doesn't exist
+            const grid = document.querySelector('.departamentos-grid');
+            if (!grid.querySelector('.add-new-card')) {
+                const addButton = document.createElement('div');
+                addButton.className = 'departamento-card add-new-card';
+                addButton.innerHTML = `
+                    <div class="add-new-content">
+                        <i class="fas fa-plus-circle"></i>
+                        <h3>Agregar Departamento</h3>
+                        <p>Haz clic para agregar un nuevo departamento</p>
+                    </div>
+                `;
+                addButton.onclick = () => openAddDepartmentModal();
+                grid.appendChild(addButton);
+            }
+        }
+
+        // Function to add admin controls to newly created departments
+        function addAdminControlsToCard(card, departmentNumber) {
+            // Skip if already has admin controls
+            if (card.querySelector('.admin-controls')) {
+                return;
+            }
+
+            // Create admin controls container
+            const adminControls = document.createElement('div');
+            adminControls.className = 'admin-controls';
+            adminControls.innerHTML = `
+                <div class="admin-buttons">
+                    <button class="admin-btn edit-btn" onclick="editDepartment('${departmentNumber}')" title="Editar departamento">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="admin-btn delete-btn" onclick="deleteDepartment('${departmentNumber}')" title="Eliminar departamento">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+
+            // Add controls to card
+            card.appendChild(adminControls);
+        }
+
+        // Admin functions
+        window.editDepartment = async function(deptNumber) {
+            try {
+                // Get department data from Firebase
+                const { getAllDepartments } = await import('../js/add-department.js');
+                const allDepartments = await getAllDepartments();
+
+                // Find the department with matching numero
+                const departmentFromFirebase = allDepartments.find(dept => dept.numero === deptNumber);
+
+                if (departmentFromFirebase) {
+                    // Use Firebase data
+                    const departmentData = {
+                        number: departmentFromFirebase.numero,
+                        title: departmentFromFirebase.titulo,
+                        bedrooms: departmentFromFirebase.dormitorios,
+                        bathrooms: departmentFromFirebase.banos,
+                        area: departmentFromFirebase.area,
+                        description: departmentFromFirebase.descripcion || '',
+                        image: departmentFromFirebase.imagen || null,
+                        id: departmentFromFirebase.id // Store Firebase ID for updates
+                    };
+                    openEditModal(departmentData);
+                } else {
+                    // Fallback to DOM data if not found in Firebase - this means it's a hardcoded department
+                    const cards = document.querySelectorAll('.departamento-card');
+                    let selectedCard = null;
+                    let departmentData = {};
+
+                    cards.forEach(card => {
+                        if (!card.classList.contains('add-new-card')) {
+                            const title = card.querySelector('h3').textContent;
+                            if (title.includes(deptNumber)) {
+                                selectedCard = card;
+                                const details = card.querySelector('.card-details p').textContent;
+                                const specs = details.split(', ');
+
+                                departmentData = {
+                                    number: deptNumber,
+                                    title: title,
+                                    bedrooms: parseInt(specs[0].split(' ')[0]),
+                                    bathrooms: parseInt(specs[1].split(' ')[0]),
+                                    area: parseFloat(specs[2].split(' ')[0]),
+                                    description: '',
+                                    image: card.querySelector('.departamento-img').src || null,
+                                    isHardcoded: true // Mark as hardcoded department
+                                };
+                            }
+                        }
+                    });
+
+                    if (selectedCard) {
+                        openEditModal(departmentData);
+                    }
+                }
+            } catch (error) {
+                console.error('Error al obtener datos del departamento:', error);
+                alert('Error al cargar datos del departamento: ' + error.message);
+            }
+        };
+
+        window.deleteDepartment = async function(deptNumber) {
+            if (!confirm(`¿Estás seguro de que deseas eliminar el departamento ${deptNumber}? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                // Find the department in Firebase by numero field
+                const { getAllDepartments, deleteDepartment: deleteFromFirebase } = await import('../js/add-department.js');
+                const allDepartments = await getAllDepartments();
+
+                // Find the department with matching numero
+                const departmentToDelete = allDepartments.find(dept => dept.numero === deptNumber);
+
+                if (departmentToDelete) {
+                    // Delete from Firebase
+                    await deleteFromFirebase(departmentToDelete.id);
+                    console.log('Departamento eliminado de Firebase');
+                }
+
+                // Remove from DOM
+                const cards = document.querySelectorAll('.departamento-card');
+                cards.forEach(card => {
+                    if (!card.classList.contains('add-new-card')) {
+                        const title = card.querySelector('h3').textContent;
+                        if (title.includes(deptNumber)) {
+                            card.remove();
+                            showSuccessMessage('Departamento eliminado exitosamente');
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error al eliminar departamento:', error);
+                alert('Error al eliminar departamento: ' + error.message);
+            }
+        };
+
+        function openAddDepartmentModal() {
+            const newDeptData = {
+                number: '',
+                title: '',
+                bedrooms: 1,
+                bathrooms: 1,
+                area: 50
+            };
+            openEditModal(newDeptData, true);
+        }
+
+        function openEditModal(deptData, isNew = false) {
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'admin-modal';
+            modal.innerHTML = `
+                <div class="admin-modal-content">
+                    <div class="admin-modal-header">
+                        <h3>${isNew ? 'Agregar Nuevo Departamento' : 'Editar Departamento'}</h3>
+                        <button class="close-modal-btn" onclick="closeAdminModal()">&times;</button>
+                    </div>
+                    <div class="admin-modal-body">
+                        <form id="departmentForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="deptNumber">Número de Departamento:</label>
+                                    <input type="text" id="deptNumber" value="${deptData.number}" ${!isNew ? 'readonly' : ''} required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="deptTitle">Título:</label>
+                                    <input type="text" id="deptTitle" value="${deptData.title}" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="bedrooms">Dormitorios:</label>
+                                    <input type="number" id="bedrooms" value="${deptData.bedrooms}" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bathrooms">Baños:</label>
+                                    <input type="number" id="bathrooms" value="${deptData.bathrooms}" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="area">Área (m²):</label>
+                                    <input type="number" id="area" value="${deptData.area}" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Descripción:</label>
+                                <textarea id="description" rows="3" placeholder="Descripción detallada del departamento"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="departmentImage">Imagen del Departamento:</label>
+                                <input type="file" id="departmentImage" accept="image/*">
+                                <div id="imagePreview" class="image-preview-container" style="display: none;">
+                                    <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 6px; margin-top: 0.5rem;">
+                                </div>
+                                <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="departmentVideos">Videos del Departamento:</label>
+                                <input type="file" id="departmentVideos" accept="video/*" multiple>
+                                <div id="videosPreview" style="display:none"></div>
+                                <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">
+                                  Formatos permitidos: MP4, AVI, MOV. Tamaño máximo por archivo: 100MB
+                                </small>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="admin-modal-footer">
+                        <button class="btn-cancel" onclick="closeAdminModal()">Cancelar</button>
+                        <button class="btn-save" onclick="saveDepartment(${isNew})">${isNew ? 'Crear' : 'Guardar'} Departamento</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+
+            // Store current department data for saving
+            window.currentDeptData = deptData;
+            window.isNewDepartment = isNew;
+
+            // Setup image preview functionality
+            setupImagePreview();
+        }
+
+        function setupImagePreview() {
+            console.log('=== setupImagePreview INICIADO ===');
+
+            // Imagen
+            const imageInput = document.getElementById('departmentImage');
+            const previewContainer = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+
+            console.log('Elementos de imagen encontrados:', {
+                imageInput: !!imageInput,
+                previewContainer: !!previewContainer,
+                previewImg: !!previewImg
+            });
+
+            if (imageInput) {
+                imageInput.addEventListener('change', (e) => {
+                    console.log('Evento change en imagen:', e.target.files);
+                    const file = e.target.files?.[0];
+                    if (!file) {
+                        console.log('No hay archivo seleccionado');
+                        previewContainer.style.display='none';
+                        window.selectedImageFile=null;
+                        return;
+                    }
+                    if (!file.type.startsWith('image/')) {
+                        alert('Selecciona una imagen válida');
+                        imageInput.value='';
+                        return;
+                    }
+                    if (file.size > 5*1024*1024) {
+                        alert('La imagen no debe superar 5MB');
+                        imageInput.value='';
+                        return;
+                    }
+                    console.log('Imagen válida seleccionada:', file.name, file.size);
+                    const reader = new FileReader();
+                    reader.onload = ev => {
+                        previewImg.src = ev.target.result;
+                        previewContainer.style.display='block';
+                        console.log('Preview de imagen cargado');
+                    };
+                    reader.readAsDataURL(file);
+                    window.selectedImageFile = file;
+                });
+            }
+
+            // Videos múltiples
+            const videosInput = document.getElementById('departmentVideos');
+            const videosPreview = document.getElementById('videosPreview');
+            window.selectedVideoFiles = [];
+
+            console.log('Elementos de video encontrados:', {
+                videosInput: !!videosInput,
+                videosPreview: !!videosPreview
+            });
+
+            if (videosInput) {
+                videosInput.addEventListener('change', (e) => {
+                    console.log('Evento change en videos:', e.target.files);
+                    const files = Array.from(e.target.files || []);
+                    console.log('Archivos de video seleccionados:', files.length);
+
+                    for (const f of files) {
+                        if (!f.type.startsWith('video/')) {
+                            alert('Solo videos');
+                            videosInput.value='';
+                            return;
+                        }
+                        if (f.size > 100*1024*1024) {
+                            alert('Cada video máx 100MB');
+                            videosInput.value='';
+                            return;
+                        }
+                    }
+
+                    window.selectedVideoFiles = files;
+                    console.log('selectedVideoFiles asignados:', files.map(f => ({name: f.name, size: f.size})));
+
+                    // Preview simple
+                    videosPreview.innerHTML = '';
+                    if (files.length) {
+                        videosPreview.style.display = 'flex';
+                        videosPreview.style.gap = '.5rem';
+                        files.forEach((f, index) => {
+                            console.log(`Creando preview para video ${index + 1}:`, f.name);
+                            const v = document.createElement('video');
+                            v.controls = true;
+                            v.muted = true;
+                            v.style.cssText = 'max-width:160px;max-height:110px;border-radius:6px;';
+                            v.src = URL.createObjectURL(f);
+                            videosPreview.appendChild(v);
+                        });
+                        console.log('Previews de video creados');
+                    } else {
+                        videosPreview.style.display = 'none';
+                    }
+                });
+            }
+
+            console.log('=== setupImagePreview COMPLETADO ===');
+        }
+
+        window.closeAdminModal = function() {
+            const modal = document.querySelector('.admin-modal');
+            if (modal) {
+                modal.remove();
+            }
+        };
+
+        window.saveDepartment = async function(isNew) {
+          console.log('=== INICIANDO saveDepartment ===');
+          console.log('isNew:', isNew);
+
+          const formData = {
+            numero: document.getElementById('deptNumber').value.trim(),
+            titulo: document.getElementById('deptTitle').value.trim(),
+            dormitorios: parseInt(document.getElementById('bedrooms').value),
+            banos: parseInt(document.getElementById('bathrooms').value),
+            area: parseFloat(document.getElementById('area').value),
+            descripcion: document.getElementById('description').value.trim()
+          };
+
+          console.log('formData recopilado:', formData);
+
+          if (!formData.numero || !formData.titulo) {
+            alert('Por favor, completa todos los campos obligatorios');
+            return;
+          }
+
+          const submitBtn = document.querySelector('.btn-save');
+
+          try {
+            // 1) Imagen
+            let imageUrl = null;
+            console.log('window.selectedImageFile:', window.selectedImageFile);
+            if (window.selectedImageFile) {
+              console.log('Subiendo imagen...');
+              submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo imagen...';
+              submitBtn.disabled = true;
+              const imageResult = await uploadToCloudinary(window.selectedImageFile);
+              imageUrl = imageResult.secure_url;
+              console.log('Imagen subida exitosamente:', imageUrl);
+            } else {
+              console.log('No hay imagen seleccionada');
+            }
+
+            // 2) Videos (múltiples)
+            let videos = [];
+            console.log('window.selectedVideoFiles:', window.selectedVideoFiles);
+            if (Array.isArray(window.selectedVideoFiles) && window.selectedVideoFiles.length) {
+              console.log('Subiendo', window.selectedVideoFiles.length, 'videos...');
+              submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo videos...';
+              submitBtn.disabled = true;
+              for (let i = 0; i < window.selectedVideoFiles.length; i++) {
+                const f = window.selectedVideoFiles[i];
+                console.log(`Subiendo video ${i + 1}/${window.selectedVideoFiles.length}:`, f.name);
+                const up = await uploadToCloudinary(f);
+                videos.push(up.secure_url);
+                console.log(`Video ${i + 1} subido:`, up.secure_url);
+              }
+              console.log('Todos los videos subidos:', videos);
+            } else {
+              console.log('No hay videos seleccionados');
+            }
+
+            submitBtn.innerHTML = isNew ? 'Crear Departamento' : 'Guardar Departamento';
+            submitBtn.disabled = false;
+
+            // 3) Persistencia
+            const departmentData = {
+              numero: formData.numero,
+              titulo: formData.titulo,
+              dormitorios: formData.dormitorios,
+              banos: formData.banos,
+              area: formData.area,
+              descripcion: formData.descripcion,
+              imagen: imageUrl,
+              videos: videos
+            };
+
+            console.log('Datos finales para guardar:', departmentData);
+
+            if (isNew) {
+              console.log('Creando nuevo departamento...');
+              const { addDepartment } = await import('../js/add-department.js');
+              const docId = await addDepartment(departmentData);
+              console.log('Departamento guardado con ID:', docId);
+
+              // 4) Reflejar en UI
+              addNewDepartmentCard({ ...formData, videos }, imageUrl);
+              showSuccessMessage('Departamento creado exitosamente');
+            } else {
+              console.log('Actualizando departamento existente...');
+              // Para actualización, necesitamos el ID del departamento existente
+              const { getAllDepartments, updateDepartment: updateFromFirebase } = await import('../js/add-department.js');
+              const allDepartments = await getAllDepartments();
+              const existingDept = allDepartments.find(dept => dept.numero === formData.numero);
+
+              if (existingDept) {
+                console.log('Departamento encontrado para actualizar:', existingDept.id);
+                const updateData = {
+                  titulo: formData.titulo,
+                  dormitorios: formData.dormitorios,
+                  banos: formData.banos,
+                  area: formData.area,
+                  descripcion: formData.descripcion,
+                  imagen: imageUrl,
+                  videos: videos
+                };
+
+                await updateFromFirebase(existingDept.id, updateData);
+                console.log('Departamento actualizado en Firebase');
+              } else {
+                console.log('No se encontró departamento existente para actualizar');
+              }
+
+              updateDepartmentCard(formData, imageUrl);
+              showSuccessMessage('Departamento actualizado exitosamente');
+            }
+
+            closeAdminModal();
+            console.log('=== saveDepartment COMPLETADO ===');
+          } catch (error) {
+            console.error('Error completo en saveDepartment:', error);
+            console.error('Stack trace:', error.stack);
+            alert('Error al guardar departamento: ' + error.message);
+            submitBtn.innerHTML = isNew ? 'Crear Departamento' : 'Guardar Departamento';
+            submitBtn.disabled = false;
+          }
+        };
+
+        function addNewDepartmentCard(data, imageUrl = null) {
+            const grid = document.querySelector('.departamentos-grid');
+            const newCard = document.createElement('div');
+            newCard.className = 'departamento-card';
+            newCard.innerHTML = `
+                <img src="${imageUrl || '../Resource/Logo/logo.png'}" alt="Nuevo Departamento" class="departamento-img">
+                <div class="card-details">
+                    <h3 data-translate="Departamento ${data.numero}">${data.titulo}</h3>
+                    <p data-translate="${data.dormitorios} Dormitorios, ${data.banos} Baños, ${data.area} m²">${data.dormitorios} Dormitorios, ${data.banos} Baños, ${data.area} m²</p>
+                    <div class="button-container">
+                        <button class="btn-details" data-department="${data.numero}" data-video="${data.video || ''}" data-translate="Ver detalles">Ver detalles</button>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                    <button class="btn-obra" onclick="agendarCitaObra('${data.numero}')">Cita en obra</button>
+                </div>
+            `;
+
+            // Insert before the "Add New" card
+            const addCard = grid.querySelector('.add-new-card');
+            grid.insertBefore(newCard, addCard);
+
+            // Add admin controls to the new card
+            addAdminControlsToCard(newCard, data.numero);
+
+            // Add event listener for the "Ver detalles" button
+            const detailsBtn = newCard.querySelector('.btn-details');
+            if (detailsBtn) {
+                detailsBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const departmentNumber = this.getAttribute('data-department');
+                    const videoUrl = this.getAttribute('data-video');
+
+                    if (videoUrl) {
+                        // If video URL exists, show modal with video
+                        showDepartmentModal(departmentNumber, videoUrl, imageUrl);
+                    } else {
+                        // If no video, show default modal or alert
+                        alert('Video no disponible para este departamento');
+                    }
+                });
+            }
+        }
+
+        function showDepartmentModal(departmentNumber, videoUrls, imageUrl) {
+            console.log('=== showDepartmentModal INICIADO ===');
+            console.log('departmentNumber:', departmentNumber);
+            console.log('videoUrls:', videoUrls);
+            console.log('imageUrl:', imageUrl);
+
+            // Asegurar que videoUrls sea un arreglo
+            const videos = Array.isArray(videoUrls) ? videoUrls : [videoUrls].filter(Boolean);
+            console.log('Videos procesados:', videos);
+
+            // Create modal for new departments
+            const modal = document.createElement('div');
+            modal.className = 'modal dark-mode';
+            modal.id = `detail-modal-${departmentNumber}`;
+
+            // Crear contenido del carrusel con todos los videos
+            let carouselItems = '';
+
+            // Agregar imagen principal si existe
+            if (imageUrl) {
+                carouselItems += `
+                    <div class="carousel-item active" onclick="changeContentCarousel('${imageUrl}', false, '${departmentNumber}')">
+                        <img src="${imageUrl}" alt="Vista principal">
+                    </div>
+                `;
+            }
+
+            // Agregar todos los videos
+            videos.forEach((videoUrl, index) => {
+                const isFirstItem = index === 0 && !imageUrl;
+                carouselItems += `
+                    <div class="carousel-item ${isFirstItem ? 'active' : ''}" onclick="changeContentCarousel('${videoUrl}', true, '${departmentNumber}')">
+                        <video controls muted poster="${imageUrl || '../Resource/Logo/logo.png'}">
+                            <source src="${videoUrl}" type="video/mp4">
+                            Tu navegador no soporta el elemento de video.
+                        </video>
+                        <div class="video-overlay">
+                            <i class="fa fa-play"></i>
+                            <span>Video ${index + 1}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            modal.innerHTML = `
+                <div class="modal-content dark-mode">
+                    <span class="close-btn" onclick="closeModal('${departmentNumber}')">&times;</span>
+                    <div id="main-content-container" class="video-container dark-mode">
+                        ${videos.length > 0 ? `
+                            <video id="main-content" controls autoplay muted>
+                                <source src="${videos[0]}" type="video/mp4">
+                                Tu navegador no soporta el elemento de video.
+                            </video>
+                        ` : `
+                            <img id="main-content" src="${imageUrl || '../Resource/Logo/logo.png'}" alt="Vista principal" style="width: 100%; height: auto;">
+                        `}
+                    </div>
+
+                    <!-- Carrusel de imágenes y videos -->
+                    <div class="image-carousel">
+                        <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <div class="carousel-track">
+                            ${carouselItems}
+                        </div>
+                        <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+            // Inicializar el carousel para el modal dinámico
+            initializeCarousel(departmentNumber);
+            console.log('=== showDepartmentModal COMPLETADO ===');
+        }
+
+        function updateDepartmentCard(data, imageUrl = null) {
+            const cards = document.querySelectorAll('.departamento-card');
+            cards.forEach(card => {
+                if (!card.classList.contains('add-new-card')) {
+                    const title = card.querySelector('h3');
+                    if (title.textContent.includes(data.number)) {
+                        title.textContent = data.title;
+                        const details = card.querySelector('.card-details p');
+                        details.textContent = `${data.bedrooms} Dormitorios, ${data.bathrooms} Baños, ${data.area} m²`;
+
+                        // Update image if provided
+                        if (imageUrl) {
+                            const img = card.querySelector('.departamento-img');
+                            img.src = imageUrl;
+                        }
+                    }
+                }
+            });
+        }
+
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'admin-success-message';
+            successDiv.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <p>${message}</p>
+            `;
+            document.body.appendChild(successDiv);
+            setTimeout(() => successDiv.remove(), 3000);
+        }
+
+        // Configuración de Cloudinary
+        const CLOUDINARY_CLOUD_NAME = 'ddqe5f2br';
+        const CLOUDINARY_API_KEY = '142722212461979';
+        const CLOUDINARY_UPLOAD_PRESET = 'PolylineIMG';
+
+            async function uploadToCloudinary(file) {
+        console.log('=== uploadToCloudinary INICIADO ===');
+        console.log('Archivo a subir:', file.name, 'Tipo:', file.type, 'Tamaño:', file.size);
+
+        // Detectar si es video o imagen y usar endpoint específico
+        const isVideo = file.type.startsWith('video/');
+        const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${isVideo ? 'video' : 'image'}/upload`;
+        console.log('URL de subida:', url);
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        formData.append('folder', 'departamentos'); // opcional
+
+        console.log('Enviando petición a Cloudinary...');
+        const res = await fetch(url, { method: 'POST', body: formData });
+        const data = await res.json();
+
+        console.log('Respuesta de Cloudinary - Status:', res.status);
+        console.log('Respuesta de Cloudinary - Data:', data);
+
+        if (!res.ok || data.error) {
+            console.error('Error en subida a Cloudinary:', data.error);
+            throw new Error(data.error?.message || 'Falla subiendo a Cloudinary');
+        }
+
+        console.log('Subida exitosa. URL segura:', data.secure_url);
+        console.log('=== uploadToCloudinary COMPLETADO ===');
+        return data; // trae secure_url y resource_type
+        }
+    </script>
     <style>
         .animated-title {
             position: relative;
@@ -73,106 +888,519 @@
         .btn-details:hover, .btn-separate:hover {
             transform: scale(1.05);
         }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            justify-content: flex-start;
+            margin-top: 15px;
+            align-items: flex-start;
+        }
+
+        .button-container .btn-details,
+        .button-container .btn-separate {
+            width: auto;
+            min-width: fit-content;
+            text-align: center;
+            padding: 8px 12px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 400;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .button-container .btn-details {
+            background: #f39c12;
+            color: white;
+        }
+
+        .button-container .btn-details:hover {
+            background: #e67e22;
+            transform: translateY(-1px);
+        }
+
+        .button-container .btn-separate {
+            background: #27ae60;
+            color: white;
+        }
+
+        .button-container .btn-separate:hover {
+            background: #229954;
+            transform: translateY(-1px);
+        }
+
+        .btn-obra {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: auto;
+            min-width: 80px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.4);
+            z-index: 10;
+        }
+
+        .btn-obra:hover {
+            background: linear-gradient(135deg, #e55a2b, #e8851a);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Estilos mejorados para el modal de cita en obra */
+        .obra-modal .modal-content {
+            width: 96% !important;
+            max-width: 1000px !important;
+            margin: 2vh auto !important;
+            background: #fff;
+            border-radius: 10px;
+            padding: 2rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .obra-modal .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .obra-modal .property-preview {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+        }
+
+        body.dark-mode .obra-modal .property-preview {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        }
+
+        .obra-modal .preview-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .obra-modal .preview-features span {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        body.dark-mode .obra-modal .preview-features span {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .obra-modal .preview-features i {
+            color: #ff6b2c;
+        }
+
+        .obra-modal .property-preview img {
+            max-width: 600px;
+            max-height: 300px;
+            width: auto;
+            height: auto;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        /* Estilos específicos para inputs del modal de obra */
+        .obra-modal .form-group {
+            position: relative;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .obra-modal .form-group input,
+        .obra-modal .form-group select {
+            width: 100%;
+            padding: 12px 12px 12px 0;
+            border: none;
+            border-bottom: 2px solid #ddd;
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .obra-modal .form-group input:focus,
+        .obra-modal .form-group select:focus {
+            border-color: #ff6b2c;
+        }
+
+        .obra-modal .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .obra-modal .form-group select {
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding-right: 30px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 5px center;
+        }
+
+        .obra-modal .form-group select option {
+            background: var(--card-bg, #fff);
+            color: var(--text-color);
+            padding: 10px;
+        }
+
+        /* Input de fecha y hora */
+        .obra-modal .form-group input[type="date"],
+        .obra-modal .form-group input[type="time"] {
+            cursor: pointer;
+        }
+
+        /* Placeholder invisible para activar :placeholder-shown */
+        .obra-modal .form-group input::placeholder {
+            color: transparent;
+        }
+
+        body.dark-mode .obra-modal .form-group input,
+        body.dark-mode .obra-modal .form-group select {
+            border-bottom-color: #555;
+            color: #fff;
+        }
+
+        body.dark-mode .obra-modal .form-group label {
+            color: #aaa;
+        }
+
+        .obra-modal .submit-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .obra-modal .submit-btn:hover i {
+            transform: scale(1.2);
+        }
+.obra-modal .submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+        @media (max-width: 768px) {
+            .obra-modal .preview-features {
+                grid-template-columns: 1fr;
+            }
+
+            .obra-modal .modal-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary, #666);
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary, #666);
+            z-index: 10;
+        }
+
+        .close-modal-btn:hover {
+            color: #ff6b2c;
+        }
+
+        /* Obra Modal Styles */
+        .obra-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 90%;
+            height: 90%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .obra-modal .modal-content {
+            background: #fff;
+            border-radius: 10px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .obra-modal h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .obra-modal .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .obra-modal .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .obra-modal label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .obra-modal input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .obra-modal input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .obra-modal .submit-btn {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        .obra-modal .submit-btn:hover {
+            background: linear-gradient(135deg, #e55a2b, #e8851a);
+        }
+
+        .obra-modal .success-message {
+            display: none;
+            color: green;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Admin Modal Styles */
+        .admin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .admin-modal-content {
+            background: var(--card-bg, #fff);
+            border-radius: 10px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .admin-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color, #ddd);
+        }
+
+        .admin-modal-header h3 {
+            margin: 0;
+            color: var(--text-color, #333);
+        }
+
+        .close-modal-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary, #666);
+        }
+
+        .admin-modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color, #333);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color, #ddd);
+            border-radius: 6px;
+            font-size: 1rem;
+            background: var(--input-bg, #fff);
+            color: var(--text-color, #333);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color, #007bff);
+        }
+
+        .admin-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color, #ddd);
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .btn-save {
+            background: var(--accent-color, #007bff);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-save:hover {
+            background: var(--accent-color-dark, #0056b3);
+        }
+
+        .admin-success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 10001;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .admin-modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+
+            .admin-modal-footer {
+                flex-direction: column;
+            }
+
+            .btn-cancel,
+            .btn-save {
+                width: 100%;
+            }
+        }
     </style>
+    <!-- Navbar Loader - Carga el menú dinámicamente -->
+    <script src="../js/navbar-loader.js"></script>
 </head>
 <body>
-    <header>
-        <!-- Botón de menú móvil -->
-        <button class="mobile-menu-button" aria-label="Menú">
-            <div class="hamburger"></div>
-        </button>
-        <div id="loading-screen" class="loading-screen">
-            <div class="logo-container">
-                <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
-                <h1 class="company-name">POLYLINE</h1>
-                <p class="slogan">CONSTRUCTORA</p>
-            </div>
-        </div>
-        <div class="logo-container">
-            <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
-            <h1 class="company-name">POLYLINE</h1>
-            <p class="slogan"> CONSTRUCTORA</p>
-        </div>
-        <nav>
-            <ul class="nav-menu">
-                <li class="language-selector">
-                    <button class="language-btn" onclick="toggleLanguageOptions()">
-                        <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
-                        <span id="currentLanguage">Español</span>
-                    </button>
-                    <div class="language-options" id="languageOptions">
-                        <div class="language-option" onclick="changeLanguage('es')">
-                            <img src="../Resource/flags/es.png" alt="Español">
-                            <span>Español</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('en')">
-                            <img src="../Resource/flags/en.png" alt="English">
-                            <span>English</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('pt')">
-                            <img src="../Resource/flags/pt.png" alt="Português">
-                            <span>Português</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('zh')">
-                            <img src="../Resource/flags/zh.png" alt="中文">
-                            <span>中文</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('ja')">
-                            <img src="../Resource/flags/ja.png" alt="日本語">
-                            <span>日本語</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('it')">
-                            <img src="../Resource/flags/it.png" alt="Italiano">
-                            <span>Italiano</span>
-                        </div>
-                    </div>
-                </li>
-                <li><a class='active' data-translate='Inicio' href='../index.html'>Inicio</a></li>
-                <li><a href="../index.html#para-ti" data-translate="Para Tí">Para Tí</a></li>
-                <li class="dropdown">
-                    <a data-translate='Proyectos' href='proyectos.html' id='proyectos-link'>Proyectos</a>
-                    <ul class="dropdown-menu">
-                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
-                        <li><a data-translate='Proyecto Benavides 1' href='pben1.html'>Proyecto Benavides 1</a></li>
-                        <li><a data-translate='Proyecto Benavides 2' href='pben2.html'>Proyecto Benavides 2</a></li>
-                        <li><a data-translate='Proyecto Sienna' href='ppl1.html'>Proyecto Sienna</a></li>
-                        <li><a data-translate='Proyecto Varsovia' href='plin.html'>Proyecto Varsovia</a></li>
-                        <li><a data-translate='Mas Proyectos' href='mas-proyectos.html'>Mas Proyectos</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="../contact/informaci%c3%b3n.html" id="proyectos-link" data-translate="Contacto">Contacto</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="../contact/informaci%c3%b3n.html" data-translate="Información">Información</a></li>
-                        <li><a href="../contact/agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
-                    </ul>
-                </li>
-                <li><a data-translate='Cotizar Proyecto' href='cotizar.html'>Cotizar Proyecto</a></li>
-                <li><a data-translate='Anuncios' href='Anuncios.html'>Anuncios</a></li>
-                <li id="translateContainer" class="translate-container">
-                    <div id="google_translate_element" title="Seleccionar idioma"></div>
-                </li>
-                <li id="loginContainer" class="mobile-login">
-                    <a class='login-link' href='../pages/login.html' id='loginLink'>
-                        <i class="fas fa-sign-in-alt"></i> 
-                        <span data-translate="Login">Login</span>
-                    </a>
-                    <div id="userProfile" style="display: none;">
-                        <div class="profile-header">
-                            <a id="profileLink" href='../pages/perfil.html' style='text-decoration: none; color: inherit;'>
-                                <i class="fas fa-user"></i>
-                                <span id="profileText" data-translate="Perfil">Perfil</span>
-                            </a>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </nav>
-    </header>
-   
-
-        <!-- Sección de Proyectos -->
-        <section id="departamentos" class=departamentos-section>
+    <!-- El navbar se cargará dinámicamente aquí desde components/navbar.html --><section id="departamentos" class=departamentos-section>
             <div class="animated-title">
             <div class="main-title">
                 <span class="letter" data-translate="P">P</span>
@@ -210,11 +1438,13 @@
                     <div class="card-details">
                         <h3 data-translate="Departamento 1201">Departamento 1201</h3>
                         <p><span data-translate="2 Dormitorios">2 Dormitorios</span>, 77.36 m²</p>
-                        <a href="#" class="btn-details" data-department="1201" data-translate="Ver detalles">Ver detalles</a>
-                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        <div class="button-container">
+                            <button class="btn-details" data-department="1201" data-translate="Ver detalles">Ver detalles</button>
+                            <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        </div>
+                        <button class="btn-obra" onclick="agendarCitaObra('1201')">Cita en obra</button>
                     </div>
                 </div>
-                
                 <!-- Layout emergente para detalles -->
                 <div id="detail-modal-1201" class="modal hidden dark-mode">
                     <div class="modal-content dark-mode">
@@ -236,43 +1466,43 @@
                             </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1201/video cocina depa 1201.mp4', true, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA 1201/video cocina depa 1201.mp4', true, '1201')">
                                     <img src="../Resource/PLIN/DEPA%201201/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1201/video dormitorio depa 1201.mp4', true, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA 1201/video dormitorio depa 1201.mp4', true, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/2.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201-%2014.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201-%2014.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201-%2014.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%201.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%201.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%201.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%209.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%209.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%209.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%207.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%207.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%207.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%206.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%206.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%206.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%2010.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%2010.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%2010.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 8 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%202.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%202.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%202.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201201/dpto%201201%20-%2012.jpg', false, 1201)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201201/dpto%201201%20-%2012.jpg', false, 1201)">
                                     <img src="../Resource/PLIN/DEPA%201201/dpto%201201%20-%2012.jpg" alt="Vista 4">
                                 </div>
                             </div>
@@ -290,11 +1520,13 @@
                     <div class="card-details">
                         <h3 data-translate="Departamento 1202">Departamento 1202</h3>
                         <p><span data-translate="3 Dormitorios">3 Dormitorios</span>, 86.73 m²</p>
-                        <a href="#" class="btn-details" data-department="1202" data-translate="Ver detalles">Ver detalles</a>
-                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        <div class="button-container">
+                            <button class="btn-details" data-department="1202" data-translate="Ver detalles">Ver detalles</button>
+                            <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        </div>
+                        <button class="btn-obra" onclick="agendarCitaObra('1202')">Cita en obra</button>
                     </div>
                 </div>
-                
                 <!-- Layout emergente para detalles -->
                 <div id="detail-modal-1202" class="modal hidden dark-mode">
                     <div class="modal-content dark-mode">
@@ -315,44 +1547,44 @@
                             </button>    
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1202/video depa 1202.mp4', true, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA 1202/video depa 1202.mp4', true, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%201.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%201.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%201.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2013.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2013.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2013.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2012.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2012.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2012.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%204.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%204.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%204.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2016.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2016.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2016.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%202.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%202.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%202.jpg" alt="Vista 6">
                                 </div>
                                 <!-- Ítem 8 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2020.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2020.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2020.jpg" alt="Vista 7">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2021.jpg', false, 1202)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20-%2021.jpg', false, 1202)">
                                     <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20-%2021.jpg" alt="Vista 8">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201202/dpto%201202%20%20-%2010.jpg', false, 1202)">
-                                    <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20%20-%2010.jpg" alt="Vista 9">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201202/dpto%201202%20%20-%２０１0.jpg', false, 1202)">
+                                    <img src="../Resource/PLIN/DEPA%201202/dpto%201202%20%20-%２０１0.jpg" alt="Vista 9">
                                 </div>
                             </div>
                             <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
@@ -362,14 +1594,18 @@
                     </div>
                 </div>
 
+
                 <!-- Departamento 3 -->
                 <div class="departamento-card">
                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%205.jpg" alt="Departamento 1301" class="departamento-img">
                     <div class="card-details">
                         <h3 data-translate="Departamento 1301 - Dúplex con Patio">Departamento 1301 - Dúplex con Patio</h3>
                         <p><span data-translate="2 Dormitorios">2 Dormitorios</span>, 134.21 m²</p>
-                        <a href="#" class="btn-details" data-department="1301" data-translate="Ver detalles">Ver detalles</a>
-                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        <div class="button-container">
+                            <button class="btn-details" data-department="1301" data-translate="Ver detalles">Ver detalles</button>
+                            <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        </div>
+                        <button class="btn-obra" onclick="agendarCitaObra('1301')">Cita en obra</button>
                     </div>
                 </div>
                 
@@ -390,43 +1626,43 @@
                             </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%204.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%204.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%204.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%206.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%206.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%206.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2014.jpg', false, 1301)">
-                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2014.jpg" alt="Vista 4">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%２０１4.jpg', false, 1301)">
+                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%２０１4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-25.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-25.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-25.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 8 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%202.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%202.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%202.jpg" alt="Vista 7">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2013.jpg', false, 1301)">
-                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2013.jpg" alt="Vista 8">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%２０１3.jpg', false, 1301)">
+                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%２０１3.jpg" alt="Vista 8">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2021.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2021.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2021.jpg"alt="Vista 9">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2019.jpg', false, 1301)">
-                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2019.jpg"alt="Vista 9">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%２０１9.jpg', false, 1301)">
+                                    <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%２０１9.jpg"alt="Vista 9">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%20%201301%20-%2029.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%20%201301%20-%2029.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%20%201301%20-%2029.jpg"alt="Vista 9">
                                 </div>
                                 <!-- Ítem 10 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2030.jpg', false, 1301)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201301/departamento%201301%20-%2030.jpg', false, 1301)">
                                     <img src="../Resource/PLIN/DEPA%201301/departamento%201301%20-%2030.jpg"alt="Vista 9">
                                 </div>
                             </div>
@@ -444,11 +1680,13 @@
                     <div class="card-details">
                         <h3 data-translate="Departamento 1302 - Dúplex con terraza y área Libre">Departamento 1302 - Dúplex con terraza y área Libre</h3>
                         <p><span data-translate="3 Dormitorios">3 Dormitorios</span>, 148.46 m²</p>
-                        <a href="#" class="btn-details" data-department="1302" data-translate="Ver detalles">Ver detalles</a>
-                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        <div class="button-container">
+                            <button class="btn-details" data-department="1302" data-translate="Ver detalles">Ver detalles</button>
+                            <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        </div>
+                        <button class="btn-obra" onclick="agendarCitaObra('1302')">Cita en obra</button>
                     </div>
                 </div>
-                
                 <!-- Layout emergente para detalles -->
                 <div id="detail-modal-1302" class="modal hidden dark-mode">
                     <div class="modal-content dark-mode">
@@ -470,51 +1708,50 @@
                             </button>    
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1302/video depa 1302 1.mp4', true, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA 1302/video depa 1302 1.mp4', true, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/1.jpg" alt="Vista 0">
                                 </div>
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1302/video depa 1302 2.mp4', true, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA 1302/video depa 1302 2.mp4', true, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/2.jpg" alt="Vista 0">
                                 </div>
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA 1302/video depa 1302 3.mp4', true, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA 1302/video depa 1302 3.mp4', true, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/3.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%204.jpg', false, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%204.jpg', false, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%204.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%208.jpg', false, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%208.jpg', false, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%208.jpg" alt="Vista 3">
                                 </div>                                
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2010.jpg', false, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2010.jpg', false, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%2010.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%203.jpg', false, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%203.jpg', false, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%203.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2014.jpg', false, 1302)">
-                                    <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%2014.jpg" alt="Vista 6">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%２０１4.jpg', false, 1302)">
+                                    <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%２０１4.jpg" alt="Vista 6">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2015.jpg', false, 1302)">
-                                    <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%2015.jpg" alt="Vista 7">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%２０１5.jpg', false, 1302)">
+                                    <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%２０１5.jpg" alt="Vista 7">
                                 </div>
                                 <!-- Ítem 8 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2027.jpg', false, 1302)">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PLIN/DEPA%201302/dpto%201302%20-%2027.jpg', false, 1302)">
                                     <img src="../Resource/PLIN/DEPA%201302/dpto%201302%20-%2027.jpg" alt="Vista 8">
                                 </div>
                             </div>
-                            <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                                                       <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
                                 <i class="fa fa-chevron-right"></i>
                             </button>
                         </div>
                     </div>
                 </div>
-
 
 
         </section>
@@ -643,7 +1880,7 @@
                         textShadow: '0 0 10px rgba(0,123,255,0.5)'
                     });
                 });
-                
+
                 letter.addEventListener('mouseleave', () => {
                     anime({
                         targets: letter,
@@ -656,6 +1893,368 @@
                 });
             });
         });
+
+        // Admin modal styles
+        const adminModalStyles = `
+            .admin-controls {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                display: flex;
+                gap: 5px;
+                opacity: 1;
+                transition: opacity 0.3s ease;
+            }
+
+            .admin-buttons {
+                display: flex;
+                gap: 5px;
+            }
+
+            .admin-btn {
+                width: 30px;
+                height: 30px;
+                border: none;
+                border-radius: 50%;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                transition: all 0.2s ease;
+            }
+
+            .admin-btn.edit-btn {
+                background: #2196f3;
+                color: white;
+            }
+
+            .admin-btn.edit-btn:hover {
+                background: #1976d2;
+                transform: scale(1.1);
+            }
+
+            .admin-btn.delete-btn {
+                background: #f44336;
+                color: white;
+            }
+
+            .admin-btn.delete-btn:hover {
+                background: #d32f2f;
+                transform: scale(1.1);
+            }
+
+            .add-new-card {
+                border: 2px dashed #007bff;
+                background: rgba(0, 123, 255, 0.1);
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 300px;
+                transition: all 0.3s ease;
+            }
+
+            .add-new-card:hover {
+                background: rgba(0, 123, 255, 0.2);
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            }
+
+            .add-new-content {
+                text-align: center;
+                color: #007bff;
+            }
+
+            .add-new-content i {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+            }
+
+            .add-new-content h3 {
+                margin: 0 0 0.5rem 0;
+                font-size: 1.2rem;
+            }
+
+            .add-new-content p {
+                margin: 0;
+                font-size: 0.9rem;
+                opacity: 0.8;
+            }
+
+            .departamento-card {
+                position: relative;
+            }
+
+            /* Admin Modal Styles */
+            .admin-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+            }
+
+            .admin-modal-content {
+                background: var(--card-bg, #fff);
+                border-radius: 10px;
+                padding: 0;
+                max-width: 500px;
+                width: 90%;
+                max-height: 90vh;
+                overflow-y: auto;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            }
+
+            .admin-modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1.5rem;
+                border-bottom: 1px solid var(--border-color, #ddd);
+            }
+
+            .admin-modal-header h3 {
+                margin: 0;
+                color: var(--text-color, #333);
+            }
+
+            .close-modal-btn {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: var(--text-secondary, #666);
+            }
+
+            .admin-modal-body {
+                padding: 1.5rem;
+            }
+
+            .form-row {
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .form-row .form-group {
+                flex: 1;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 500;
+                color: var(--text-color, #333);
+            }
+
+            .form-group input,
+            .form-group textarea {
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid var(--border-color, #ddd);
+                border-radius: 6px;
+                font-size: 1rem;
+                background: var(--input-bg, #fff);
+                color: var(--text-color, #333);
+            }
+
+            .form-group input:focus,
+            .form-group textarea:focus {
+                outline: none;
+                border-color: var(--accent-color, #007bff);
+            }
+
+            .admin-modal-footer {
+                display: flex;
+                justify-content: flex-end;
+                gap: 1rem;
+                padding: 1.5rem;
+                border-top: 1px solid var(--border-color, #ddd);
+            }
+
+            .btn-cancel {
+                background: #6c757d;
+                color: white;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 1rem;
+            }
+
+            .btn-cancel:hover {
+                background: #5a6268;
+            }
+
+            .btn-save {
+                background: var(--accent-color, #007bff);
+                color: white;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 1rem;
+            }
+
+            .btn-save:hover {
+                background: var(--accent-color-dark, #0056b3);
+            }
+
+            .admin-success-message {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4caf50;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                z-index: 10001;
+                animation: slideInRight 0.3s ease-out;
+            }
+
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            /* Obra Modal Styles */
+            .obra-modal {
+                position: fixed;
+                top: 60;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                 padding-top: 40px; /* Espacio adicional arriba */
+            }
+
+            .obra-modal .modal-content {
+                background: #fff;
+                border-radius: 8px;
+                max-width: 400px;
+                width: 90%;
+                max-height: 85vh;
+               
+             
+                overflow-y: auto;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            }
+
+            .obra-modal h3 {
+                margin: 0 0 1rem 0;
+                font-size: 2rem;
+                color: #333;
+            }
+
+            .obra-modal .close-btn {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: #666;
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+
+            .obra-modal .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .obra-modal label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 800;
+                color: #333;
+            }
+
+            .obra-modal input {
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                font-size: 1rem;
+                color: #333;
+            }
+
+            .obra-modal input:focus {
+                outline: none;
+                border-color: #007bff;
+            }
+
+            .obra-modal .submit-btn {
+                background: linear-gradient(135deg, #ff6b35, #f7931e);
+                color: white;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 1rem;
+                width: 100%;
+                transition: background 0.3s;
+            }
+
+            .obra-modal .submit-btn:hover {
+                background: linear-gradient(135deg, #e55a2b, #e8851a);
+            }
+
+            .obra-modal .submit-btn:hover {
+                background: linear-gradient(135deg, #e55a2b, #e8851a);
+            }
+
+            .obra-modal .success-message {
+                display: none;
+                color: green;
+                margin-top: 10px;
+                font-size: 0.9rem;
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .form-row {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+
+                .admin-modal-content {
+                    width: 95%;
+                    margin: 1rem;
+                }
+
+                .admin-modal-footer {
+                    flex-direction: column;
+                }
+
+                .btn-cancel,
+                .btn-save {
+                    width: 100%;
+                }
+            }
+        `;
+
+        // Add styles to document
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = adminModalStyles;
+        document.head.appendChild(styleSheet);
 
         
     </script>
@@ -695,7 +2294,7 @@
                     animation: particle-fade 1s ease-out forwards;
                 `;
 
-                documewnt.body.appendChild(particle);
+                document.body.appendChild(particle);
 
                 const animation = particle.animate([
                     {
@@ -793,19 +2392,25 @@
     import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     // Función para manejar el cierre de sesión
-    document.getElementById('logoutButton').addEventListener('click', async (e) => {
-        e.preventDefault();
-        const auth = getAuth();
-        try {
-            await signOut(auth);
-            console.log('Sesión cerrada exitosamente');
-            window.location.href = '../index.html'; // Redirige al inicio después de cerrar sesión
-        } catch (error) {
-            console.error('Error al cerrar sesión:', error);
+    document.addEventListener('DOMContentLoaded', () => {
+        const logoutButton = document.getElementById('logoutButton');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const auth = getAuth();
+                try {
+                    await signOut(auth);
+                    localStorage.removeItem('userSession');
+                    console.log('Sesión cerrada exitosamente');
+                    window.location.href = '../index.html'; // Redirige al inicio después de cerrar sesión
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                }
+            });
         }
     });
 </script>
-<script type="module" src="js/nav.html"></script>
+<!-- <script type="module" src="js/nav.html"></script> -->
 </body>
 
 </html>
@@ -964,7 +2569,7 @@
                 'Proyecto Varsovia': '华沙项目',
                 'Es un edificio ubicado en el distrito de Lince, en la ciudad de Lima.': '该建筑位于利马市林塞区。',
                 'Tiene una ubicación estratégica, cerca de avenidas principales, centros comerciales, restaurantes, parques y más.': '地理位置优越，毗邻主要道路、购物中心、餐厅、公园等。',
-                'El edificio cuenta con departamentos de 1, 2 y 3 dormitorios, con áreas desde 77.36 m² hasta 87.36 m².': '该建筑提供1、2和3间卧室的公寓，面积从77.36平方米到87.36平方米不等。',
+                'El edificio cuenta con departamentos de 1, 2 y 3 dormitorios, con áreas desde 77.36 m² hasta 87.36 m².': '该建筑提供1、2和3卧室的公寓，面积从77.36平方米到87.36平方米不等。',
                 'Además, cuenta con áreas comunes como piscina, gimnasio, zona de parrillas, sala de juegos y más.': '此外，还配备游泳池、健身房、烧烤区、游戏室等公共设施。',
                 '¡No pierdas la oportunidad de vivir en un lugar exclusivo y con todas las comodidades que necesitas!': '不要错过在这个配备齐全的高级住所生活的机会！',
                 'Podrías ver la distribución de los departamentos en el siguiente plano.': '您可以在以下平面图中查看公寓的布局。',
@@ -1046,7 +2651,7 @@
                 'TIPOLOGÍA 1': 'TIPOLOGIA 1',
                 'TIPOLOGÍA 2': 'TIPOLOGIA 2',
                 'TIPOLOGÍA 3': 'TIPOLOGIA 3',
-                'Proyecto Varsovia': 'Progetto Varsavia',
+                'Proyecto Varsovia': 'Progetto Varsovia',
                 'Es un edificio ubicado en el distrito de Lince, en la ciudad de Lima.': 'È un edificio situato nel distretto di Lince, nella città di Lima.',
                 'Tiene una ubicación estratégica, cerca de avenidas principales, centros comerciales, restaurantes, parques y más.': 'Ha una posizione strategica, vicino alle principali strade, centri commerciali, ristoranti, parchi e altro.',
                 'El edificio cuenta con departamentos de 1, 2 y 3 dormitorios, con áreas desde 77.36 m² hasta 87.36 m².': 'L\'edificio dispone di appartamenti da 1, 2 e 3 camere da letto, con superfici da 77,36 m² a 87,36 m².',
@@ -1161,3 +2766,232 @@
 
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script type="module" src="../js/property-viewer.js"></script>
+
+<script>
+    // Función para agendar cita en obra
+    function agendarCitaObra(deptNumber) {
+        // Obtener información del departamento
+        const deptImages = {
+            '1201': '../Resource/PLIN/DEPA%201201/dpto%201201%20-%209.jpg',
+            '1202': '../Resource/PLIN/DEPA%201202/dpto%201202%20-%2013.jpg',
+            '1301': '../Resource/PLIN/DEPA%201301/departamento%201301%20-%205.jpg',
+            '1302': '../Resource/PLIN/DEPA%201302/dpto%201302%20-%209.jpg'
+        };
+
+        // Crear modal de cita en obra con el mismo diseño que casas de playa
+        const modal = document.createElement('div');
+        modal.className = 'modal obra-modal';
+        modal.id = `obra-modal-${deptNumber}`;
+        modal.style.display = 'block';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <button class="close-modal-btn" onclick="closeObraModal('${deptNumber}')">&times;</button>
+                <div class="modal-grid">
+                    <!-- Preview Section -->
+                    <div class="property-preview">
+                        <img src="${deptImages[deptNumber] || '../Resource/Logo/logo.png'}" alt="Departamento ${deptNumber}">
+                        <div class="preview-details">
+                            <h3 data-translate="Departamento ${deptNumber}">Departamento ${deptNumber}</h3>
+                            <p data-translate="visita-obra-desc">Agenda una cita para visitar la obra en construcción y conocer tu futuro departamento. Nuestro equipo te mostrará los avances y responderá todas tus consultas.</p>
+                            <div class="preview-features">
+                                <span><i class="fa fa-hard-hat"></i> <span data-translate="en-construccion">En construcción</span></span>
+                                <span><i class="fa fa-calendar-check"></i> <span data-translate="visitas-programadas">Visitas programadas</span></span>
+                                <span><i class="fa fa-user-tie"></i> <span data-translate="asesor-especializado">Asesor especializado</span></span>
+                                <span><i class="fa fa-shield-alt"></i> <span data-translate="protocolo-seguridad">Protocolo de seguridad</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Contact Form -->
+                    <form id="obraForm-${deptNumber}" class="contact-form" onsubmit="enviarCitaObra(event, '${deptNumber}')">
+                        <h2 data-translate="Solicitar visita a obra">Solicitar visita a obra</h2>
+                        <input type="hidden" name="to_name" value="Polyline">
+                        <input type="hidden" name="property_title" value="Departamento ${deptNumber} - Proyecto Varsovia">
+                        <div class="form-group">
+                            <label for="obra-nombre-${deptNumber}" data-translate="Nombre completo">Nombre completo</label>
+                            <input type="text" id="obra-nombre-${deptNumber}" name="from_name" placeholder=" " pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="obra-email-${deptNumber}" data-translate="Correo electrónico">Correo electrónico</label>
+                            <input type="email" id="obra-email-${deptNumber}" name="from_email" placeholder=" " required>
+                        </div>
+                        <div class="form-group">
+                            <label for="obra-telefono-${deptNumber}" data-translate="Teléfono">Teléfono</label>
+                            <input type="tel" id="obra-telefono-${deptNumber}" name="from_phone" placeholder=" " maxlength="9" inputmode="numeric" pattern="[0-9]{1,9}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="obra-fecha-${deptNumber}" data-translate="Fecha preferida">Fecha preferida</label>
+                            <input type="date" id="obra-fecha-${deptNumber}" name="preferred_date" placeholder=" " required>
+                        </div>
+                        <div class="form-group">
+                            <label for="obra-hora-${deptNumber}" data-translate="Hora preferida">Hora preferida</label>
+                            <select id="obra-hora-${deptNumber}" name="preferred_time" required>
+                                <option value="" disabled selected></option>
+                                <option value="09:00">9:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <span data-translate="Agendar visita">Agendar visita</span>
+                            <i class="fas fa-calendar-check"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Filtrar entrada para solo números en teléfono
+        const telefonoInput = document.getElementById(`obra-telefono-${deptNumber}`);
+        telefonoInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        // Filtrar entrada para solo letras y espacios en nombre
+        const nombreInput = document.getElementById(`obra-nombre-${deptNumber}`);
+        nombreInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+        });
+
+        // Cerrar modal al hacer clic fuera
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closeObraModal(deptNumber);
+            }
+        });
+    }
+
+    // Función para cerrar modal de obra
+    function closeObraModal(deptNumber) {
+        const modal = document.getElementById(`obra-modal-${deptNumber}`);
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    // Función para cerrar modal (tanto de obra como de detalle)
+    window.closeModal = function(modalId) {
+        // Primero intentar cerrar modal de obra
+        let modal = document.getElementById(`obra-modal-${modalId.replace('obra-', '')}`);
+        if (modal) {
+            modal.remove();
+            return;
+        }
+
+        // Si no es modal de obra, intentar cerrar modal de detalle
+        modal = document.getElementById(`detail-modal-${modalId}`);
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    };
+
+    // Función para enviar cita de obra con EmailJS
+    function enviarCitaObra(event, deptNumber) {
+        event.preventDefault();
+
+        const nombre = document.getElementById(`obra-nombre-${deptNumber}`).value;
+        const email = document.getElementById(`obra-email-${deptNumber}`).value;
+        const telefono = document.getElementById(`obra-telefono-${deptNumber}`).value;
+        const fecha = document.getElementById(`obra-fecha-${deptNumber}`).value;
+        const hora = document.getElementById(`obra-hora-${deptNumber}`).value;
+
+        if (!nombre || !email || !telefono || !fecha || !hora) {
+            alert('Por favor, completa todos los campos obligatorios');
+            return false;
+        }
+
+        const propertyTitle = `Departamento ${deptNumber} - Proyecto Varsovia`;
+
+        const templateParams = {
+            to_name: 'Polyline',
+            property_title: propertyTitle,
+            from_name: nombre,
+            from_email: email,
+            from_phone: telefono,
+            preferred_date: fecha,
+            preferred_time: hora,
+            message: `Solicitud de visita a obra para ${propertyTitle}. Fecha preferida: ${fecha} a las ${hora}.`
+        };
+
+        const btn = event.target.querySelector('.submit-btn');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span>Enviando...</span><i class="fas fa-spinner fa-spin"></i>';
+
+        // Preparar datos para guardar en Firebase
+        const citaData = {
+            proyecto: 'Varsovia',
+            departamento: deptNumber,
+            nombre: nombre,
+            email: email,
+            telefono: telefono,
+            fechaPreferida: fecha,
+            horaPreferida: hora,
+            estado: 'pendiente',
+            createdAt: new Date().toISOString(),
+            emailEnviado: false
+        };
+
+        // Primero guardar en Firebase usando la función helper
+        if (window.guardarCitaEnFirebase) {
+            window.guardarCitaEnFirebase(citaData)
+                .then((result) => {
+                    if (result.success) {
+                        console.log('Cita guardada en Firebase con ID:', result.id);
+                        citaData.emailEnviado = true;
+
+                        // Luego intentar enviar email
+                        return emailjs.send('service_nmqdl9u', 'template_xzgzp8p', templateParams);
+                    } else {
+                        throw new Error('Error al guardar en Firebase');
+                    }
+                })
+                .then(function(response) {
+                    console.log('Email enviado exitosamente:', response.status);
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    alert('¡Cita agendada exitosamente! Nos pondremos en contacto contigo pronto.');
+                    closeObraModal(deptNumber);
+                })
+                .catch(function(error) {
+                    console.error('Error al enviar email:', error);
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    // Los datos YA están guardados en Firebase, solo falló el email
+                    alert('✅ Tu solicitud ha sido registrada exitosamente.\n\nNos pondremos en contacto contigo pronto.\n\n📱 También puedes contactarnos por WhatsApp: +51 943 812 536');
+                    closeObraModal(deptNumber);
+                })
+        } else {
+            // Si no hay Firebase disponible, solo intentar con EmailJS
+            emailjs.send('service_nmqdl9u', 'template_xzgzp8p', templateParams)
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    alert('¡Cita agendada exitosamente! Nos pondremos en contacto contigo pronto.');
+                    closeObraModal(deptNumber);
+                })
+                .catch(function(error) {
+                    console.error('FAILED...', error);
+                    let errorMessage = 'Error al enviar la solicitud. ';
+                    if (error.status === 412) {
+                        errorMessage += 'El servicio de email no está disponible temporalmente.';
+                    } else if (error.status === 400) {
+                        errorMessage += 'Los datos enviados no son válidos.';
+                    } else if (error.status === 401) {
+                        errorMessage += 'Servicio de email no configurado.';
+                    }
+                    errorMessage += '\n\nPor favor, contáctanos directamente por WhatsApp: +51 943 812 536';
+                    alert(errorMessage);
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                });
+        }
+
+        return false;
+    }
+</script>

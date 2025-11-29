@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>POLYLINE - Constructora</title>
@@ -16,8 +17,16 @@
     <link rel="stylesheet" href="../css/idiomas.css">
     <link rel="stylesheet" href="../css/departamentos.css">
     <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/contact-form.css">
     <!-- Add Anime.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        (function() {
+            emailjs.init("At9dqPbCCCXcMSTls");
+        })();
+    </script>
     <style>
         .animated-title {
             position: relative;
@@ -64,104 +73,1565 @@
         }
 
         .btn-details, .btn-separate {
-            transition: all 0.3s;
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 400;
+            font-size: 14px;
+            text-align: center;
+            white-space: nowrap;
+            width: auto;
+            min-width: fit-content;
         }
 
-        .btn-details:hover, .btn-separate:hover {
-            transform: scale(1.05);
+        .btn-details {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-separate {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-details:hover {
+            background: #e67e22;
+            transform: translateY(-1px);
+        }
+
+        .btn-separate:hover {
+            background: #229954;
+            transform: translateY(-1px);
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            justify-content: flex-start;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+
+        .btn-obra {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: auto;
+            min-width: 80px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.4);
+            z-index: 10;
+        }
+
+        .btn-obra:hover {
+            background: linear-gradient(135deg, #e55a2b, #e8851a);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Estilos mejorados para el modal de cita en obra */
+        .obra-modal .modal-content {
+            background: var(--card-bg, #fff);
+        }
+
+        .obra-modal .property-preview {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+        }
+
+        body.dark-mode .obra-modal .property-preview {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        }
+
+        .obra-modal .preview-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .obra-modal .preview-features span {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        body.dark-mode .obra-modal .preview-features span {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .obra-modal .preview-features i {
+            color: #ff6b2c;
+        }
+
+        /* Estilos específicos para inputs del modal de obra */
+        .obra-modal .form-group {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .obra-modal .form-group input,
+        .obra-modal .form-group select {
+            width: 100%;
+            padding: 12px 12px 12px 0;
+            border: none;
+            border-bottom: 2px solid #ddd;
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .obra-modal .form-group input:focus,
+        .obra-modal .form-group select:focus {
+            border-color: #ff6b2c;
+        }
+
+        .obra-modal .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .obra-modal .form-group select {
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding-right: 30px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 5px center;
+        }
+
+        .obra-modal .form-group select option {
+            background: var(--card-bg, #fff);
+            color: var(--text-color);
+            padding: 10px;
+        }
+
+        /* Input de fecha y hora */
+        .obra-modal .form-group input[type="date"],
+        .obra-modal .form-group input[type="time"] {
+            cursor: pointer;
+        }
+
+        /* Placeholder invisible para activar :placeholder-shown */
+        .obra-modal .form-group input::placeholder {
+            color: transparent;
+        }
+
+        body.dark-mode .obra-modal .form-group input,
+        body.dark-mode .obra-modal .form-group select {
+            border-bottom-color: #555;
+            color: #fff;
+        }
+
+        body.dark-mode .obra-modal .form-group label {
+            color: #aaa;
+        }
+
+        .obra-modal .submit-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .obra-modal .submit-btn:hover i {
+            transform: scale(1.2);
+        }
+
+        @media (max-width: 768px) {
+            .obra-modal .preview-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .obra-modal .modal-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        /* Estilos para arregla el crud*/
+
+                        .admin-modal .form-group {
+                    display: flex;
+                    flex-direction: column;   /* label arriba, input abajo */
+                }
+
+                .admin-modal .form-group label {
+                    position: static !important;
+                    top: auto !important;
+                    transform: none !important;
+                    margin-bottom: 6px;       /* separación entre label y input */
+                    font-size: 12px;
+                    color: #666;
+                }
+
+                .admin-modal .form-group input,
+                .admin-modal .form-group select,
+                .admin-modal .form-group textarea {
+                    padding: 8px 10px;        /* quitar padding superior grande */
+                }
+
+
+        /* fin */
+
+
+    </style>
+    <!-- Firebase SDK for admin controls -->
+    <script type="module">
+        import { auth, db } from '../js/firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Hacer db disponible globalmente para la función de citas
+        window.firestoreDB = db;
+        
+        // Función global para guardar citas en Firebase
+        window.guardarCitaEnFirebase = async (citaData) => {
+            try {
+                const docRef = await addDoc(collection(db, 'citasObra'), citaData);
+                console.log('Cita guardada en Firebase con ID:', docRef.id);
+                return { success: true, id: docRef.id };
+            } catch (error) {
+                console.error('Error al guardar en Firebase:', error);
+                return { success: false, error };
+            }
+        };
+
+        // Check if user is admin and show/hide CRUD controls
+        window.addEventListener('DOMContentLoaded', () => {
+            onAuthStateChanged(auth, async (user) => {
+                console.log('Auth state changed, user:', user ? user.email : 'null');
+                if (user) {
+                    try {
+                        const userDoc = await getDoc(doc(db, 'users', user.uid));
+                        const userData = userDoc.data() || {};
+                        console.log('User data:', userData);
+                        if (userData.isAdmin) {
+                            console.log('User is admin, loading departments and showing controls');
+                            await loadDepartmentsFromFirebase();
+                            showAdminControls();
+                        } else {
+                            console.log('User is not admin');
+                        }
+                    } catch (error) {
+                        console.error('Error checking admin status:', error);
+                    }
+                } else {
+                    console.log('No user logged in');
+                }
+            });
+        });
+
+        async function loadDepartmentsFromFirebase() {
+            try {
+                const { getAllDepartments } = await import('../js/add-department.js');
+                const departments = await getAllDepartments();
+
+                // Add Firebase departments to the grid
+                departments.forEach(dept => {
+                    // Check if department card already exists
+                    const existingCards = document.querySelectorAll('.departamento-card');
+                    let cardExists = false;
+
+                    existingCards.forEach(card => {
+                        if (!card.classList.contains('add-new-card')) {
+                            const title = card.querySelector('h3');
+                            if (title && title.textContent.includes(dept.numero)) {
+                                cardExists = true;
+                            }
+                        }
+                    });
+
+                    // Only add if card doesn't exist
+                    if (!cardExists) {
+                        addDepartmentCardFromFirebase(dept);
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading departments from Firebase:', error);
+            }
+        }
+
+        function addDepartmentCardFromFirebase(dept) {
+            console.log('=== addDepartmentCardFromFirebase INICIADO ===');
+            console.log('Datos del departamento de Firebase:', dept);
+
+            const grid = document.querySelector('.departamentos-grid');
+            const newCard = document.createElement('div');
+            newCard.className = 'departamento-card';
+            newCard.innerHTML = `
+                <img src="${dept.imagen || '../Resource/Logo/logo.png'}" alt="Departamento ${dept.numero}" class="departamento-img">
+                <div class="card-details">
+                    <h3 data-translate="Departamento ${dept.numero}">${dept.titulo}</h3>
+                    <p data-translate="${dept.dormitorios} Dormitorios, ${dept.banos} Baños, ${dept.area} m²">${dept.dormitorios} Dormitorios, ${dept.banos} Baños, ${dept.area} m²</p>
+                    <div class="button-container">
+                        <button class="btn-details" data-department="${dept.numero}" data-translate="Ver detalles">Ver detalles</button>
+                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                    </div>
+                    <button class="btn-obra" onclick="agendarCitaObra('${dept.numero}')">Cita en Obra</button>
+                </div>
+            `;
+
+            // Insert before the "Add New" card if it exists, otherwise at the end
+            const addCard = grid.querySelector('.add-new-card');
+            if (addCard) {
+                grid.insertBefore(newCard, addCard);
+                console.log('Tarjeta de Firebase insertada antes de add-new-card');
+            } else {
+                grid.appendChild(newCard);
+                console.log('Tarjeta de Firebase agregada al final del grid');
+            }
+
+            // Add admin controls to the Firebase-loaded card
+            addAdminControlsToCard(newCard, dept.numero);
+
+            // Add event listener for the "Ver detalles" button
+            const detailsBtn = newCard.querySelector('.btn-details');
+            if (detailsBtn) {
+                detailsBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const departmentNumber = this.getAttribute('data-department');
+                    console.log('Botón detalles clickeado para departamento de Firebase:', departmentNumber);
+
+                    // Usar videos del arreglo si existen
+                    const videoUrls = dept.videos && dept.videos.length > 0 ? dept.videos : [];
+                    console.log('Video URLs para modal (Firebase):', videoUrls);
+
+                    if (videoUrls.length > 0) {
+                        console.log('Calling showDepartmentModal with videos');
+                        showDepartmentModal(departmentNumber, videoUrls, dept.imagen);
+                        // Initialize carousel after modal is shown
+                        setTimeout(() => {
+                            console.log('Initializing carousel for Firebase department');
+                            window.initializeCarousel(departmentNumber);
+                        }, 200);
+                    } else {
+                        console.log('No hay video disponible, redirigiendo a página de detalle');
+                        window.location.href = `department-detail.html?num=${encodeURIComponent(departmentNumber)}`;
+                    }
+                });
+            }
+
+            console.log('=== addDepartmentCardFromFirebase COMPLETADO ===');
+        }
+
+        function showAdminControls() {
+            // Add admin controls to each department card
+            const departmentCards = document.querySelectorAll('.departamento-card');
+            departmentCards.forEach(card => {
+                // Skip if already has admin controls or is the add-new-card
+                if (card.querySelector('.admin-controls') || card.classList.contains('add-new-card')) {
+                    return;
+                }
+
+                // Extract department number from title (handle different formats)
+                const titleElement = card.querySelector('h3');
+                let departmentNumber = '';
+
+                if (titleElement) {
+                    const titleText = titleElement.textContent.trim();
+                    // Handle formats like "Departamento 101", "Departamento 101 - DUPLEX", etc.
+                    const match = titleText.match(/(\d+)/);
+                    if (match) {
+                        departmentNumber = match[1];
+                    }
+                }
+
+                // Skip if we couldn't extract the number
+                if (!departmentNumber) {
+                    return;
+                }
+
+                // Create admin controls container
+                const adminControls = document.createElement('div');
+                adminControls.className = 'admin-controls';
+                adminControls.innerHTML = `
+                    <div class="admin-buttons">
+                        <button class="admin-btn edit-btn" onclick="editDepartment('${departmentNumber}')" title="Editar departamento">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="admin-btn delete-btn" onclick="deleteDepartment('${departmentNumber}')" title="Eliminar departamento">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+
+                // Add controls to card
+                card.appendChild(adminControls);
+            });
+
+            // Add "Add New Department" button only if it doesn't exist
+            const grid = document.querySelector('.departamentos-grid');
+            if (!grid.querySelector('.add-new-card')) {
+                const addButton = document.createElement('div');
+                addButton.className = 'departamento-card add-new-card';
+                addButton.innerHTML = `
+                    <div class="add-new-content">
+                        <i class="fas fa-plus-circle"></i>
+                        <h3>Agregar Departamento</h3>
+                        <p>Haz clic para agregar un nuevo departamento</p>
+                    </div>
+                `;
+                addButton.onclick = () => openAddDepartmentModal();
+                grid.appendChild(addButton);
+            }
+        }
+
+        // Function to add admin controls to newly created departments
+        function addAdminControlsToCard(card, departmentNumber) {
+            // Skip if already has admin controls
+            if (card.querySelector('.admin-controls')) {
+                return;
+            }
+
+            // Create admin controls container
+            const adminControls = document.createElement('div');
+            adminControls.className = 'admin-controls';
+            adminControls.innerHTML = `
+                <div class="admin-buttons">
+                    <button class="admin-btn edit-btn" onclick="editDepartment('${departmentNumber}')" title="Editar departamento">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="admin-btn delete-btn" onclick="deleteDepartment('${departmentNumber}')" title="Eliminar departamento">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+
+            // Add controls to card
+            card.appendChild(adminControls);
+        }
+
+        // Admin functions
+        window.editDepartment = async function(deptNumber) {
+            try {
+                // Get department data from Firebase
+                const { getAllDepartments } = await import('../js/add-department.js');
+                const allDepartments = await getAllDepartments();
+
+                // Find the department with matching numero
+                const departmentFromFirebase = allDepartments.find(dept => dept.numero === deptNumber);
+
+                if (departmentFromFirebase) {
+                    // Use Firebase data
+                    const departmentData = {
+                        number: departmentFromFirebase.numero,
+                        title: departmentFromFirebase.titulo,
+                        bedrooms: departmentFromFirebase.dormitorios,
+                        bathrooms: departmentFromFirebase.banos,
+                        area: departmentFromFirebase.area,
+                        description: departmentFromFirebase.descripcion || '',
+                        image: departmentFromFirebase.imagen || null,
+                        status: departmentFromFirebase.status || 'available'
+                    };
+                    openEditModal(departmentData);
+                } else {
+                    // Fallback to DOM data if not found in Firebase
+                    const cards = document.querySelectorAll('.departamento-card');
+                    let selectedCard = null;
+                    let departmentData = {};
+
+                    cards.forEach(card => {
+                        if (!card.classList.contains('add-new-card')) {
+                            const title = card.querySelector('h3').textContent;
+                            if (title.includes(deptNumber)) {
+                                selectedCard = card;
+                                const details = card.querySelector('.card-details p').textContent;
+                                const specs = details.split(', ');
+
+                                departmentData = {
+                                    number: deptNumber,
+                                    title: title,
+                                    bedrooms: parseInt(specs[0].split(' ')[0]),
+                                    bathrooms: parseInt(specs[1].split(' ')[0]),
+                                    area: parseFloat(specs[2].split(' ')[0])
+                                };
+                            }
+                        }
+                    });
+
+                    if (selectedCard) {
+                        openEditModal(departmentData);
+                    }
+                }
+            } catch (error) {
+                console.error('Error al obtener datos del departamento:', error);
+                alert('Error al cargar datos del departamento: ' + error.message);
+            }
+        };
+
+        window.deleteDepartment = async function(deptNumber) {
+            if (!confirm(`¿Estás seguro de que deseas eliminar el departamento ${deptNumber}? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                // Find the department in Firebase by numero field
+                const { getAllDepartments, deleteDepartment: deleteFromFirebase } = await import('../js/add-department.js');
+                const allDepartments = await getAllDepartments();
+
+                // Find the department with matching numero
+                const departmentToDelete = allDepartments.find(dept => dept.numero === deptNumber);
+
+                if (departmentToDelete) {
+                    // Delete from Firebase
+                    await deleteFromFirebase(departmentToDelete.id);
+                    console.log('Departamento eliminado de Firebase');
+                }
+
+                // Remove from DOM
+                const cards = document.querySelectorAll('.departamento-card');
+                cards.forEach(card => {
+                    if (!card.classList.contains('add-new-card')) {
+                        const title = card.querySelector('h3').textContent;
+                        if (title.includes(deptNumber)) {
+                            card.remove();
+                            showSuccessMessage('Departamento eliminado exitosamente');
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error al eliminar departamento:', error);
+                alert('Error al eliminar departamento: ' + error.message);
+            }
+        };
+
+        function openAddDepartmentModal() {
+            const newDeptData = {
+                number: '',
+                title: '',
+                bedrooms: 1,
+                bathrooms: 1,
+                area: 50,
+                status: 'available'
+            };
+            openEditModal(newDeptData, true);
+        }
+
+        function openEditModal(deptData, isNew = false) {
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'admin-modal';
+            modal.innerHTML = `
+                <div class="admin-modal-content">
+                    <div class="admin-modal-header">
+                        <h3>${isNew ? 'Agregar Nuevo Departamento' : 'Editar Departamento'}</h3>
+                        <button class="close-modal-btn" onclick="closeAdminModal()">&times;</button>
+                    </div>
+                    <div class="admin-modal-body">
+                        <form id="departmentForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="deptNumber">Número de Departamento:</label>
+                                    <input type="text" id="deptNumber" value="${deptData.number}" ${!isNew ? 'readonly' : ''} required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="deptTitle">Título:</label>
+                                    <input type="text" id="deptTitle" value="${deptData.title}" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="bedrooms">Dormitorios:</label>
+                                    <input type="number" id="bedrooms" value="${deptData.bedrooms}" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bathrooms">Baños:</label>
+                                    <input type="number" id="bathrooms" value="${deptData.bathrooms}" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="area">Área (m²):</label>
+                                    <input type="number" id="area" value="${deptData.area}" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="status">Estado:</label>
+                                    <select id="status" required>
+                                        <option value="available" ${deptData.status === 'available' ? 'selected' : ''}>Disponible</option>
+                                        <option value="reserved" ${deptData.status === 'reserved' ? 'selected' : ''}>Reservado</option>
+                                        <option value="sold" ${deptData.status === 'sold' ? 'selected' : ''}>Vendido</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Descripción:</label>
+                                <textarea id="description" rows="3" placeholder="Descripción detallada del departamento"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="departmentImage">Imagen del Departamento:</label>
+                                <input type="file" id="departmentImage" accept="image/*">
+                                <div id="imagePreview" style="display:none"><img id="previewImg"></div>
+                                <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="departmentVideos">Videos del Departamento:</label>
+                                <input type="file" id="departmentVideos" accept="video/*" multiple>
+                                <div id="videosPreview" style="display:none"></div>
+                                <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">
+                                  Formatos permitidos: MP4, AVI, MOV. Tamaño máximo por archivo: 100MB
+                                </small>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="admin-modal-footer">
+                        <button class="btn-cancel" onclick="closeAdminModal()">Cancelar</button>
+                        <button class="btn-save" onclick="saveDepartment(${isNew})">${isNew ? 'Crear' : 'Guardar'} Departamento</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+
+            // Store current department data for saving
+            window.currentDeptData = deptData;
+            window.isNewDepartment = isNew;
+
+            // Setup image preview functionality
+            setupImagePreview();
+        }
+
+        function setupImagePreview() {
+          console.log('=== setupImagePreview INICIADO ===');
+
+          // Imagen
+          const imageInput = document.getElementById('departmentImage');
+          const previewContainer = document.getElementById('imagePreview');
+          const previewImg = document.getElementById('previewImg');
+
+          console.log('Elementos de imagen encontrados:', {
+            imageInput: !!imageInput,
+            previewContainer: !!previewContainer,
+            previewImg: !!previewImg
+          });
+
+          if (imageInput) {
+            imageInput.addEventListener('change', (e) => {
+              console.log('Evento change en imagen:', e.target.files);
+              const file = e.target.files?.[0];
+              if (!file) {
+                console.log('No hay archivo seleccionado');
+                previewContainer.style.display='none';
+                window.selectedImageFile=null;
+                return;
+              }
+              if (!file.type.startsWith('image/')) {
+                alert('Selecciona una imagen válida');
+                imageInput.value='';
+                return;
+              }
+              if (file.size > 5*1024*1024) {
+                alert('La imagen no debe superar 5MB');
+                imageInput.value='';
+                return;
+              }
+              console.log('Imagen válida seleccionada:', file.name, file.size);
+              const reader = new FileReader();
+              reader.onload = ev => {
+                previewImg.src = ev.target.result;
+                previewContainer.style.display='block';
+                console.log('Preview de imagen cargado');
+              };
+              reader.readAsDataURL(file);
+              window.selectedImageFile = file;
+            });
+          }
+
+          // Videos múltiples
+          const videosInput = document.getElementById('departmentVideos');
+          const videosPreview = document.getElementById('videosPreview');
+          window.selectedVideoFiles = [];
+
+          console.log('Elementos de video encontrados:', {
+            videosInput: !!videosInput,
+            videosPreview: !!videosPreview
+          });
+
+          if (videosInput) {
+            videosInput.addEventListener('change', (e) => {
+              console.log('Evento change en videos:', e.target.files);
+              const files = Array.from(e.target.files || []);
+              console.log('Archivos de video seleccionados:', files.length);
+
+              for (const f of files) {
+                if (!f.type.startsWith('video/')) {
+                  alert('Solo videos');
+                  videosInput.value='';
+                  return;
+                }
+                if (f.size > 100*1024*1024) {
+                  alert('Cada video máx 100MB');
+                  videosInput.value='';
+                  return;
+                }
+              }
+
+              window.selectedVideoFiles = files;
+              console.log('selectedVideoFiles asignados:', files.map(f => ({name: f.name, size: f.size})));
+
+              // Preview simple
+              videosPreview.innerHTML = '';
+              if (files.length) {
+                videosPreview.style.display = 'flex';
+                videosPreview.style.gap = '.5rem';
+                files.forEach((f, index) => {
+                  console.log(`Creando preview para video ${index + 1}:`, f.name);
+                  const v = document.createElement('video');
+                  v.controls = true;
+                  v.muted = true;
+                  v.style.cssText = 'max-width:160px;max-height:110px;border-radius:6px;';
+                  v.src = URL.createObjectURL(f);
+                  videosPreview.appendChild(v);
+                });
+                console.log('Previews de video creados');
+              } else {
+                videosPreview.style.display = 'none';
+              }
+            });
+          }
+
+          console.log('=== setupImagePreview COMPLETADO ===');
+        }
+
+        window.closeAdminModal = function() {
+            const modal = document.querySelector('.admin-modal');
+            if (modal) {
+                modal.remove();
+            }
+        };
+
+        window.saveDepartment = async function(isNew) {
+          console.log('=== INICIANDO saveDepartment ===');
+          console.log('isNew:', isNew);
+
+          const formData = {
+            numero: document.getElementById('deptNumber').value.trim(),
+            titulo: document.getElementById('deptTitle').value.trim(),
+            dormitorios: parseInt(document.getElementById('bedrooms').value),
+            banos: parseInt(document.getElementById('bathrooms').value),
+            area: parseFloat(document.getElementById('area').value),
+            descripcion: document.getElementById('description').value.trim(),
+            status: document.getElementById('status').value
+          };
+
+          console.log('formData recopilado:', formData);
+
+          if (!formData.numero || !formData.titulo) {
+            alert('Por favor, completa todos los campos obligatorios');
+            return;
+          }
+
+          const submitBtn = document.querySelector('.btn-save');
+
+          try {
+            // 1) Imagen
+            let imageUrl = null;
+            console.log('window.selectedImageFile:', window.selectedImageFile);
+            if (window.selectedImageFile) {
+              console.log('Subiendo imagen...');
+              submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo imagen...';
+              submitBtn.disabled = true;
+              const imageResult = await uploadToCloudinary(window.selectedImageFile);
+              imageUrl = imageResult.secure_url;
+              console.log('Imagen subida exitosamente:', imageUrl);
+            } else {
+              console.log('No hay imagen seleccionada');
+            }
+
+            // 2) Videos (múltiples)
+            let videos = [];
+            console.log('window.selectedVideoFiles:', window.selectedVideoFiles);
+            if (Array.isArray(window.selectedVideoFiles) && window.selectedVideoFiles.length) {
+              console.log('Subiendo', window.selectedVideoFiles.length, 'videos...');
+              submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo videos...';
+              submitBtn.disabled = true;
+              for (let i = 0; i < window.selectedVideoFiles.length; i++) {
+                const f = window.selectedVideoFiles[i];
+                console.log(`Subiendo video ${i + 1}/${window.selectedVideoFiles.length}:`, f.name);
+                const up = await uploadToCloudinary(f);
+                videos.push(up.secure_url);
+                console.log(`Video ${i + 1} subido:`, up.secure_url);
+              }
+              console.log('Todos los videos subidos:', videos);
+            } else {
+              console.log('No hay videos seleccionados');
+            }
+
+            submitBtn.innerHTML = isNew ? 'Crear Departamento' : 'Guardar Departamento';
+            submitBtn.disabled = false;
+
+            // 3) Persistencia
+            const departmentData = {
+              numero: formData.numero,
+              titulo: formData.titulo,
+              dormitorios: formData.dormitorios,
+              banos: formData.banos,
+              area: formData.area,
+              descripcion: formData.descripcion,
+              imagen: imageUrl,
+              videos: videos,
+              status: formData.status
+            };
+
+            console.log('Datos finales para guardar:', departmentData);
+
+            if (isNew) {
+              console.log('Creando nuevo departamento...');
+              const { addDepartment } = await import('../js/add-department.js');
+              const docId = await addDepartment(departmentData);
+              console.log('Departamento guardado con ID:', docId);
+
+              // 4) Reflejar en UI
+              addNewDepartmentCard({ ...formData, videos }, imageUrl);
+              showSuccessMessage('Departamento creado exitosamente');
+            } else {
+              console.log('Actualizando departamento existente...');
+              // Para actualización, necesitamos el ID del departamento existente
+              const { getAllDepartments, updateDepartment: updateFromFirebase } = await import('../js/add-department.js');
+              const allDepartments = await getAllDepartments();
+              const existingDept = allDepartments.find(dept => dept.numero === formData.numero);
+
+              if (existingDept) {
+                console.log('Departamento encontrado para actualizar:', existingDept.id);
+                const updateData = {
+                  titulo: formData.titulo,
+                  dormitorios: formData.dormitorios,
+                  banos: formData.banos,
+                  area: formData.area,
+                  descripcion: formData.descripcion,
+                  imagen: imageUrl,
+                  videos: videos,
+                  status: formData.status
+                };
+
+                await updateFromFirebase(existingDept.id, updateData);
+                console.log('Departamento actualizado en Firebase');
+              } else {
+                console.log('No se encontró departamento existente para actualizar');
+              }
+
+              updateDepartmentCard(formData, imageUrl);
+              showSuccessMessage('Departamento actualizado exitosamente');
+            }
+
+            closeAdminModal();
+            console.log('=== saveDepartment COMPLETADO ===');
+          } catch (error) {
+            console.error('Error completo en saveDepartment:', error);
+            console.error('Stack trace:', error.stack);
+            alert('Error al guardar departamento: ' + error.message);
+            submitBtn.innerHTML = isNew ? 'Crear Departamento' : 'Guardar Departamento';
+            submitBtn.disabled = false;
+          }
+        };
+
+        function addNewDepartmentCard(data, imageUrl = null) {
+          console.log('=== addNewDepartmentCard INICIADO ===');
+          console.log('Datos recibidos:', data);
+          console.log('imageUrl:', imageUrl);
+
+          const grid = document.querySelector('.departamentos-grid');
+          console.log('Grid encontrado:', !!grid);
+
+          const newCard = document.createElement('div');
+          newCard.className = 'departamento-card';
+          newCard.innerHTML = `
+            <img src="${imageUrl || '../Resource/Logo/logo.png'}" alt="Departamento ${data.numero}" class="departamento-img">
+            <div class="card-details">
+              <h3 data-translate="Departamento ${data.numero}">${data.titulo}</h3>
+              <p data-translate="${data.dormitorios} Dormitorios, ${data.banos} Baños, ${data.area} m²">
+                ${data.dormitorios} Dormitorios, ${data.banos} Baños, ${data.area} m²
+              </p>
+              <div class="button-container">
+                <a class="btn-details" data-department="${data.numero}" data-translate="Ver detalles">Ver detalles</a>
+                <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+              </div>
+              <button class="btn-obra" onclick="agendarCitaObra('${data.numero}')">Cita en Obra</button>
+            </div>
+          `;
+
+          const addCard = grid.querySelector('.add-new-card');
+          if (addCard) {
+            grid.insertBefore(newCard, addCard);
+            console.log('Nueva tarjeta insertada antes de add-new-card');
+          } else {
+            grid.appendChild(newCard);
+            console.log('Nueva tarjeta agregada al final del grid');
+          }
+
+          addAdminControlsToCard(newCard, data.numero);
+
+          // Configurar el botón de detalles
+          const detailsBtn = newCard.querySelector('.btn-details');
+          if (detailsBtn) {
+            detailsBtn.addEventListener('click', function(e){
+              e.preventDefault();
+              const num = this.getAttribute('data-department');
+              console.log('Botón detalles clickeado para departamento:', num);
+
+              // Usar videos si están disponibles, sino fallback a video único
+              const videoUrls = data.videos && data.videos.length > 0 ? data.videos : [];
+              console.log('Video URLs para modal:', videoUrls);
+
+              if (videoUrls.length > 0) {
+                console.log('Calling showDepartmentModal for new department with videos');
+                showDepartmentModal(num, videoUrls, imageUrl);
+                // Initialize carousel after modal is shown
+                setTimeout(() => {
+                    console.log('Initializing carousel for new department');
+                    window.initializeCarousel(num);
+                }, 200);
+              } else {
+                window.location.href = `department-detail.html?num=${encodeURIComponent(num)}`;
+              }
+            });
+          }
+
+          console.log('=== addNewDepartmentCard COMPLETADO ===');
+        }
+
+        function showDepartmentModal(departmentNumber, videoUrls, imageUrl) {
+            console.log('=== showDepartmentModal INICIADO ===');
+            console.log('departmentNumber:', departmentNumber);
+            console.log('videoUrls:', videoUrls);
+            console.log('imageUrl:', imageUrl);
+
+            // Asegurar que videoUrls sea un arreglo
+            const videos = Array.isArray(videoUrls) ? videoUrls : [videoUrls].filter(Boolean);
+            console.log('Videos procesados:', videos);
+
+            // Create modal for new departments
+            const modal = document.createElement('div');
+            modal.className = 'modal dark-mode';
+            modal.id = `detail-modal-${departmentNumber}`;
+
+            // Crear contenido del carrusel con todos los videos
+            let carouselItems = '';
+
+            // Agregar imagen principal si existe
+            if (imageUrl) {
+                carouselItems += `
+                    <div class="carousel-item active" onclick="changeContentCarousel('${imageUrl}', false, '${departmentNumber}')">
+                        <img src="${imageUrl}" alt="Vista principal">
+                    </div>
+                `;
+            }
+
+            // Agregar todos los videos
+            videos.forEach((videoUrl, index) => {
+                const isFirstItem = index === 0 && !imageUrl;
+                carouselItems += `
+                    <div class="carousel-item ${isFirstItem ? 'active' : ''}" onclick="changeContentCarousel('${videoUrl}', true, '${departmentNumber}')">
+                        <video controls muted poster="${imageUrl || '../Resource/Logo/logo.png'}">
+                            <source src="${videoUrl}" type="video/mp4">
+                            Tu navegador no soporta el elemento de video.
+                        </video>
+                        <div class="video-overlay">
+                            <i class="fa fa-play"></i>
+                            <span>Video ${index + 1}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Si no hay videos, agregar imagen como primer item
+            if (videos.length === 0 && imageUrl) {
+                carouselItems += `
+                    <div class="carousel-item active" onclick="changeContentCarousel('${imageUrl}', false, '${departmentNumber}')">
+                        <img src="${imageUrl}" alt="Vista principal">
+                    </div>
+                `;
+            }
+
+            // Si no hay imagen ni videos, mostrar mensaje
+            if (!imageUrl && videos.length === 0) {
+                carouselItems += `
+                    <div class="carousel-item active">
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">
+                            <p>No hay contenido multimedia disponible</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            modal.innerHTML = `
+                <div class="modal-content dark-mode">
+                    <span class="close-btn" onclick="closeModal('${departmentNumber}')">&times;</span>
+                    <div id="main-content-container" class="video-container dark-mode">
+                        ${videos.length > 0 ? `
+                            <video id="main-content" controls autoplay muted>
+                                <source src="${videos[0]}" type="video/mp4">
+                                Tu navegador no soporta el elemento de video.
+                            </video>
+                        ` : imageUrl ? `
+                            <img id="main-content" src="${imageUrl}" alt="Vista principal" style="width: 100%; height: auto;">
+                        ` : `
+                            <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">
+                                <p>No hay contenido multimedia disponible</p>
+                            </div>
+                        `}
+                    </div>
+
+                    <!-- Carrusel de imágenes y videos -->
+                    <div class="image-carousel">
+                        <button class="carousel-arrow left-arrow" onclick="moveCarousel(-1)">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <div class="carousel-track">
+                            ${carouselItems}
+                        </div>
+                        <button class="carousel-arrow right-arrow" onclick="moveCarousel(1)">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+            // Inicializar el carousel para el modal dinámico
+            initializeCarousel(departmentNumber);
+            console.log('=== showDepartmentModal COMPLETADO ===');
+        }
+
+        function updateDepartmentCard(data, imageUrl = null) {
+            const cards = document.querySelectorAll('.departamento-card');
+            cards.forEach(card => {
+                if (!card.classList.contains('add-new-card')) {
+                    const title = card.querySelector('h3');
+                    if (title.textContent.includes(data.number)) {
+                        title.textContent = data.title;
+                        const details = card.querySelector('.card-details p');
+                        details.textContent = `${data.bedrooms} Dormitorios, ${data.bathrooms} Baños, ${data.area} m²`;
+
+                        // Update image if provided
+                        if (imageUrl) {
+                            const img = card.querySelector('.departamento-img');
+                            img.src = imageUrl;
+                        }
+                    }
+                }
+            });
+        }
+
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'admin-success-message';
+            successDiv.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <p>${message}</p>
+            `;
+            document.body.appendChild(successDiv);
+            setTimeout(() => successDiv.remove(), 3000);
+        }
+
+        // Configuración de Cloudinary
+        const CLOUDINARY_CLOUD_NAME = 'ddqe5f2br';
+        const CLOUDINARY_API_KEY = '142722212461979';
+        const CLOUDINARY_UPLOAD_PRESET = 'PolylineIMG';
+
+            async function uploadToCloudinary(file) {
+        console.log('=== uploadToCloudinary INICIADO ===');
+        console.log('Archivo a subir:', file.name, 'Tipo:', file.type, 'Tamaño:', file.size);
+
+        // Detectar si es video o imagen y usar endpoint específico
+        const isVideo = file.type.startsWith('video/');
+        const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${isVideo ? 'video' : 'image'}/upload`;
+        console.log('URL de subida:', url);
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        formData.append('folder', 'departamentos'); // opcional
+
+        console.log('Enviando petición a Cloudinary...');
+        const res = await fetch(url, { method: 'POST', body: formData });
+        const data = await res.json();
+
+        console.log('Respuesta de Cloudinary - Status:', res.status);
+        console.log('Respuesta de Cloudinary - Data:', data);
+
+        if (!res.ok || data.error) {
+            console.error('Error en subida a Cloudinary:', data.error);
+            throw new Error(data.error?.message || 'Falla subiendo a Cloudinary');
+        }
+
+        console.log('Subida exitosa. URL segura:', data.secure_url);
+        console.log('=== uploadToCloudinary COMPLETADO ===');
+        return data; // trae secure_url y resource_type
+        }
+    </script>
+
+    <style>
+        .admin-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            gap: 5px;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .admin-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .admin-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .admin-btn.edit-btn {
+            background: #2196f3;
+            color: white;
+        }
+
+        .admin-btn.edit-btn:hover {
+            background: #1976d2;
+            transform: scale(1.1);
+        }
+
+        .admin-btn.delete-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .admin-btn.delete-btn:hover {
+            background: #d32f2f;
+            transform: scale(1.1);
+        }
+
+        .add-new-card {
+            border: 2px dashed #007bff;
+            background: rgba(0, 123, 255, 0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .add-new-card:hover {
+            background: rgba(0, 123, 255, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .add-new-content {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .add-new-content i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .add-new-content h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.2rem;
+        }
+
+        .add-new-content p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .departamento-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Admin Modal Styles */
+        .admin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .admin-modal-content {
+            background: var(--card-bg, #fff);
+            border-radius: 10px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: visible;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .admin-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color, #ddd);
+        }
+
+        .admin-modal-header h3 {
+            margin: 0;
+            color: var(--text-color, #333);
+        }
+
+        .close-modal-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary, #666);
+        }
+
+        .admin-modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color, #333);
+        }
+
+        /* Admin Modal Styles */
+        .admin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .admin-modal-content {
+            background: var(--card-bg, #fff);
+            border-radius: 10px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .admin-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color, #ddd);
+        }
+
+        .admin-modal-header h3 {
+            margin: 0;
+            color: var(--text-color, #333);
+        }
+
+        .close-modal-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary, #666);
+        }
+
+        .admin-modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            color: var(--text-color, #333);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color, #ddd);
+            border-radius: 6px;
+            font-size: 1rem;
+            background: var(--input-bg, #fff);
+            color: var(--text-color, #333);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color, #007bff);
+        }
+
+        .admin-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color, #ddd);
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .btn-save {
+            background: var(--accent-color, #007bff);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-save:hover {
+            background: var(--accent-color-dark, #0056b3);
+        }
+
+        .admin-success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 10001;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Video preview styles */
+        .video-preview-item {
+            display: inline-block;
+            margin: 0.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color, #ddd);
+            border-radius: 6px;
+            padding: 0.5rem;
+            background: var(--input-bg, #fff);
+        }
+
+        .video-preview-item video {
+            max-width: 150px;
+            max-height: 100px;
+            border-radius: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .admin-modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+
+            .admin-modal-footer {
+                flex-direction: column;
+            }
+
+            .btn-cancel,
+            .btn-save {
+                width: 100%;
+            }
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color, #ddd);
+            border-radius: 6px;
+            font-size: 1rem;
+            background: var(--input-bg, #fff);
+            color: var(--text-color, #333);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color, #007bff);
+        }
+
+        .admin-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color, #ddd);
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .btn-save {
+            background: var(--accent-color, #007bff);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-save:hover {
+            background: var(--accent-color-dark, #0056b3);
+        }
+
+        .admin-success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 10001;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .admin-modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+
+            .admin-modal-footer {
+                flex-direction: column;
+            }
+
+            .btn-cancel,
+            .btn-save {
+                width: 100%;
+            }
         }
     </style>
 
+    <!-- Navbar Loader - Carga el menú dinámicamente -->
+    <script src="../js/navbar-loader.js"></script>
 </head>
 <body>
-    <header>
-        <!-- Botón de menú móvil -->
-        <button class="mobile-menu-button" aria-label="Menú">
-            <div class="hamburger"></div>
-        </button>
-        <div class="logo-container">
-            <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
-            <h1 class="company-name">POLYLINE</h1>
-            <p class="slogan">CONSTRUCTORA</p>
-        </div>
-        <nav>
-            <ul class="nav-menu">
-                <li class="language-selector">
-                    <button class="language-btn" onclick="toggleLanguageOptions()">
-                        <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
-                        <span id="currentLanguage">Español</span>
-                    </button>
-                    <div class="language-options" id="languageOptions">
-                        <div class="language-option" onclick="changeLanguage('es')">
-                            <img src="../Resource/flags/es.png" alt="Español">
-                            <span>Español</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('en')">
-                            <img src="../Resource/flags/en.png" alt="English">
-                            <span>English</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('pt')">
-                            <img src="../Resource/flags/pt.png" alt="Português">
-                            <span>Português</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('zh')">
-                            <img src="../Resource/flags/zh.png" alt="中文">
-                            <span>中文</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('ja')">
-                            <img src="../Resource/flags/ja.png" alt="日本語">
-                            <span>日本語</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('it')">
-                            <img src="../Resource/flags/it.png" alt="Italiano">
-                            <span>Italiano</span>
-                        </div>
-                    </div>
-                </li>
-                <li><a class='active' data-translate='Inicio' href='../index.html'>Inicio</a></li>
-                <li><a href="../index.html#para-ti" data-translate="Para Tí">Para Tí</a></li>
-                <li class="dropdown">
-                    <a data-translate='Proyectos' href='proyectos.html' id='proyectos-link'>Proyectos</a>
-                    <ul class="dropdown-menu">
-                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
-                        <li><a data-translate='Proyecto Benavides 1' href='pben1.html'>Proyecto Benavides 1</a></li>
-                        <li><a data-translate='Proyecto Benavides 2' href='pben2.html'>Proyecto Benavides 2</a></li>
-                        <li><a data-translate='Proyecto Sienna' href='ppl1.html'>Proyecto Sienna</a></li>
-                        <li><a data-translate='Proyecto Varsovia' href='plin.html'>Proyecto Varsovia</a></li>
-                        <li><a data-translate='Mas Proyectos' href='mas-proyectos.html'>Mas Proyectos</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="../contact/informaci%c3%b3n.html" id="proyectos-link" data-translate="Contacto">Contacto</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="../contact/informaci%c3%b3n.html" data-translate="Información">Información</a></li>
-                        <li><a href="../contact/agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
-                    </ul>
-                </li>
-                <li><a data-translate='Cotizar Proyecto' href='cotizar.html'>Cotizar Proyecto</a></li>
-                <li><a data-translate='Anuncios' href='Anuncios.html'>Anuncios</a></li>
-                <li id="translateContainer" class="translate-container">
-                    <div id="google_translate_element" title="Seleccionar idioma"></div>
-                </li>
-                <li id="loginContainer" class="mobile-login">
-                    <a class='login-link' href='../pages/login.html' id='loginLink'>
-                        <i class="fas fa-sign-in-alt"></i> 
-                        <span data-translate="Login">Login</span>
-                    </a>
-                    <div id="userProfile" style="display: none;">
-                        <div class="profile-header">
-                            <a id="profileLink" href='../pages/perfil.html' style='text-decoration: none; color: inherit;'>
-                                <i class="fas fa-user"></i>
-                                <span id="profileText" data-translate="Perfil">Perfil</span>
-                            </a>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </nav>
-    </header>
-    <!-- Overlay para el menú móvil -->
-    <div class="menu-overlay"></div>
+    <!-- El navbar se cargará dinámicamente aquí desde components/navbar.html -->
 
         <!-- Sección de Proyectos -->
         <section id="departamentos" class="departamentos-section">
@@ -204,8 +1674,11 @@
                     <div class="card-details">
                         <h3 data-translate="Departamento 101">Departamento 101</h3>
                         <p data-translate="Haz clic para ver más detalles">Haz clic para ver más detalles</p>
-                        <a href="#" class="btn-details" data-department="101a" data-translate="Ver detalles">Ver detalles</a>
-                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        <div class="button-container">
+                            <button class="btn-details" data-department="101a" data-translate="Ver detalles">Ver detalles</button>
+                            <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        </div>
+                        <button class="btn-obra" onclick="agendarCitaObra('101')" data-translate="Cita en Obra">Cita en Obra</button>
                     </div>
                 </div>
                 
@@ -230,23 +1703,23 @@
                             </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP101/101_VID.mp4', true, '101a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP101/101_VID.mp4', true, '101a')">
                                     <img src="../Resource/PBEN2/DEP101/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP101/1.jpg', false, '101a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP101/1.jpg', false, '101a')">
                                     <img src="../Resource/PBEN2/DEP101/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP101/2.jpg', false, '101a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP101/2.jpg', false, '101a')">
                                     <img src="../Resource/PBEN2/DEP101/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP101/3.jpg', false, '101a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP101/3.jpg', false, '101a')">
                                     <img src="../Resource/PBEN2/DEP101/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP101/4.jpg', false, '101a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP101/4.jpg', false, '101a')">
                                     <img src="../Resource/PBEN2/DEP101/4.jpg" alt="Vista 4">
                                 </div>
                             </div>
@@ -263,8 +1736,11 @@
                     <div class="card-details">
                         <h3 data-translate="Departamento 202">Departamento 202</h3>
                         <p data-translate="Haz clic para ver más detalles">Haz clic para ver más detalles</p>
-                        <a href="#" class="btn-details" data-department="202a" data-translate="Ver detalles">Ver detalles</a>
-                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        <div class="button-container">
+                            <button class="btn-details" data-department="202a" data-translate="Ver detalles">Ver detalles</button>
+                            <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        </div>
+                        <button class="btn-obra" onclick="agendarCitaObra('202')" data-translate="Cita en Obra">Cita en Obra</button>
                     </div>
                 </div>
                 
@@ -289,35 +1765,35 @@
                             </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/202_VID.mp4', true, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/202_VID.mp4', true, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/1.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/1.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/2.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/2.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/3.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/3.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/4.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/4.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/5.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/5.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/5.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/6.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/6.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/6.jpg" alt="Vista 6">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP202/7.jpg', false, '202a')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP202/7.jpg', false, '202a')">
                                     <img src="../Resource/PBEN2/DEP202/7.jpg" alt="Vista 7">
                                 </div>
                             </div>
@@ -330,14 +1806,17 @@
 
                  <!-- Departamento 3 -->
                  <div class="departamento-card">
-                    <img src="../Resource/PBEN2/DEP203/1.jpg" alt="Departamento 203" class="departamento-img">
-                    <div class="card-details">
-                        <h3 data-translate="Departamento 203">Departamento 203</h3>
-                        <p data-translate="Haz clic para ver más detalles">Haz clic para ver más detalles</p>
-                        <a href="#" class="btn-details" data-department="203" data-translate="Ver detalles">Ver detalles</a>
-                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
-                    </div>
-                </div>
+                     <img src="../Resource/PBEN2/DEP203/1.jpg" alt="Departamento 203" class="departamento-img">
+                     <div class="card-details">
+                         <h3 data-translate="Departamento 203">Departamento 203</h3>
+                         <p data-translate="Haz clic para ver más detalles">Haz clic para ver más detalles</p>
+                         <div class="button-container">
+                             <a href="#" class="btn-details" data-department="203" data-translate="Ver detalles">Ver detalles</a>
+                             <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                         </div>
+                         <button class="btn-obra" onclick="agendarCitaObra('203')">Cita en Obra</button>
+                     </div>
+                 </div>
                 <!-- Layout emergente para detalles -->
                 <div id="detail-modal-203" class="modal hidden dark-mode">
                     <div class="modal-content dark-mode">
@@ -358,35 +1837,35 @@
                             </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/203_VID.mp4', true, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/203_VID.mp4', true, '203')">
                                     <img src="../Resource/PBEN2/DEP203/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/1.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/1.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/2.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/2.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/3.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/3.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/4.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/4.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/5.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/5.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/5.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/6.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/6.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/6.jpg" alt="Vista 6">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP203/7.jpg', false, '203')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP203/7.jpg', false, '203')">
                                     <img src="../Resource/PBEN2/DEP203/7.jpg" alt="Vista 7">
                                 </div>
                             </div>
@@ -399,14 +1878,17 @@
 
                  <!-- Departamento 4 -->
                  <div class="departamento-card">
-                    <img src="../Resource/PBEN2/DEP401/1.jpg" alt="Departamento 401" class="departamento-img">
-                    <div class="card-details">
-                        <h3 data-translate="Departamento 401">Departamento 401</h3>
-                        <p data-translate="Haz clic para ver más detalles">Haz clic para ver más detalles</p>
-                        <a href="#" class="btn-details" data-department="401" data-translate="Ver detalles">Ver detalles</a>
-                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
-                    </div>
-                </div>
+                     <img src="../Resource/PBEN2/DEP401/1.jpg" alt="Departamento 401" class="departamento-img">
+                     <div class="card-details">
+                         <h3 data-translate="Departamento 401">Departamento 401</h3>
+                         <p data-translate="Haz clic para ver más detalles">Haz clic para ver más detalles</p>
+                         <div class="button-container">
+                             <a href="#" class="btn-details" data-department="401" data-translate="Ver detalles">Ver detalles</a>
+                             <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                         </div>
+                         <button class="btn-obra" onclick="agendarCitaObra('401')">Cita en Obra</button>
+                     </div>
+                 </div>
                 
                 <!-- Layout emergente para detalles -->
                 <div id="detail-modal-401" class="modal hidden dark-mode">
@@ -428,35 +1910,35 @@
                             </button>    
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/401_VID.mp4', true, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/401_VID.mp4', true, '401')">
                                     <img src="../Resource/PBEN2/DEP401/5.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/1.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/1.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/2.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/2.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/3.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/3.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/4.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/4.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/5.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/5.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/5.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/6.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/6.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/6.jpg" alt="Vista 6">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP401/7.jpg', false, '401')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP401/7.jpg', false, '401')">
                                     <img src="../Resource/PBEN2/DEP401/7.jpg" alt="Vista 7">
                                 </div>
                             </div>
@@ -473,8 +1955,11 @@
                     <div class="card-details">
                         <h3 data-translate="Departamento 402">Departamento 402</h3>
                         <p data-translate="Haz clic para ver más detalles">Haz clic para ver más detalles</p>
-                        <a href="#" class="btn-details" data-department="402" data-translate="Ver detalles">Ver detalles</a>
-                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        <div class="button-container">
+                            <a href="#" class="btn-details" data-department="402" data-translate="Ver detalles">Ver detalles</a>
+                            <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        </div>
+                        <button class="btn-obra" onclick="agendarCitaObra('402')">Cita en Obra</button>
                     </div>
                 </div>
                 
@@ -498,35 +1983,35 @@
                         </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/402_VID.mp4', true, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/402_VID.mp4', true, '402')">
                                     <img src="../Resource/PBEN2/DEP402/5.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/1.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/1.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/2.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/2.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/3.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/3.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/4.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/4.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/5.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/5.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/5.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/6.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/6.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/6.jpg" alt="Vista 6">
                                 </div>
                                 <!-- Ítem 7 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP402/7.jpg', false, '402')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP402/7.jpg', false, '402')">
                                     <img src="../Resource/PBEN2/DEP402/7.jpg" alt="Vista 7">
                                 </div>
                             </div>
@@ -545,8 +2030,11 @@
                     <div class="card-details">
                         <h3 data-translate="Departamento 501">Departamento 501</h3>
                         <p data-translate="Haz clic para ver más detalles">Haz clic para ver más detalles</p>
-                        <a href="#" class="btn-details" data-department="501" data-translate="Ver detalles">Ver detalles</a>
-                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        <div class="button-container">
+                            <a href="#" class="btn-details" data-department="501" data-translate="Ver detalles">Ver detalles</a>
+                            <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        </div>
+                        <button class="btn-obra" onclick="agendarCitaObra('501')">Cita en Obra</button>
                     </div>
                 </div>
                 
@@ -571,31 +2059,31 @@
 
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/501_VID.mp4', true, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/501_VID.mp4', true, '501')">
                                     <img src="../Resource/PBEN2/DEP501/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/1.jpg', false, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/1.jpg', false, '501')">
                                     <img src="../Resource/PBEN2/DEP501/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/2.jpg', false, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/2.jpg', false, '501')">
                                     <img src="../Resource/PBEN2/DEP501/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/3.jpg', false, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/3.jpg', false, '501')">
                                     <img src="../Resource/PBEN2/DEP501/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/4.jpg', false, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/4.jpg', false, '501')">
                                     <img src="../Resource/PBEN2/DEP501/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/5.jpg', false, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/5.jpg', false, '501')">
                                     <img src="../Resource/PBEN2/DEP501/5.jpg" alt="Vista 5">
                                 </div>
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP501/6.jpg', false, '501')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP501/6.jpg', false, '501')">
                                     <img src="../Resource/PBEN2/DEP501/6.jpg" alt="Vista 6">
                                 </div>                            
                             </div>
@@ -609,12 +2097,15 @@
                 
                 <!-- Departamento 7 -->
                 <div class="departamento-card">
-                    <img src="../Resource/PBEN2/DEP502/1.jpg" alt="Departamento 502" class="departamento-img"> 
+                    <img src="../Resource/PBEN2/DEP502/1.jpg" alt="Departamento 502" class="departamento-img">
                     <div class="card-details">
                         <h3 data-translate="Departamento 502">Departamento 502</h3>
                         <p data-translate="Haz clic para ver más detalles">Haz clic para ver más detalles</p>
-                        <a href="#" class="btn-details" data-department="502" data-translate="Ver detalles">Ver detalles</a>
-                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        <div class="button-container">
+                            <a href="#" class="btn-details" data-department="502" data-translate="Ver detalles">Ver detalles</a>
+                            <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        </div>
+                        <button class="btn-obra" onclick="agendarCitaObra('502')">Cita en Obra</button>
                     </div>
                 </div>
                 
@@ -638,27 +2129,27 @@
                         </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP502/502_VID.mp4', true, '502')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP502/502_VID.mp4', true, '502')">
                                     <img src="../Resource/PBEN2/DEP502/5.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP502/1.jpg', false, '502')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP502/1.jpg', false, '502')">
                                     <img src="../Resource/PBEN2/DEP502/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP502/2.jpg', false, '502')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP502/2.jpg', false, '502')">
                                     <img src="../Resource/PBEN2/DEP502/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP502/3.jpg', false, '502')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP502/3.jpg', false, '502')">
                                     <img src="../Resource/PBEN2/DEP502/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP502/4.jpg', false, '502')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP502/4.jpg', false, '502')">
                                     <img src="../Resource/PBEN2/DEP502/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP502/5.jpg', false, '502')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP502/5.jpg', false, '502')">
                                     <img src="../Resource/PBEN2/DEP502/5.jpg" alt="Vista 5">
                                 </div>                                
                             </div>
@@ -675,8 +2166,11 @@
                     <div class="card-details">
                         <h3 data-translate="Departamento 503">Departamento 503</h3>
                         <p data-translate="Haz clic para ver más detalles">Haz clic para ver más detalles</p>
-                        <a href="#" class="btn-details" data-department="503" data-translate="Ver detalles">Ver detalles</a>
-                        <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        <div class="button-container">
+                            <a href="#" class="btn-details" data-department="503" data-translate="Ver detalles">Ver detalles</a>
+                            <a class='btn-separate' data-translate='Separar' href='../payment/pagina-de-pago.html'>Separar</a>
+                        </div>
+                        <button class="btn-obra" onclick="agendarCitaObra('503')">Cita en Obra</button>
                     </div>
                 </div>
                 <!-- Layout emergente para detalles -->
@@ -700,31 +2194,31 @@
                             </button>
                             <div class="carousel-track">
                                 <!-- Ítem Principal -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/503_VID.mp4', true, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/503_VID.mp4', true, '503')">
                                     <img src="../Resource/PBEN2/DEP503/1.jpg" alt="Vista 0">
                                 </div>
                                 <!-- Ítem 1 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/1.jpg', false, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/1.jpg', false, '503')">
                                     <img src="../Resource/PBEN2/DEP503/1.jpg" alt="Vista 1">
                                 </div>
                                 <!-- Ítem 2 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/2.jpg', false, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/2.jpg', false, '503')">
                                     <img src="../Resource/PBEN2/DEP503/2.jpg" alt="Vista 2">
                                 </div>
                                 <!-- Ítem 3 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/3.jpg', false, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/3.jpg', false, '503')">
                                     <img src="../Resource/PBEN2/DEP503/3.jpg" alt="Vista 3">
                                 </div>
                                 <!-- Ítem 4 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/4.jpg', false, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/4.jpg', false, '503')">
                                     <img src="../Resource/PBEN2/DEP503/4.jpg" alt="Vista 4">
                                 </div>
                                 <!-- Ítem 5 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/5.jpg', false, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/5.jpg', false, '503')">
                                     <img src="../Resource/PBEN2/DEP503/5.jpg" alt="Vista 5">
                                 </div>  
                                 <!-- Ítem 6 -->
-                                <div class="carousel-item" onclick="changeContent('../Resource/PBEN2/DEP503/6.jpg', false, '503')">
+                                <div class="carousel-item" onclick="changeContentCarousel('../Resource/PBEN2/DEP503/6.jpg', false, '503')">
                                     <img src="../Resource/PBEN2/DEP503/6.jpg" alt="Vista 6">                              
                                 </div>
                             </div>
@@ -874,6 +2368,25 @@
         window.addEventListener('load', function () {
             document.body.classList.add('loaded');
         });
+
+        // Función para manejar el botón de modo oscuro
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', function() {
+                    document.body.classList.toggle('dark-mode');
+                    // Guardar preferencia en localStorage
+                    const isDark = document.body.classList.contains('dark-mode');
+                    localStorage.setItem('darkMode', isDark);
+                });
+
+                // Cargar preferencia guardada
+                const savedDarkMode = localStorage.getItem('darkMode');
+                if (savedDarkMode === 'true') {
+                    document.body.classList.add('dark-mode');
+                }
+            }
+        });
     </script>
 
     <script>
@@ -936,10 +2449,15 @@
             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-            document.querySelector('.days').textContent = days.toString().padStart(3, '');
-            document.querySelector('.hours').textContent = hours.toString().padStart(2, '0');
-            document.querySelector('.minutes').textContent = minutes.toString().padStart(2, '0');
-            document.querySelector('.seconds').textContent = seconds.toString().padStart(2, '0');
+            const daysElement = document.querySelector('.days');
+            const hoursElement = document.querySelector('.hours');
+            const minutesElement = document.querySelector('.minutes');
+            const secondsElement = document.querySelector('.seconds');
+
+            if (daysElement) daysElement.textContent = days.toString().padStart(3, '');
+            if (hoursElement) hoursElement.textContent = hours.toString().padStart(2, '0');
+            if (minutesElement) minutesElement.textContent = minutes.toString().padStart(2, '0');
+            if (secondsElement) secondsElement.textContent = seconds.toString().padStart(2, '0');
         }
 
         // Inicializar el contador
@@ -951,6 +2469,31 @@
             const buttons = document.querySelectorAll('.btn-details, .btn-separate');
             buttons.forEach(button => {
                 button.addEventListener('click', createParticles);
+            });
+
+            // Agregar event listeners a los botones estáticos de "Ver detalles"
+            const staticDetailButtons = document.querySelectorAll('.btn-details');
+            staticDetailButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const departmentNumber = this.getAttribute('data-department');
+                    console.log('Botón Ver detalles clickeado para departamento estático:', departmentNumber);
+                    
+                    const modal = document.getElementById(`detail-modal-${departmentNumber}`);
+                    if (modal) {
+                        modal.classList.remove('hidden');
+                        modal.style.display = 'flex';
+                        console.log('Modal abierto para departamento:', departmentNumber);
+                        
+                        // Reproducir video automáticamente si existe
+                        const video = modal.querySelector('video');
+                        if (video) {
+                            video.play().catch(err => console.log('Error al reproducir video:', err));
+                        }
+                    } else {
+                        console.error('Modal no encontrado para departamento:', departmentNumber);
+                    }
+                });
             });
         });
     </script>
@@ -1003,19 +2546,25 @@
     import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     // Función para manejar el cierre de sesión
-    document.getElementById('logoutButton').addEventListener('click', async (e) => {
-        e.preventDefault();
-        const auth = getAuth();
-        try {
-            await signOut(auth);
-            console.log('Sesión cerrada exitosamente');
-            window.location.href = '../index.html'; // Redirige al inicio después de cerrar sesión
-        } catch (error) {
-            console.error('Error al cerrar sesión:', error);
+    document.addEventListener('DOMContentLoaded', () => {
+        const logoutButton = document.getElementById('logoutButton');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const auth = getAuth();
+                try {
+                    await signOut(auth);
+                    localStorage.removeItem('userSession');
+                    console.log('Sesión cerrada exitosamente');
+                    window.location.href = '../index.html'; // Redirige al inicio después de cerrar sesión
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                }
+            });
         }
     });
 </script>
-<script type="module" src="js/nav.html"></script>
+<!-- <script type="module" src="js/nav.html"></script> -->
 <script>
     // Funciones para el selector de idiomas
     function toggleLanguageOptions() {
@@ -1074,7 +2623,19 @@
             'Haz clic para ver más detalles': 'Haz clic para ver más detalles',
             'Ver detalles': 'Ver detalles',
             'Separar': 'Separar',
-            'Anuncios': 'Anuncios'
+            'Anuncios': 'Anuncios',
+            'Solicitar visita a obra': 'Solicitar visita a obra',
+            'visita-obra-desc': 'Agenda una cita para visitar la obra en construcción y conocer tu futuro departamento. Nuestro equipo te mostrará los avances y responderá todas tus consultas.',
+            'en-construccion': 'En construcción',
+            'visitas-programadas': 'Visitas programadas',
+            'asesor-especializado': 'Asesor especializado',
+            'protocolo-seguridad': 'Protocolo de seguridad',
+            'Nombre completo': 'Nombre completo',
+            'Correo electrónico': 'Correo electrónico',
+            'Teléfono': 'Teléfono',
+            'Fecha preferida': 'Fecha preferida',
+            'Hora preferida': 'Hora preferida',
+            'Agendar visita': 'Agendar visita'
         },
         'en': {
             'Inicio': 'Home',
@@ -1104,6 +2665,7 @@
             'Haz clic para ver más detalles': 'Click to see more details',
             'Ver detalles': 'View details',
             'Separar': 'Reserve',
+            'Cita en Obra': 'Site Visit',
             'Departamento 202': 'Apartment 202',
             'Departamento 203': 'Apartment 203', 
             'Departamento 401': 'Apartment 401',
@@ -1122,7 +2684,18 @@
             'Haga clic para descargar la tipología': 'Click to download typology',
             'Descargar Plano': 'Download Plan',
             'PRÓXIMO INICIO, NO TE LO PIERDAS': 'NEXT START, DONT MISS IT',
-            
+            'Solicitar visita a obra': 'Request site visit',
+            'visita-obra-desc': 'Schedule an appointment to visit the construction site and see your future apartment. Our team will show you the progress and answer all your questions.',
+            'en-construccion': 'Under construction',
+            'visitas-programadas': 'Scheduled visits',
+            'asesor-especializado': 'Specialized advisor',
+            'protocolo-seguridad': 'Safety protocol',
+            'Nombre completo': 'Full name',
+            'Correo electrónico': 'Email',
+            'Teléfono': 'Phone',
+            'Fecha preferida': 'Preferred date',
+            'Hora preferida': 'Preferred time',
+            'Agendar visita': 'Schedule visit'
         },
         'pt': {
             'Inicio': 'Início',
@@ -1152,6 +2725,7 @@
             'Haz clic para ver más detalles': 'Clique para ver mais detalhes',
             'Ver detalles': 'Ver detalhes',
             'Separar': 'Reservar',
+            'Cita en Obra': 'Visita ao Canteiro',
             'Departamento 202': 'Apartamento 202',
             'Departamento 203': 'Apartamento 203',
             'Departamento 401': 'Apartamento 401', 
@@ -1169,7 +2743,19 @@
             'Proyecto Benavides 2': 'Projeto Benavides 2', 
             'Haga clic para descargar la tipología': 'Clique para baixar a tipologia',
             'Descargar Plano': 'Baixar Planta',
-            'PRÓXIMO INICIO, NO TE LO PIERDAS': 'PRÓXIMA PARTIDA, NÃO PERCA'
+            'PRÓXIMO INICIO, NO TE LO PIERDAS': 'PRÓXIMA PARTIDA, NÃO PERCA',
+            'Solicitar visita a obra': 'Solicitar visita à obra',
+            'visita-obra-desc': 'Agende uma consulta para visitar a obra e conhecer seu futuro apartamento. Nossa equipe mostrará o progresso e responderá todas as suas perguntas.',
+            'en-construccion': 'Em construção',
+            'visitas-programadas': 'Visitas agendadas',
+            'asesor-especializado': 'Consultor especializado',
+            'protocolo-seguridad': 'Protocolo de segurança',
+            'Nombre completo': 'Nome completo',
+            'Correo electrónico': 'E-mail',
+            'Teléfono': 'Telefone',
+            'Fecha preferida': 'Data preferida',
+            'Hora preferida': 'Hora preferida',
+            'Agendar visita': 'Agendar visita'
         },
         'zh': {
             'Inicio': '首页',
@@ -1199,6 +2785,7 @@
             'Haz clic para ver más detalles': '点击查看更多详情',
             'Ver detalles': '查看详情',
             'Separar': '预订',
+            'Cita en Obra': '工地参观',
             'Departamento 202': '202号公寓',
             'Departamento 203': '203号公寓',
             'Departamento 401': '401号公寓',
@@ -1216,7 +2803,19 @@
             'Proyecto Benavides 2': '贝纳维德斯2号项目',
             'Haga clic para descargar la tipología': '点击下载户型图',
             'Descargar Plano': '下载平面图',
-            'PRÓXIMO INICIO, NO TE LO PIERDAS': '即将开始，不要错过'
+            'PRÓXIMO INICIO, NO TE LO PIERDAS': '即将开始，不要错过',
+            'Solicitar visita a obra': '申请工地参观',
+            'visita-obra-desc': '预约参观施工现场，了解您未来的公寓。我们的团队将向您展示进展情况并回答所有问题。',
+            'en-construccion': '建设中',
+            'visitas-programadas': '预约参观',
+            'asesor-especializado': '专业顾问',
+            'protocolo-seguridad': '安全协议',
+            'Nombre completo': '全名',
+            'Correo electrónico': '电子邮件',
+            'Teléfono': '电话',
+            'Fecha preferida': '首选日期',
+            'Hora preferida': '首选时间',
+            'Agendar visita': '预约参观'
         },
         'ja': {
             'Inicio': 'ホーム',
@@ -1246,6 +2845,7 @@
             'Haz clic para ver más detalles': '詳細を見るにはクリックしてください',
             'Ver detalles': '詳細を見る',
             'Separar': '予約する',
+            'Cita en Obra': '工事現場見学',
             'Departamento 202': '202号室',
             'Departamento 203': '203号室',
             'Departamento 401': '401号室',
@@ -1263,7 +2863,19 @@
             'Proyecto Benavides 2': 'ベナビデス2プロジェクト',
             'Haga clic para descargar la tipología': '間取り図をダウンロードする',
             'Descargar Plano': '図面をダウンロード',
-            'PRÓXIMO INICIO, NO TE LO PIERDAS': '次回開始、お見逃しなく'
+            'PRÓXIMO INICIO, NO TE LO PIERDAS': '次回開始、お見逃しなく',
+            'Solicitar visita a obra': '工事現場見学の申込',
+            'visita-obra-desc': '建設現場を訪問し、将来のアパートメントをご覧ください。私たちのチームが進捗状況を説明し、すべての質問にお答えします。',
+            'en-construccion': '建設中',
+            'visitas-programadas': '予約見学',
+            'asesor-especializado': '専門アドバイザー',
+            'protocolo-seguridad': '安全プロトコル',
+            'Nombre completo': '氏名',
+            'Correo electrónico': 'メールアドレス',
+            'Teléfono': '電話番号',
+            'Fecha preferida': '希望日',
+            'Hora preferida': '希望時間',
+            'Agendar visita': '見学予約'
         },
         'it': {
             'Inicio': 'Inizio',
@@ -1293,6 +2905,7 @@
             'Haz clic para ver más detalles': 'Clicca per vedere più dettagli',
             'Ver detalles': 'Vedi dettagli',
             'Separar': 'Prenota',
+            'Cita en Obra': 'Visita al Cantiere',
             'Departamento 202': 'Appartamento 202',
             'Departamento 203': 'Appartamento 203',
             'Departamento 401': 'Appartamento 401',
@@ -1310,7 +2923,19 @@
             'Proyecto Benavides 2': 'Progetto Benavides 2',
             'Haga clic para descargar la tipología': 'Clicca per scaricare la tipologia',
             'Descargar Plano': 'Scarica Planimetria',
-            'PRÓXIMO INICIO, NO TE LO PIERDAS': 'PROSSIMO INIZIO, NON PERDERLO'
+            'PRÓXIMO INICIO, NO TE LO PIERDAS': 'PROSSIMO INIZIO, NON PERDERLO',
+            'Solicitar visita a obra': 'Richiedi visita al cantiere',
+            'visita-obra-desc': 'Prenota un appuntamento per visitare il cantiere e conoscere il tuo futuro appartamento. Il nostro team ti mostrerà i progressi e risponderà a tutte le tue domande.',
+            'en-construccion': 'In costruzione',
+            'visitas-programadas': 'Visite programmate',
+            'asesor-especializado': 'Consulente specializzato',
+            'protocolo-seguridad': 'Protocollo di sicurezza',
+            'Nombre completo': 'Nome completo',
+            'Correo electrónico': 'Email',
+            'Teléfono': 'Telefono',
+            'Fecha preferida': 'Data preferita',
+            'Hora preferida': 'Ora preferita',
+            'Agendar visita': 'Prenota visita'
         }
     };
 
@@ -1333,6 +2958,10 @@
 
     document.querySelectorAll('.btn-separate').forEach(el => {
         el.setAttribute('data-translate', 'Separar');
+    });
+
+    document.querySelectorAll('.btn-obra').forEach(el => {
+        el.setAttribute('data-translate', 'Cita en Obra');
     });
 
     function translatePage(lang) {
@@ -1429,15 +3058,258 @@
     document.addEventListener('click', function(event) {
         const languageSelector = document.querySelector('.language-selector');
         const languageOptions = document.getElementById('languageOptions');
-        
+
         if (!languageSelector.contains(event.target)) {
             languageOptions.classList.remove('show');
         }
     });
+
+    // Función para inicializar el carrusel
+    function initializeCarousel() {
+        // Implementación básica del carrusel
+        console.log('Carrusel inicializado');
+    }
+
+    // Función para actualizar el estado del carrusel
+    function updateCarouselState() {
+        // Implementación básica
+        console.log('Estado del carrusel actualizado');
+    }
+
+    // Función para agendar cita en obra
+    function agendarCitaObra(deptNumber) {
+        // Obtener información del departamento
+        const deptImages = {
+            '101': '../Resource/PBEN2/DEP101/1.jpg',
+            '202': '../Resource/PBEN2/DEP202/1.jpg',
+            '203': '../Resource/PBEN2/DEP203/1.jpg',
+            '401': '../Resource/PBEN2/DEP401/1.jpg',
+            '402': '../Resource/PBEN2/DEP402/2.jpg',
+            '501': '../Resource/PBEN2/DEP501/1.jpg',
+            '502': '../Resource/PBEN2/DEP502/1.jpg',
+            '503': '../Resource/PBEN2/DEP503/2.jpg'
+        };
+
+        // Crear modal de cita en obra con el mismo diseño que casas de playa
+        const modal = document.createElement('div');
+        modal.className = 'modal obra-modal';
+        modal.id = `obra-modal-${deptNumber}`;
+        modal.style.display = 'block';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeObraModal('${deptNumber}')">&times;</span>
+                <div class="modal-grid">
+                    <!-- Preview Section -->
+                    <div class="property-preview">
+                        <img src="${deptImages[deptNumber] || '../Resource/Logo/logo.png'}" alt="Departamento ${deptNumber}">
+                        <div class="preview-details">
+                            <h3 data-translate="Departamento ${deptNumber}">Departamento ${deptNumber}</h3>
+                            <p data-translate="visita-obra-desc">Agenda una cita para visitar la obra en construcción y conocer tu futuro departamento. Nuestro equipo te mostrará los avances y responderá todas tus consultas.</p>
+                            <div class="preview-features">
+                                <span><i class="fa fa-hard-hat"></i> <span data-translate="en-construccion">En construcción</span></span>
+                                <span><i class="fa fa-calendar-check"></i> <span data-translate="visitas-programadas">Visitas programadas</span></span>
+                                <span><i class="fa fa-user-tie"></i> <span data-translate="asesor-especializado">Asesor especializado</span></span>
+                                <span><i class="fa fa-shield-alt"></i> <span data-translate="protocolo-seguridad">Protocolo de seguridad</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Contact Form -->
+                    <form id="obraForm-${deptNumber}" class="contact-form" onsubmit="enviarCitaObra(event, '${deptNumber}')">
+                        <h2 data-translate="Solicitar visita a obra">Solicitar visita a obra</h2>
+                        <input type="hidden" name="to_name" value="Polyline">
+                        <input type="hidden" name="property_title" value="Departamento ${deptNumber} - Proyecto Benavides 2">
+                        <div class="form-group">
+                            <label for="obra-nombre-${deptNumber}" data-translate="Nombre completo">Nombre completo</label>
+                            <input type="text" id="obra-nombre-${deptNumber}" name="from_name" placeholder=" " pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="obra-email-${deptNumber}" data-translate="Correo electrónico">Correo electrónico</label>
+                            <input type="email" id="obra-email-${deptNumber}" name="from_email" placeholder=" " required>
+                        </div>
+                        <div class="form-group">
+                            <label for="obra-telefono-${deptNumber}" data-translate="Teléfono">Teléfono</label>
+                            <input type="tel" id="obra-telefono-${deptNumber}" name="from_phone" placeholder=" " maxlength="9" inputmode="numeric" pattern="[0-9]{1,9}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="obra-fecha-${deptNumber}" data-translate="Fecha preferida">Fecha preferida</label>
+                            <input type="date" id="obra-fecha-${deptNumber}" name="preferred_date" placeholder=" " required>
+                        </div>
+                        <div class="form-group">
+                            <label for="obra-hora-${deptNumber}" data-translate="Hora preferida">Hora preferida</label>
+                            <select id="obra-hora-${deptNumber}" name="preferred_time" required>
+                                <option value="" disabled selected></option>
+                                <option value="09:00">9:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <span data-translate="Agendar visita">Agendar visita</span>
+                            <i class="fas fa-calendar-check"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Filtrar entrada para solo números en teléfono
+        const telefonoInput = document.getElementById(`obra-telefono-${deptNumber}`);
+        telefonoInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        // Filtrar entrada para solo letras y espacios en nombre
+        const nombreInput = document.getElementById(`obra-nombre-${deptNumber}`);
+        nombreInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+        });
+
+        // Cerrar modal al hacer clic fuera
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closeObraModal(deptNumber);
+            }
+        });
+    }
+
+    // Función para cerrar modal de obra
+    function closeObraModal(deptNumber) {
+        const modal = document.getElementById(`obra-modal-${deptNumber}`);
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    // Función para cerrar modal (tanto de obra como de detalle)
+    window.closeModal = function(modalId) {
+        // Primero intentar cerrar modal de obra
+        let modal = document.getElementById(`obra-modal-${modalId.replace('obra-', '')}`);
+        if (modal) {
+            modal.remove();
+            return;
+        }
+
+        // Si no es modal de obra, intentar cerrar modal de detalle
+        modal = document.getElementById(`detail-modal-${modalId}`);
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    };
+
+    // Función para enviar cita de obra con EmailJS
+    window.enviarCitaObra = function(event, deptNumber) {
+        event.preventDefault();
+        
+        const nombre = document.getElementById(`obra-nombre-${deptNumber}`).value;
+        const email = document.getElementById(`obra-email-${deptNumber}`).value;
+        const telefono = document.getElementById(`obra-telefono-${deptNumber}`).value;
+        const fecha = document.getElementById(`obra-fecha-${deptNumber}`).value;
+        const hora = document.getElementById(`obra-hora-${deptNumber}`).value;
+
+        if (!nombre || !email || !telefono || !fecha || !hora) {
+            alert('Por favor, completa todos los campos obligatorios');
+            return false;
+        }
+
+        const propertyTitle = `Departamento ${deptNumber} - Proyecto Benavides 2`;
+        
+        const templateParams = {
+            to_name: 'Polyline',
+            property_title: propertyTitle,
+            from_name: nombre,
+            from_email: email,
+            from_phone: telefono,
+            preferred_date: fecha,
+            preferred_time: hora,
+            message: `Solicitud de visita a obra para ${propertyTitle}. Fecha preferida: ${fecha} a las ${hora}.`
+        };
+
+        const btn = event.target.querySelector('.submit-btn');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span>Enviando...</span><i class="fas fa-spinner fa-spin"></i>';
+        
+        // Preparar datos para guardar en Firebase
+        const citaData = {
+            proyecto: 'Benavides 2',
+            departamento: deptNumber,
+            nombre: nombre,
+            email: email,
+            telefono: telefono,
+            fechaPreferida: fecha,
+            horaPreferida: hora,
+            estado: 'pendiente',
+            createdAt: new Date().toISOString(),
+            emailEnviado: false
+        };
+
+        // Primero guardar en Firebase usando la función helper
+        if (window.guardarCitaEnFirebase) {
+            window.guardarCitaEnFirebase(citaData)
+                .then((result) => {
+                    if (result.success) {
+                        console.log('Cita guardada en Firebase con ID:', result.id);
+                        citaData.emailEnviado = true;
+                        
+                        // Luego intentar enviar email
+                        return emailjs.send('service_nmqdl9u', 'template_xzgzp8p', templateParams);
+                    } else {
+                        throw new Error('Error al guardar en Firebase');
+                    }
+                })
+                .then(function(response) {
+                    console.log('Email enviado exitosamente:', response.status);
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    alert('¡Cita agendada exitosamente! Nos pondremos en contacto contigo pronto.');
+                    closeObraModal(deptNumber);
+                })
+                .catch(function(error) {
+                    console.error('Error al enviar email:', error);
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    // Los datos YA están guardados en Firebase, solo falló el email
+                    alert('✅ Tu solicitud ha sido registrada exitosamente.\n\nNos pondremos en contacto contigo pronto.\n\n📱 También puedes contactarnos por WhatsApp: +51 943 812 536');
+                    closeObraModal(deptNumber);
+                })
+        } else {
+            // Si no hay Firebase disponible, solo intentar con EmailJS
+            emailjs.send('service_nmqdl9u', 'template_xzgzp8p', templateParams)
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    alert('¡Cita agendada exitosamente! Nos pondremos en contacto contigo pronto.');
+                    closeObraModal(deptNumber);
+                })
+                .catch(function(error) {
+                    console.error('FAILED...', error);
+                    let errorMessage = 'Error al enviar la solicitud. ';
+                    if (error.status === 412) {
+                        errorMessage += 'El servicio de email no está disponible temporalmente.';
+                    } else if (error.status === 400) {
+                        errorMessage += 'Los datos enviados no son válidos.';
+                    } else if (error.status === 401) {
+                        errorMessage += 'Servicio de email no configurado.';
+                    }
+                    errorMessage += '\n\nPor favor, contáctanos directamente por WhatsApp: +51 943 812 536';
+                    alert(errorMessage);
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                });
+        }
+
+        return false;
+    };
 </script>
 
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-<script type="module" src="../js/property-viewer.js"></script>
+<!-- <script type="module" src="../js/property-viewer.js"></script> -->
     
 
 <script>
@@ -1503,3 +3375,4 @@
 <script type="module" src="../js/firebase-config.js"></script>
 <script type="module" src="../js/auth-check.js"></script>
 <script type="module" src="../js/Login_Perfil.js"></script>
+

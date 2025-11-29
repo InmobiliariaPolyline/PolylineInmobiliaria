@@ -14,11 +14,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="preload" as="video" href="../Resource/background1.mp4">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <link rel="stylesheet" href="../css/assistant.css">
-    <link rel="stylesheet" href="../css/gallery.html">
     <link rel="stylesheet" href="../css/cotizar.css">
     <link rel="stylesheet" href="../css/idiomas.css">
     <link rel="stylesheet" href="../css/footer.css">
@@ -27,106 +25,12 @@
     <script type="module" src="../js/auth-check.js"></script>
     <script type="module" src="../js/Login_Perfil.js"></script>
 
+    <!-- Navbar Loader - Carga el menú dinámicamente -->
+    <script src="../js/navbar-loader.js"></script>
 </head>
 
 <body>
-    <header>
-        <!-- Botón de menú móvil -->
-        <button class="mobile-menu-button" aria-label="Menú">
-            <div class="hamburger"></div>
-        </button>
-        <div id="loading-screen" class="loading-screen">
-            <div class="logo-container">
-                <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
-                <h1 class="company-name">POLYLINE</h1>
-                <p class="slogan">CONSTRUCTORA</p>
-            </div>
-        </div>
-        <div class="logo-container">
-            <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
-            <h1 class="company-name">POLYLINE</h1>
-            <p class="slogan"> CONSTRUCTORA</p>
-        </div>
-        <nav>
-            <ul class="nav-menu">
-                <li class="language-selector">
-                    <button class="language-btn" onclick="toggleLanguageOptions()">
-                        <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
-                        <span id="currentLanguage">Español</span>
-                    </button>
-                    <div class="language-options" id="languageOptions">
-                        <div class="language-option" onclick="changeLanguage('es')">
-                            <img src="../Resource/flags/es.png" alt="Español">
-                            <span>Español</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('en')">
-                            <img src="../Resource/flags/en.png" alt="English">
-                            <span>English</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('pt')">
-                            <img src="../Resource/flags/pt.png" alt="Português">
-                            <span>Português</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('zh')">
-                            <img src="../Resource/flags/zh.png" alt="中文">
-                            <span>中文</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('ja')">
-                            <img src="../Resource/flags/ja.png" alt="日本語">
-                            <span>日本語</span>
-                        </div>
-                        <div class="language-option" onclick="changeLanguage('it')">
-                            <img src="../Resource/flags/it.png" alt="Italiano">
-                            <span>Italiano</span>
-                        </div>
-                    </div>
-                </li>
-                <li><a class='active' data-translate='Inicio' href='../index.html'>Inicio</a></li>
-                <li><a href="../index.html#para-ti" data-translate="Para Tí">Para Tí</a></li>
-                <li class="dropdown">
-                    <a data-translate='Proyectos' href='proyectos.html' id='proyectos-link'>Proyectos</a>
-                    <ul class="dropdown-menu">
-                        <li><a data-translate='Casas de Playa en Venta / Alquiler' href='proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
-                        <li><a data-translate='Proyecto Benavides 1' href='pben1.html'>Proyecto Benavides 1</a></li>
-                        <li><a data-translate='Proyecto Benavides 2' href='pben2.html'>Proyecto Benavides 2</a></li>
-                        <li><a data-translate='Proyecto Sienna' href='ppl1.html'>Proyecto Sienna</a></li>
-                        <li><a data-translate='Proyecto Varsovia' href='plin.html'>Proyecto Varsovia</a></li>
-                        <li><a data-translate='Mas Proyectos' href='mas-proyectos.html'>Mas Proyectos</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="../contact/informaci%c3%b3n.html" id="proyectos-link" data-translate="Contacto">Contacto</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="../contact/informaci%c3%b3n.html" data-translate="Información">Información</a></li>
-                        <li><a href="../contact/agenda%20una%20reuni%c3%b3n.html" data-translate="Agenda Una Reunión">Agenda una Reunión con Nosotros</a></li>
-                    </ul>
-                </li>
-                <li><a data-translate='Cotizar Proyecto' href='cotizar.html'>Cotizar Proyecto</a></li>
-                <li><a data-translate='Anuncios' href='Anuncios.html'>Anuncios</a></li>
-                <li id="translateContainer" class="translate-container">
-                    <div id="google_translate_element" title="Seleccionar idioma"></div>
-                </li>
-                <li id="loginContainer" class="mobile-login">
-                    <a class='login-link' href='../pages/login.html' id='loginLink'>
-                        <i class="fas fa-sign-in-alt"></i> 
-                        <span data-translate="Login">Login</span>
-                    </a>
-                    <div id="userProfile" style="display: none;">
-                        <div class="profile-header">
-                            <a id="profileLink" href='../pages/perfil.html' style='text-decoration: none; color: inherit;'>
-                                <i class="fas fa-user"></i>
-                                <span id="profileText" data-translate="Perfil">Perfil</span>
-                            </a>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </nav>
-    </header>
-
-
-    <!-- Overlay para el menú móvil -->
-    <div class="menu-overlay"></div>
+    <!-- El navbar se cargará dinámicamente aquí desde components/navbar.html -->
 
     <!--audio de ambiente-->
     <audio id="ambient-sound" autoplay loop volume="0.0">
@@ -343,18 +247,29 @@ document.addEventListener('DOMContentLoaded', () => {
     
 
     // Manejador del botón de cotización
-    document.querySelector('.cotizar-btn').addEventListener('click', () => {
+    document.querySelector('.cotizar-btn').addEventListener('click', async () => {
         const resultado = document.querySelector('.resultado-cotizacion');
-        
-        // Cálculo del presupuesto (ejemplo)
+
+        // Cálculo del presupuesto
         const metrosTerreno = parseFloat(document.getElementById('metros-terreno').value) || 0;
         const metrosConstruccion = parseFloat(document.getElementById('metros-construccion').value) || 0;
         const metrosExcavacion = parseFloat(document.getElementById('metros-excavacion').value) || 0;
         const niveles = parseFloat(document.getElementById('niveles').value) || 1;
+        const tipoInmueble = tipoSeleccionado;
+        const moneda = monedaSeleccionada;
 
-        const precioExcavacion = metrosExcavacion * 100;
-        const precioConstruccion = metrosConstruccion * 500 * niveles;
-        const precioAcabados = metrosConstruccion * 200 * niveles;
+        const costos = precios[tipoInmueble];
+        let precioExcavacion = metrosExcavacion * costos.excavacion;
+        let precioConstruccion = metrosConstruccion * costos.construccion * niveles;
+        let precioAcabados = metrosConstruccion * costos.acabados * niveles;
+
+        // Convertir precios si es necesario
+        if (moneda === 'USD') {
+            precioExcavacion = precioExcavacion * exchangeRate.PEN_TO_USD;
+            precioConstruccion = precioConstruccion * exchangeRate.PEN_TO_USD;
+            precioAcabados = precioAcabados * exchangeRate.PEN_TO_USD;
+        }
+
         const total = precioExcavacion + precioConstruccion + precioAcabados;
 
         // Animación del resultado
@@ -374,15 +289,59 @@ document.addEventListener('DOMContentLoaded', () => {
             duration: 2000,
             easing: 'easeOutExpo',
             update: function(anim) {
-                document.querySelector('.precio-total').innerHTML = 
-                    '$' + anim.progress.toFixed(2);
+                const currentValue = total * (anim.progress / 100);
+                document.querySelector('.precio-total').innerHTML = formatPrice(currentValue) + ' <span style="font-size: 0.5em; color: #aaa;">aproximados</span>';
             }
         });
 
         // Actualizar desglose
-        document.getElementById('precio-excavacion').textContent = `$${precioExcavacion.toFixed(2)}`;
-        document.getElementById('precio-construccion').textContent = `$${precioConstruccion.toFixed(2)}`;
-        document.getElementById('precio-acabados').textContent = `$${precioAcabados.toFixed(2)}`;
+        document.getElementById('precio-excavacion').textContent = formatPrice(precioExcavacion);
+        document.getElementById('precio-construccion').textContent = formatPrice(precioConstruccion);
+        document.getElementById('precio-acabados').textContent = formatPrice(precioAcabados);
+
+        // Guardar cotización en Firebase
+        try {
+            const { db } = await import('../js/firebase-config.js');
+            const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+
+            // Función para determinar la colección basada en la página actual
+            function getCollectionName() {
+                const currentPath = window.location.pathname.toLowerCase();
+                if (currentPath.includes('ppl1') || currentPath.includes('siena')) {
+                    return 'proyectoFormato2Siena';
+                }
+                if (currentPath.includes('plin') || currentPath.includes('varsovia')) {
+                    return 'formatoProyecto2Varsovia';
+                }
+                return 'proyectoFormato2';
+            }
+
+            const cotizacionData = {
+                tipoInmueble,
+                metrosTerreno,
+                metrosConstruccion,
+                metrosExcavacion,
+                niveles,
+                moneda,
+                precioExcavacion,
+                precioConstruccion,
+                precioAcabados,
+                total,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            };
+
+            const collectionName = getCollectionName();
+            const docRef = await addDoc(collection(db, collectionName), cotizacionData);
+            console.log('Cotización guardada en colección:', collectionName, 'con ID:', docRef.id);
+
+            // Mostrar mensaje de éxito
+            showSuccessMessage('Cotización guardada exitosamente');
+
+        } catch (error) {
+            console.error('Error al guardar cotización:', error);
+            alert('Error al guardar la cotización: ' + error.message);
+        }
     });
 
     // Add touch events for mobile
@@ -831,6 +790,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const auth = getAuth();
         try {
             await signOut(auth);
+            localStorage.removeItem('userSession');
             console.log('Sesión cerrada exitosamente');
             window.location.href = '../index.html'; // Redirige al inicio después de cerrar sesión
         } catch (error) {

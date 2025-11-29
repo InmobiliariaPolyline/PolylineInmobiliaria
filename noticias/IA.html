@@ -1,46 +1,208 @@
-      <!DOCTYPE html>
+  <!DOCTYPE html>
   <html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Noticias IA | Polyline</title>
-      <link rel="stylesheet" href="../css/style.css" />
-  <!-- estilos de noticias, debe ir DESPUÉS -->
-  <link rel="stylesheet" href="../css/noticias.css" />  
-  </head>
+
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/noticias.css" />
+    <link rel="stylesheet" href="../css/navbar-noticias.css" />
+
+    
+    
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <meta name="theme-color" content="#ffffff">
+      <meta name="mobile-web-app-capable" content="yes">   <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+      <title>POLYLINE - Constructora</title>
+      <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon">
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+      
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+      <link rel="stylesheet" href="../css/assistant.css">
+      <link rel="stylesheet" href="../css/idiomas.css">
+      <link rel="stylesheet" href="../css/footer.css">
+      <!-- Firebase SDK -->
+
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+      <script src="../js/navbar-noticias.js"></script>
+      </head>
   <body>
-<main class="ia-section">
-    <header class="ia-header">
-      <h1>Noticias sobre Inteligencia Artificial</h1>
-      <p class="ia-subtitle">Lo más reciente en IA, investigación, herramientas y tendencias.</p>
-    </header>
 
-    <section id="ia-grid" class="ia-grid" aria-live="polite">
-      <!-- Skeletons iniciales -->
-      <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
-      <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
-      <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
-    </section>
-  </main>
+    <header>
+    <!-- Botón de menú móvil -->
+    <button class="mobile-menu-button" aria-label="Menú">
+        <div class="hamburger"></div>
+    </button>
+    <div class="logo-container">
+        <img src="../Resource/Logo/logo.png" alt="Logo de POLYLINE" class="logo">
+        <h1 class="company-name">POLYLINE</h1>
+        <p class="slogan">CONSTRUCTORA</p>
+    </div>
+    <nav>
+        <ul class="nav-menu">
+            <li class="language-selector">
+                <button class="language-btn" onclick="toggleLanguageOptions()">
+                    <img src="../Resource/flags/es.png" alt="Español" id="currentFlag">
+                    <span id="currentLanguage">Español</span>
+                </button>
+                <div class="language-options" id="languageOptions">
+                    <div class="language-option" onclick="changeLanguage('es')">
+                        <img src="../Resource/flags/es.png" alt="Español">
+                        <span>Español</span>
+                    </div>
+                    <div class="language-option" onclick="changeLanguage('en')">
+                        <img src="../Resource/flags/en.png" alt="English">
+                        <span>English</span>
+                    </div>
+                    <div class="language-option" onclick="changeLanguage('pt')">
+                        <img src="../Resource/flags/pt.png" alt="Português">
+                        <span>Português</span>
+                    </div>
+                    <div class="language-option" onclick="changeLanguage('zh')">
+                        <img src="../Resource/flags/zh.png" alt="中文">
+                        <span>中文</span>
+                    </div>
+                    <div class="language-option" onclick="changeLanguage('ja')">
+                        <img src="../Resource/flags/ja.png" alt="日本語">
+                        <span>日本語</span>
+                    </div>
+                    <div class="language-option" onclick="changeLanguage('it')">
+                        <img src="../Resource/flags/it.png" alt="Italiano">
+                        <span>Italiano</span>
+                    </div>
+                </div>
+            </li>
+            <li><a href='../index.html'>Inicio</a></li>
+            <li><a href="../index.html#para-ti">Para Tí</a></li>
+            <li class="dropdown">
+                <a href='#' onclick="return false;">Proyectos <span class="dropdown-arrow">▼</span></a>
+                <ul class="dropdown-menu">
+                    <li><a href='../proyectos/proyectos.html'>Casas de Playa en Venta / Alquiler</a></li>
+                    <li><a href='../proyectos/pben2.html'>Proyecto Benavides 2</a></li>
+                    <li><a href='../proyectos/ppl1.html'>Proyecto Sienna</a></li>
+                    <li><a href='../proyectos/plin.html'>Proyecto Varsovia</a></li>
+                    <li><a href='../proyectos/mas-proyectos.html'>Mas Proyectos</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" onclick="return false;">Contacto <span class="dropdown-arrow">▼</span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="../contact/informaci%c3%b3n.html">Información</a></li>
+                    <li><a href="../contact/agenda%20una%20reuni%c3%b3n.html">Agenda una Reunión con Nosotros</a></li>
+                </ul>
+            </li>
+            <li><a href='../proyectos/cotizar.html'>Cotizar Proyecto</a></li>
+            <li><a href='../proyectos/Anuncios.html'>Anuncios</a></li>
+            <li class="dropdown">
+                <a href="#" class="active" onclick="return false;">Noticias <span class="dropdown-arrow">▼</span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="ia.html">IA</a></li>
+                    <li><a href="bitcoin.html">Bitcoin</a></li>
+                    <li><a href="otros.html">Otros</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../proyectos/construccion.html">
+                    Construcción
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
 
-  <script>
-    async function loadNews() {
-      const grid = document.querySelector('.ia-grid');
-      grid.innerHTML = '<p>Cargando noticias…</p>';
+<!-- Overlay para el menú móvil -->
+<div class="menu-overlay"></div>
 
-      try {
-        const res = await fetch('https://delicate-pastelito-2ef0f7.netlify.app/.netlify/functions/aiNews'); // misma origin
-        if (!res.ok) throw new Error('Error HTTP ' + res.status);
-        const data = await res.json();
+    <main class="ia-section">
+      
 
-        grid.innerHTML = ''; // limpia
+      <section id="ia-grid" class="ia-grid" aria-live="polite">
+        <!-- Skeletons iniciales -->
+        <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
+        <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
+        <article class="skel-card"><div class="skel-media skeleton"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w40"></div></article>
+      </section>
+    </main>
 
+    <script>
+      /* ---------- PRELOADER con mínimo visible ---------- */
+      let __preloadStart = performance.now();
+
+      function showPreloader() {
+        const scr = document.getElementById('loading-screen');
+        if (!scr) return;
+        scr.style.display = 'flex';
+        void scr.offsetHeight;                 // reflow
+        scr.style.opacity = '1';
+        scr.style.transform = 'translateY(0)';
+        __preloadStart = performance.now();
+      }
+
+      function hidePreloader() {
+        const scr = document.getElementById('loading-screen');
+        if (!scr || scr.style.display === 'none') return;
+
+        const MIN_VISIBLE = 300;              // Reducido de 1100ms a 300ms
+        const elapsed = performance.now() - __preloadStart;
+        const wait = Math.max(0, MIN_VISIBLE - elapsed);
+
+        setTimeout(() => {
+          scr.style.transform = 'translateY(-100%)';
+          scr.style.opacity = '0';
+          scr.addEventListener('transitionend', () => {
+            scr.style.display = 'none';
+          }, { once: true });
+        }, wait);
+      }
+
+      // Exponer para otras páginas si quisieras reutilizar
+      window.__showPreloader = showPreloader;
+      window.__hidePreloader = hidePreloader;
+
+      // Cerrar por si el DOM entra rapidísimo
+      document.addEventListener('DOMContentLoaded', () => {
+        requestAnimationFrame(hidePreloader);
+      });
+      // Cerrar también al terminar la carga “pesada”
+      window.addEventListener('load', hidePreloader);
+
+      /* ---------- Cargar noticias IA ---------- */
+      async function loadNews() {
+        const grid = document.querySelector('.ia-grid');
+        grid.innerHTML = '<p>Cargando noticias…</p>';
+
+        try {
+          const res = await fetch('/.netlify/functions/aiNews');
+          if (!res.ok) throw new Error('Error HTTP ' + res.status);
+          const data = await res.json();
+
+          if (!Array.isArray(data) || data.length === 0) {
+            grid.innerHTML = '<p>No hay noticias por ahora.</p>';
+            return;
+          }
+
+          renderNews(data, grid);
+        } catch (err) {
+          console.error(err);
+          grid.innerHTML = '<p style="color:#c00">No se pudieron cargar las noticias.</p>';
+        } finally {
+          if (window.__hidePreloader) window.__hidePreloader();
+        }
+      }
+
+      function renderNews(data, grid) {
+        grid.innerHTML = '';
         data.forEach(n => {
           const card = document.createElement('article');
           card.className = 'ia-card';
-          card.innerHTML = `  
-            <a class="ia-card-image" href="${n.url}" target="_blank" rel="noopener noreferrer">
-              <img src="${n.image || 'https://via.placeholder.com/900x500?text=IA'}" alt="${n.title}">
+          const safeTitle = (n.title || 'Noticia de IA').replace(/"/g, '&quot;');
+          card.innerHTML = `
+            <a class="ia-card-image" href="${n.url}" target="_blank" rel="noopener noreferrer" aria-label="Abrir noticia: ${safeTitle}">
+              <img src="${n.image || '/Resource/Logo/logo.png'}" alt="${safeTitle}" loading="lazy">
             </a>
             <div class="ia-card-body">
               <div class="ia-card-meta">
@@ -50,7 +212,7 @@
                 </time>
               </div>
               <h3 class="ia-card-title">
-                <a href="${n.url}" target="_blank" rel="noopener noreferrer">${n.title}</a>
+                <a href="${n.url}" target="_blank" rel="noopener noreferrer">${safeTitle}</a>
               </h3>
               <p class="ia-card-excerpt">${n.summary || ''}</p>
               <a class="ia-card-link" href="${n.url}" target="_blank" rel="noopener noreferrer">Leer más</a>
@@ -58,18 +220,20 @@
           `;
           grid.appendChild(card);
         });
-
-        if (!data.length) {
-          grid.innerHTML = '<p>No hay noticias por ahora.</p>';
-        }
-      } catch (err) {
-        console.error(err);
-        grid.innerHTML = '<p style="color:#c00">No se pudieron cargar las noticias.</p>';
       }
-    }
 
-    // Ejecuta cuando el DOM esté listo
-    document.addEventListener('DOMContentLoaded', loadNews);
-  </script>
+      document.addEventListener('DOMContentLoaded', loadNews);
+    </script>
+
+    <div class="social-buttons">
+  <button class="social-btn facebook"  onclick="window.open('https://www.facebook.com/PolylineSalas')"><i class="fab fa-facebook-f"></i></button>
+  <button class="social-btn whatsapp"  onclick="window.open('https://wa.link/lkvfnb')"><i class="fab fa-whatsapp"></i></button>
+  <button class="social-btn instagram" onclick="window.open('https://www.instagram.com/arquitectosalasperu/')"><i class="fab fa-instagram"></i></button>
+  <button class="social-btn linkedin"  onclick="window.open('https://www.linkedin.com/in/arquitectosalas')"><i class="fab fa-linkedin-in"></i></button>
+  <button class="social-btn youtube"   onclick="window.open('https://www.youtube.com/channel/UC9wMT7_zsq7yE0MMCSxiVMw')"><i class="fab fa-youtube"></i></button>
+  </div>
+
+
+
   </body>
   </html>

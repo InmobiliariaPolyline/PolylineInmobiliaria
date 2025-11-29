@@ -1,155 +1,181 @@
-// construccion.mjs
-(function() {
-    'use strict';
+// netlify/functions/construccion.mjs
+export const handler = async (event) => {
+  // CORS básico
+  const baseHeaders = {
+    'content-type': 'application/json; charset=utf-8',
+    'access-control-allow-origin': '*',
+    'cache-control': 'public, max-age=300' // 5 min
+  };
 
-    const MAX_NEWS = 12;
-    const PLACEHOLDER = 'https://via.placeholder.com/1200x675?text=Construccion';
-    const QUERY_TERMS = ['construcción', 'infraestructura', 'obra', 'vivienda', 'inmobiliario', 'arquitectura', 'carretera', 'puente'];
+  // RSS fuentes en español
+const FEEDS = [
+  {
+    source: 'Google News — Construcción (PE)',
+    url:
+      'https://news.google.com/rss/search?q=construcci%C3%B3n%20OR%20obras%20OR%20infraestructura&hl=es-419&gl=PE&ceid=PE:es-419'
+  },
+  {
+    source: 'Google News — Ingeniería Civil (PE)',
+    url:
+      'https://news.google.com/rss/search?q=ingenier%C3%ADa%20civil%20OR%20edificaciones&hl=es-419&gl=PE&ceid=PE:es-419'
+  },
+  {
+    source: 'Europa Press — Construcción (ES)',
+    url: 'https://www.europapress.es/rss/rss.aspx?ch=279'
+  }
+];
 
-    // Función para limpiar texto
-    const plain = h => (h || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 
-    // Categorizar noticias
-    const getCategory = (title, desc) => {
-        const s = (String(title) + ' ' + String(desc || '')).toLowerCase();
-        const cats = [
-            ['Obra', ['obra', 'obras', 'licitación', 'contratista', 'contrata']],
-            ['Infraestructura', ['infraestructura', 'puente', 'carretera', 'vía', 'autopista', 'ferrocarril', 'aeropuerto', 'puerto']],
-            ['Vivienda', ['vivienda', 'departamento', 'inmueble', 'edificio residencial', 'hogar', 'condominio']],
-            ['Inmobiliario', ['inmobiliario', 'alquiler', 'venta', 'hipoteca', 'metro cuadrado', 'tasación']],
-            ['Arquitectura', ['arquitectura', 'diseño', 'urbanismo', 'paisajismo']],
-            ['Materiales', ['cemento', 'acero', 'concreto', 'ladrillo', 'asfalto', 'yeso', 'hormigón']]
-        ];
-        for (const [label, terms] of cats) {
-            if (terms.some(w => s.includes(w))) return label;
-        }
-        return 'Construcción';
-    };
+  try {
+    const results = await Promise.allSettled(
+      FEEDS.map(async ({ source, url }) => {
+        const res = await fetch(url, { headers: { 'user-agent': 'PolylineBot/1.0' } });
+        if (!res.ok) throw new Error(`${source} HTTP ${res.status}`);
+        const xml = await res.text();
+        return parseRSS(xml, source);
+      })
+    );
 
-    // Filtrar noticias según QUERY_TERMS
-    const filterNews = (newsArray) => {
-        return newsArray.filter(item => {
-            const text = (item.title + ' ' + (item.description || '')).toLowerCase();
-            return QUERY_TERMS.some(term => text.includes(term));
-        });
-    };
+    // Aplanar, filtrar rechazos y juntar
+    const items = results
+      .filter((r) => r.status === 'fulfilled')
+      .flatMap((r) => r.value)
+      .map(sanitizeItem);
 
-    // --- Función para cargar noticias desde tu endpoint Netlify ---
-    async function loadNews() {
-        const newsGrid = document.getElementById('newsGrid');
-        if (!newsGrid) return;
+    // Quitar duplicados por URL o título
+    const uniq = dedupe(items, (i) => i.url || i.title);
 
-        newsGrid.innerHTML = '<p>Cargando noticias...</p>';
-
-        try {
-            //Prubea local
-            const response = await fetch('/.netlify/functions/construccion', { cache: 'no-store' });
-
-            if (!response.ok) throw new Error('Error al cargar noticias');
-
-            let newsData = await response.json();
-
-            // Filtrar y limitar noticias
-            newsData = filterNews(newsData).slice(0, MAX_NEWS);
-
-            newsGrid.innerHTML = '';
-            newsData.forEach(news => {
-                const card = document.createElement('div');
-                card.className = 'news-card';
-                card.innerHTML = `
-                    <img src="${news.image || PLACEHOLDER}" alt="${news.title}" class="news-image">
-                    <div class="news-content">
-                        <h3>${news.title}</h3>
-                        <p>${plain(news.description)}</p>
-                        <small>Categoria: ${getCategory(news.title, news.description)}</small><br>
-                        <a href="${news.link}" target="_blank">Leer más</a>
-                    </div>
-                `;
-                newsGrid.appendChild(card);
-            });
-
-        } catch (error) {
-            console.error('Error cargando noticias:', error);
-            newsGrid.innerHTML = '<p>No se pudieron cargar las noticias. Intenta recargar la página.</p>';
-        }
-    }
-
-    // --- Funciones de idioma ---
-    function changeLanguageConstruction(lang) {
-        const currentFlag = document.getElementById('currentFlag');
-        const currentLanguage = document.getElementById('currentLanguage');
-
-        if (currentFlag && currentLanguage) {
-            currentFlag.src = `../Resource/flags/${lang}.png`;
-
-            const languageTexts = {
-                'es': 'Español',
-                'en': 'English',
-                'pt': 'Português',
-                'zh': '中文',
-                'ja': '日本語',
-                'it': 'Italiano'
-            };
-
-            currentLanguage.textContent = languageTexts[lang] || 'Español';
-
-            const languageOptions = document.getElementById('languageOptions');
-            if (languageOptions) languageOptions.classList.remove('show');
-
-            translatePageConstruction(lang);
-        }
-    }
-
-    function translatePageConstruction(lang) {
-        if (lang === 'es') return window.location.reload();
-
-        const translations = {
-            'en': {
-                'Servicios de Construcción': 'Construction Services',
-                '¿Listo para comenzar tu proyecto?': 'Ready to start your project?',
-                'Contáctanos hoy mismo para una consulta gratuita y cotización': 'Contact us today for a free consultation and quote',
-                'Solicitar Cotización': 'Request Quote',
-                'Noticias': 'News',
-                'Cargando proyectos...': 'Loading projects...'
-            }
-        };
-
-        const langTranslations = translations[lang];
-        if (!langTranslations) return;
-
-        document.querySelectorAll('[data-translate]').forEach(el => {
-            const key = el.getAttribute('data-translate');
-            if (langTranslations[key]) el.textContent = langTranslations[key];
-        });
-
-        document.title = langTranslations['Servicios de Construcción'] + ' - POLYLINE';
-    }
-
-    // --- Función para verificar sesión ---
-    function checkUserSession() {
-        try {
-            const userSession = JSON.parse(localStorage.getItem('userSession'));
-            const loginLink = document.getElementById('loginLink');
-
-            if (userSession && userSession.emailVerified && loginLink) {
-                loginLink.innerHTML = '<i class="fas fa-user"></i> <span data-translate="Perfil">Perfil</span>';
-                loginLink.href = '../pages/perfil.html';
-            }
-        } catch (error) {
-            console.error('Error checking user session:', error);
-        }
-    }
-
-    // --- Inicialización ---
-    document.addEventListener('DOMContentLoaded', () => {
-        const loadingScreen = document.getElementById('loading-screen');
-        if (loadingScreen) loadingScreen.style.display = 'none';
-
-        checkUserSession();
-        loadNews();
-        changeLanguageConstruction('es');
+    // Ordenar por fecha desc
+    uniq.sort((a, b) => {
+      const ad = Date.parse(a.publishedAt || 0) || 0;
+      const bd = Date.parse(b.publishedAt || 0) || 0;
+      return bd - ad;
     });
 
-    window.changeLanguageConstruction = changeLanguageConstruction;
+    // Limitar
+    const limited = uniq.slice(0, 24);
 
-})();
+    return {
+      statusCode: 200,
+      headers: baseHeaders,
+      body: JSON.stringify(limited)
+    };
+  } catch (err) {
+    console.error('Construcción feed error:', err);
+    return {
+      statusCode: 500,
+      headers: baseHeaders,
+      body: JSON.stringify({ error: 'No se pudo obtener noticias de construcción', detail: String(err) })
+    };
+  }
+};
+
+/* ---------- Helpers ---------- */
+
+// RSS parser muy simple para <item> y <entry>
+function parseRSS(xml, source) {
+  // items RSS 2.0
+  const itemRegex = /<item>([\s\S]*?)<\/item>/gi;
+  // Atom
+  const entryRegex = /<entry>([\s\S]*?)<\/entry>/gi;
+
+  const items = [];
+  let m;
+
+  const pushItem = (block) => {
+    const get = (tag) => getTag(block, tag);
+    const title = decodeHTML(get('title'));
+    const link = decodeHTML(get('link')) || getHref(block, 'link');
+    const pubDate = get('pubDate') || get('published') || get('updated') || '';
+    const description = stripTags(get('description') || get('summary') || '');
+    const image =
+      getMediaContent(block) ||
+      getEnclosureUrl(block) ||
+      extractFirstImgSrc(block) ||
+      null;
+
+    items.push({
+      source,
+      title,
+      url: link,
+      publishedAt: toISODate(pubDate),
+      summary: truncate(description, 220),
+      image
+    });
+  };
+
+  while ((m = itemRegex.exec(xml))) pushItem(m[1]);
+  while ((m = entryRegex.exec(xml))) pushItem(m[1]);
+
+  return items;
+}
+
+function getTag(block, tag) {
+  const r = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i');
+  const m = r.exec(block);
+  return m ? m[1].trim() : '';
+}
+function getHref(block, tag) {
+  const r = new RegExp(`<${tag}[^>]*href="([^"]+)"[^>]*\\/?>`, 'i');
+  const m = r.exec(block);
+  return m ? m[1].trim() : '';
+}
+function getEnclosureUrl(block) {
+  const r = /<enclosure[^>]*url="([^"]+)"[^>]*>/i;
+  const m = r.exec(block);
+  return m ? m[1] : null;
+}
+function getMediaContent(block) {
+  const r = /<(?:media:content|media:thumbnail)[^>]*url="([^"]+)"[^>]*>/i;
+  const m = r.exec(block);
+  return m ? m[1] : null;
+}
+function extractFirstImgSrc(block) {
+  const r = /<img[^>]*src="([^"]+)"[^>]*>/i;
+  const m = r.exec(block);
+  return m ? m[1] : null;
+}
+
+function decodeHTML(str = '') {
+  return str
+    .replace(/<!\[CDATA\[(.*?)\]\]>/gs, '$1')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+}
+function stripTags(str = '') {
+  return decodeHTML(str).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function toISODate(s = '') {
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d.toISOString();
+}
+function truncate(s = '', n = 200) {
+  return s.length > n ? s.slice(0, n - 1) + '…' : s;
+}
+function sanitizeItem(x) {
+  if (x.image) {
+    if (x.image.startsWith('//')) x.image = 'https:' + x.image;
+    if (!/^https?:\/\//i.test(x.image)) x.image = null;
+  }
+  return x;
+}
+
+function dedupe(arr, keyFn) {
+  const seen = new Set();
+  const out = [];
+  for (const it of arr) {
+    const k = keyFn(it);
+    if (!k) {
+      out.push(it);
+      continue;
+    }
+    if (!seen.has(k)) {
+      seen.add(k);
+      out.push(it);
+    }
+  }
+  return out;
+}

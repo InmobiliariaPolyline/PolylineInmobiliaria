@@ -85,7 +85,7 @@ body.dark-mode .project-title {
     }
 
     .project-card {
-        width: 85%;
+        width: 100%;
         padding: 20px;
         margin: 0;
         background-color: #fff;
@@ -93,9 +93,9 @@ body.dark-mode .project-title {
 
     .project-card img {
         height: 140px;
-        width: 90%;
+        width: 100%;
         margin: 0;
-        padding: 12px;
+        padding: 0;
         border-radius: 20px;
     }
 

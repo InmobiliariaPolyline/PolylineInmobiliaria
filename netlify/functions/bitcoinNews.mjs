@@ -76,9 +76,9 @@ const normalizeItem = async (item, sourceName) => {
     tryGet(item, "image.url") ||
     null;
 
-  // Si no hay imagen en el feed, intenta og:image del artículo
-  if (!image && link) {
-    image = await getOgImage(link);
+  // Si no hay imagen, usar imagen de respaldo local
+  if (!image) {
+    image = "/Resource/Logo/logo.png";
   }
 
   // (opcional) servir por Cloudinary fetch

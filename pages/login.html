@@ -22,7 +22,7 @@
     
     <!-- Scripts locales para animaciones y UI -->
     <script src="../js/login.js" defer></script>
-    <script src="../js/auth-check.js" defer></script>
+    <script type="module" src="../js/auth-check.js"></script>
 </head>
 
 <body>
@@ -374,33 +374,6 @@
         // Configurar el botón de Google
         document.getElementById('googleBtn').addEventListener('click', handleGoogleLogin);
     </script>
- 
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const userSession = JSON.parse(localStorage.getItem('userSession'));
-        const loginLink = document.getElementById('loginLink');
-        const userProfile = document.getElementById('userProfile');
-        const profileLink = document.getElementById('profileLink');
-        const profileText = document.getElementById('profileText');
-
-        if (userSession && userSession.emailVerified) {
-            loginLink.style.display = 'none';
-            userProfile.style.display = 'flex';
-            if (profileLink && profileText) {
-                if (userSession.isAdmin) {
-                    profileLink.href = '../pages/perfilAdmin.html';
-                    profileText.textContent = 'Administrador';
-                    profileText.setAttribute('data-translate', 'Administrador');
-                } else {
-                    profileLink.href = '../pages/perfil.html';
-                    profileText.textContent = 'Perfil';
-                    profileText.setAttribute('data-translate', 'Perfil');
-                }
-            }
-        }
-    });
-    </script>
-        
 
 </body>
 </html>

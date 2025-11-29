@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title id="pageTitle">Casa de Playa Dinámica</title>
+  <link rel="icon" href="../Resource/Logo/logo.png" type="image/x-icon" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/idiomas.css" />
+  <link rel="stylesheet" href="../css/assistant.css" />
+  <link rel="stylesheet" href="../css/footer.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+  <!-- 👇 No cargamos los SDK de Firebase en modo UMD.
+       Usaremos imports dinámicos (module) dentro del script de abajo. -->
+  <!-- <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script> -->
+  <!-- <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script> -->
+
+  <!-- Tu config modular (solo si la necesitas para otras páginas). No es estrictamente necesario aquí
+       porque dentro del script hacemos import('../js/firebase-config.js') dinámico. -->
+  <!-- <script type="module" src="../js/firebase-config.js"></script> -->
+    <!-- Navbar Loader - Carga el menú dinámicamente -->
+    <script src="../js/navbar-loader.js"></script>
+</head>
+<body>
+  <!-- El navbar se cargará dinámicamente aquí desde components/navbar.html -->
+
+  <!-- Panel Admin (se muestra si userSession.isAdmin) -->
+  <div id="adminPanel" style="display: none; margin-bottom: 2rem;">
+    <div class="admin-header" style="background: var(--card-bg); padding: 1.5rem; border-radius: 10px; margin-bottom: 1rem;">
+      <h2 style="margin:0;color:var(--text-color);">Panel de Administración - Casa de Playa</h2>
+      <button class="action-btn" id="toggleEditForm" style="background: var(--accent-color); color: #fff; border: none; padding: .5rem 1rem; border-radius: 5px; cursor: pointer;">
+        <i class="fas fa-edit"></i> Editar Casa de Playa
+      </button>
+    </div>
+
+    <div class="project-management-section" id="editFormContainer" style="display: none;">
+     
+        <form class="project-form" id="editBeachHouseForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <label for="editBeachHouseName">Nombre de la Casa *</label>
+                    <input type="text" id="editBeachHouseName" placeholder="Ej: Casa de Playa Golf 5" required>
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">* Campo obligatorio</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBeachHouseLocation">Ubicación</label>
+                    <input type="text" id="editBeachHouseLocation" placeholder="Ej: Golf Club, Punta Hermosa">
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Campo opcional</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBeachHouseBedrooms">Dormitorios</label>
+                    <input type="number" id="editBeachHouseBedrooms" min="1">
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Campo opcional</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBeachHouseBathrooms">Baños</label>
+                    <input type="number" id="editBeachHouseBathrooms" min="1">
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Campo opcional</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBeachHouseParking">Estacionamiento</label>
+                    <input type="number" id="editBeachHouseParking" min="0">
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Campo opcional</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBeachHouseArea">Área (m²)</label>
+                    <input type="number" id="editBeachHouseArea" step="0.01">
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Campo opcional</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBeachHouseGarden">Jardín (m²)</label>
+                    <input type="number" id="editBeachHouseGarden" step="0.01" min="0">
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Campo opcional</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBeachHousePool">Piscina</label>
+                    <select id="editBeachHousePool">
+                        <option value="false">No</option>
+                        <option value="true">Sí</option>
+                    </select>
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Campo opcional</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBeachHouseTerrace">Terraza (m²)</label>
+                    <input type="number" id="editBeachHouseTerrace" step="0.01" min="0">
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Campo opcional</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBeachHouseServices">Servicios</label>
+                    <textarea id="editBeachHouseServices" rows="3" placeholder="Ej: Agua, luz, gas, internet, etc."></textarea>
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Campo opcional</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBeachHouseGreenAreas">Áreas Verdes (m²)</label>
+                    <input type="number" id="editBeachHouseGreenAreas" step="0.01" min="0">
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Campo opcional</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBeachHouseFloors">Número de Pisos</label>
+                    <input type="number" id="editBeachHouseFloors" min="1">
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Campo opcional</small>
+                </div>
+
+                <!-- Pisos con descripciones -->
+                <div class="floors-section" id="editFloorsSection">
+                    <h3>Descripción de Pisos</h3>
+                    <div id="editFloorsContainer">
+                        <!-- Los pisos se agregarán dinámicamente aquí -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBeachHouseDescription">Descripción General</label>
+                    <textarea id="editBeachHouseDescription" rows="4" placeholder="Descripción detallada de la casa de playa"></textarea>
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Campo opcional</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBeachHouseStatus">Estado</label>
+                    <select id="editBeachHouseStatus">
+                        <option value="available">Disponible</option>
+                        <option value="reserved">Reservado</option>
+                        <option value="sold">Vendido</option>
+                    </select>
+                    <small style="color: var(--text-secondary, #666); font-size: 0.9rem;">Campo opcional</small>
+                </div>
+
+                <!-- Sección de Imágenes -->
+                <div class="project-images-section">
+                    <h3>Imágenes de la Casa de Playa</h3>
+                    <div class="images-grid" id="editBeachHouseImagesGrid">
+                        <div class="image-upload-card" id="editBeachHouseImageUploadCard">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Subir Imagen</p>
+                            <input type="file" id="editBeachHouseImageInput" accept="image/*" multiple style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Imágenes de la Galería -->
+                <div class="project-images-section">
+                    <h3>Imágenes de la Galería</h3>
+                    <p style="color: var(--text-secondary, #666); font-size: 0.9rem; margin-bottom: 1rem;">
+                        Estas imágenes se mostrarán en el slider a la izquierda de la página de detalles.
+                        Gestiona las imágenes que aparecen en la galería principal de la propiedad.
+                    </p>
+                    <div class="images-grid" id="editGalleryImagesGrid">
+                        <div class="image-upload-card" id="editGalleryImageUploadCard">
+                            <i class="fas fa-images"></i>
+                            <p>Subir Imágenes de la Galería</p>
+                            <input type="file" id="editGalleryImageInput" accept="image/*" multiple style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Imágenes del Proyecto (para la galería de detalles) -->
+                <div class="project-images-section">
+                    <h3>Imágenes del Proyecto (Galería de Detalles)</h3>
+                    <p style="color: var(--text-secondary, #666); font-size: 0.9rem; margin-bottom: 1rem;">
+                        Estas imágenes se mostrarán en la galería de detalles cuando los usuarios hagan clic en la casa.
+                        Sube imágenes de alta calidad que representen el proyecto completo.
+                    </p>
+                    <div class="images-grid" id="editProjectImagesGrid">
+                        <div class="image-upload-card" id="editProjectImageUploadCard">
+                            <i class="fas fa-images"></i>
+                            <p>Subir Imágenes del Proyecto</p>
+                            <input type="file" id="editProjectImageInput" accept="image/*" multiple style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="action-btn cancel-btn" id="cancelEdit">Cancelar</button>
+                    <button type="submit" class="action-btn save-btn">Actualizar Casa de Playa</button>
+                </div>
+            </form>
+     
+
+
+
+
+    </div>
+  </div>
+
+  <section id="inicio" class="property-showcase">
+    <div class="image-gallery">
+      <div class="image-slider" id="imageSlider"></div>
+      <div class="image-controls" id="imageControls"></div>
+    </div>
+
+    <div class="property-details" id="propertyDetails"></div>
+  </section>
+
+  <!-- Botón de modo oscuro -->
+  <button id="dark-mode-toggle" class="dark-mode-button" style="position: fixed; bottom: 20px; right: 30px;"></button>
+
+  <footer class="seccion-footer">
+    <div class="contenedor-footer">
+      <div class="bloque-logo">
+        <img src="../Resource/Logo/logo.png" alt="Polyline" />
+        <div class="texto-copyright" style="color:black;">
+          <p>&copy; 2025 POLYLINE. Todos los derechos reservados.</p>
+        </div>
+      </div>
+      <div class="bloque-contacto" style="color:black;">
+        <h3>CONTACTOS:</h3>
+        <p>WhatsApp: <a href="https://wa.link/lkvfnb">+51 943 812 536</a></p>
+        <p>Email: <a href="mailto:polylinesac@yahoo.com">polylinesac@yahoo.com</a></p>
+        <p>Dirección: Av. Benavides 3008. Lima</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/assistant.js"></script>
+
+  <div class="social-buttons" style="position: fixed; bottom: 20px; right: 142px;">
+    <button class="social-btn facebook" onclick="window.open('https://www.facebook.com/PolylineSalas')"><i class="fab fa-facebook-f"></i></button>
+    <button class="social-btn whatsapp" onclick="window.open('https://wa.link/lkvfnb')"><i class="fab fa-whatsapp"></i></button>
+    <button class="social-btn instagram" onclick="window.open('https://www.instagram.com/arquitectosalasperu/')"><i class="fab fa-instagram"></i></button>
+    <button class="social-btn linkedin" onclick="window.open('https://www.linkedin.com/in/arquitectosalas')"><i class="fab fa-linkedin-in"></i></button>
+    <button class="social-btn youtube" onclick="window.open('https://www.youtube.com/channel/UC9wMT7_zsq7yE0MMCSxiVMw')"><i class="fab fa-youtube"></i></button>
+  </div>
+
+  <!-- =========================
+       SCRIPT PRINCIPAL (module)
+       ========================= -->
+  <script type="module">
+    // --------------------------
+    // utilidades
+    // --------------------------
+    const safeStartsWith = (v, prefix) => typeof v === 'string' && v.startsWith(prefix);
+    const normalizeImage = (img) => {
+      if (typeof img === 'string') return { url: img, filename: img.split('/').pop() || 'image' };
+      if (img && typeof img.url === 'string') {
+        return { url: img.url, filename: img.filename || (img.url.split('/').pop() || 'image'), size: img.size };
+      }
+      return { url: '../Resource/Logo/logo.png', filename: 'default.png' };
+    };
+    const nz = (n) => Number.isFinite(Number(n)) ? Number(n) : 0;
+
+    // slider
+    let currentImage = 0;
+    let imagesEls = [];
+    function changeImage(direction) {
+      const next = direction === 'next' ? (currentImage + 1) % imagesEls.length : (currentImage - 1 + imagesEls.length) % imagesEls.length;
+      anime({ targets: imagesEls[currentImage], opacity: [1, 0], translateX: direction === 'next' ? [0, -100] : [0, 100], easing: 'easeInOutQuad', duration: 600 });
+      anime({ targets: imagesEls[next],       opacity: [0, 1], translateX: direction === 'next' ? [100, 0] : [-100, 0], easing: 'easeInOutQuad', duration: 600 });
+      imagesEls[currentImage].classList.remove('active');
+      imagesEls[next].classList.add('active');
+      updateDots();
+      currentImage = next;
+    }
+    function goToImage(index){ if(index!==currentImage) changeImage(index>currentImage?'next':'prev') }
+    function updateDots(){
+      document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===currentImage));
+    }
+    window.changeImage = changeImage; // para los botones inline
+    window.goToImage = goToImage;
+
+    // admin panel visible si isAdmin
+    async function checkAdminAuth(){
+      const userSession = JSON.parse(localStorage.getItem('userSession'));
+      const adminPanel = document.getElementById('adminPanel');
+      if (userSession?.isAdmin) adminPanel.style.display = 'block';
+    }
+
+    // carga de una propiedad por id
+    async function loadDynamicProperty(propertyId){
+      try{
+        const { db } = await import('../js/firebase-config.js');
+        const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+
+        const snap = await getDoc(doc(db,'proyectoFormatoA', propertyId));
+        if(!snap.exists()){
+          console.error('Propiedad no encontrada');
+          window.location.href = 'proyectos.html';
+          return;
+        }
+        const p = snap.data();
+
+        // título página
+        const title = p?.name ?? '';
+        document.getElementById('pageTitle').textContent = title;
+        document.title = title;
+
+        // imágenes
+        loadPropertyImages(p);
+
+        // detalles
+        loadPropertyDetails(p);
+
+      }catch(err){
+        console.error('Error al cargar propiedad dinámica:', err);
+        window.location.href = 'proyectos.html';
+      }
+    }
+
+    function loadPropertyImages(p){
+      const imageSlider   = document.getElementById('imageSlider');
+      const imageControls = document.getElementById('imageControls');
+
+      const rawList = (p?.imagenesdetalle?.length ? p.imagenesdetalle :
+                      (p?.galleryImages?.length ? p.galleryImages :
+                      (Array.isArray(p?.images) ? p.images : [])));
+
+      const displayImages = rawList.map(normalizeImage);
+
+      if(!displayImages.length){
+        imageSlider.innerHTML = '<img src="../Resource/Logo/logo.png" alt="Imagen no disponible" class="slider-image active">';
+        imageControls.innerHTML = '<div class="image-dots"><span class="dot active"></span></div>';
+        imagesEls = document.querySelectorAll('.slider-image');
+        return;
+      }
+
+      imageSlider.innerHTML = displayImages.map((img,i)=>`
+        <img src="${img.url}" alt="${img.filename || ('Imagen '+(i+1))}" class="slider-image ${i===0?'active':''}">
+      `).join('');
+
+      imageControls.innerHTML = `
+        <button class="nav-btn prev-btn" onclick="changeImage('prev')"><i class="fas fa-chevron-left"></i></button>
+        <div class="image-dots">${displayImages.map((_,i)=>`<span class="dot ${i===0?'active':''}" onclick="goToImage(${i})"></span>`).join('')}</div>
+        <button class="nav-btn next-btn" onclick="changeImage('next')"><i class="fas fa-chevron-right"></i></button>
+      `;
+
+      imagesEls = document.querySelectorAll('.slider-image');
+    }
+
+    function loadPropertyDetails(property){
+      const box = document.getElementById('propertyDetails');
+      const rawName = property?.name ?? '';
+      const displayName = safeStartsWith(rawName,'Casa de Playa') ? rawName : `Casa de Playa - ${rawName || 'Sin nombre'}`;
+
+      const area = nz(property.area);
+      const bedrooms = nz(property.bedrooms);
+      const bathrooms = nz(property.bathrooms);
+      const parking = nz(property.parking);
+      const garden = nz(property.garden);
+      const greenAreas = nz(property.greenAreas);
+      const terrace = nz(property.terrace);
+
+      let featuresHTML = `
+        <div class="feature-item"><i class="fa fa-bed"></i><div class="feature-text"><h4 data-translate="Dormitorios">Dormitorios</h4><p>${bedrooms} dormitorios</p></div></div>
+        <div class="feature-item"><i class="fa fa-bath"></i><div class="feature-text"><h4 data-translate="Baños">Baños</h4><p>${bathrooms} baños</p></div></div>
+        <div class="feature-item"><i class="fa fa-car"></i><div class="feature-text"><h4 data-translate="Estacionamiento">Estacionamiento</h4><p>${parking} espacios</p></div></div>
+        <div class="feature-item"><i class="fa fa-home"></i><div class="feature-text"><h4 data-translate="Área">Área</h4><p>${area} m²</p></div></div>
+        <div class="feature-item"><i class="fa fa-tree"></i><div class="feature-text"><h4 data-translate="Jardín">Jardín</h4><p>${garden} m² jardín</p></div></div>
+      `;
+      if(property.pool){
+        featuresHTML += `<div class="feature-item"><i class="fa fa-swimming-pool"></i><div class="feature-text"><h4>Piscina</h4><p>Sí</p></div></div>`;
+      }
+      if(terrace>0){
+        featuresHTML += `<div class="feature-item"><i class="fa fa-building"></i><div class="feature-text"><h4>Terraza</h4><p>${terrace} m² terraza</p></div></div>`;
+      }
+      if(greenAreas>0){
+        featuresHTML += `<div class="feature-item"><i class="fa fa-leaf"></i><div class="feature-text"><h4>Áreas Verdes</h4><p>${greenAreas} m² áreas verdes</p></div></div>`;
+      }
+      if(property.floors?.length){
+        featuresHTML += `<div class="feature-item"><i class="fa fa-layer-group"></i><div class="feature-text"><h4>Número de Pisos</h4><p>${property.floors.length} pisos</p></div></div>`;
+      }
+
+      let additionalInfoHTML = '';
+      if(property.location){
+        additionalInfoHTML += `<div class="additional-info-item"><h4>Ubicación</h4><p>${property.location}</p></div>`;
+      }
+      if(property.services){
+        additionalInfoHTML += `<div class="additional-info-item"><h4>Servicios</h4><p>${property.services}</p></div>`;
+      }
+      if(property.status){
+        const st = {available:'Disponible',reserved:'Reservado',sold:'Vendido'}[property.status] || property.status;
+        additionalInfoHTML += `<div class="additional-info-item"><h4>Estado</h4><p>${st}</p></div>`;
+      }
+      if(property.floors?.length){
+        additionalInfoHTML += `
+          <div class="additional-info-item">
+            <h4>Descripción de Pisos</h4>
+            ${property.floors.map(f=>`<div class="floor-description"><h5>Piso ${f.floor}</h5><p>${f.description||''}</p></div>`).join('')}
+          </div>`;
+      }
+
+      box.innerHTML = `
+        <h2 class="property-title">${displayName}</h2>
+        <div class="property-features">${featuresHTML}</div>
+        ${additionalInfoHTML ? `<div class="additional-info">${additionalInfoHTML}</div>` : ''}
+        <div class="property-description"><p>${property.description || 'Descripción no disponible'}</p></div>
+        <button class="contact-now-btn" onclick="openContactModal()">Contactar ahora</button>
+      `;
+    }
+
+    // modal contacto (mínimo necesario)
+    window.openContactModal = function(){
+      const m = document.getElementById('contactModal');
+      if(m) m.style.display = 'block';
+    };
+
+    // arranque
+    document.addEventListener('DOMContentLoaded', () => {
+      const id = new URLSearchParams(window.location.search).get('id');
+      if(!id){ window.location.href='proyectos.html'; return; }
+      loadDynamicProperty(id);
+      checkAdminAuth();
+    });
+
+    // animaciones de entrada
+    window.addEventListener('load', () => {
+      anime({ targets: '.property-title', opacity: [0,1], translateY:[20,0], duration: 1000, easing: 'easeOutExpo' });
+      anime({ targets: '.feature-item', opacity: [0,1], translateX:[20,0], delay: anime.stagger(100), duration: 800, easing: 'easeOutQuad' });
+      anime({ targets: '.property-description', opacity:[0,1], translateY:[20,0], duration: 1000, delay: 500, easing: 'easeOutExpo' });
+    });
+  </script>
+
+  <!-- Traducciones y utilidades UI (idéntico a tu versión) -->
+  <script>
+    function toggleLanguageOptions(){const s=document.querySelector('.language-selector'),o=document.getElementById('languageOptions');s.classList.toggle('active');o.classList.toggle('show')}
+    function changeLanguage(lang){
+      const f=document.getElementById('currentFlag'), t=document.getElementById('currentLanguage'), o=document.getElementById('languageOptions');
+      f.src=`../Resource/flags/${lang}.png`;
+      t.textContent={es:'Español',en:'English',pt:'Português',zh:'中文',ja:'日本語',it:'Italiano'}[lang];
+      o.classList.remove('show'); /* aquí podrías llamar a translatePage(lang) si lo necesitas */
+    }
+    document.addEventListener('click', (e) => {
+      const s=document.querySelector('.language-selector'), o=document.getElementById('languageOptions');
+      if (!s.contains(e.target)) o.classList.remove('show');
+    });
+  </script>
+
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+  <!-- Modal contacto mínimo para no romper openContactModal() -->
+  <div id="contactModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close-modal" onclick="document.getElementById('contactModal').style.display='none'">&times;</span>
+      <div class="modal-grid">
+        <div class="property-preview" id="propertyPreview"></div>
+        <div style="padding:1rem;">Escríbenos a <b>polylinesac@yahoo.com</b> o WhatsApp <b>+51 943 812 536</b></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
